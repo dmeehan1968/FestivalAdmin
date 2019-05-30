@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watch --no-cache"
+    "test": "jest --watch --no-cache",
+    "start": "nodemon --exec babel-node --presets @babel/preset-env src/server"
   },
   "repository": {
     "type": "git",
@@ -22,12 +23,21 @@
     "@babel/node": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
     "babel-jest": "^24.8.0",
-    "jest": "^24.8.0"
+    "jest": "^24.8.0",
+    "jest-express": "^1.10.1"
   },
   "jest": {
     "transform": {
       "^.+\\.js$": "<rootDir>/config/jest/transform.js"
     },
-    "testRegex": [ ".+\\.spec\\.js" ]
+    "testRegex": [
+      ".+\\.spec\\.js"
+    ]
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "nodemonConfig": {
+     "ignore": [ "*.spec.js" ]
   }
 }
