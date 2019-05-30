@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --watch --no-cache"
   },
   "repository": {
     "type": "git",
@@ -16,5 +16,18 @@
   "bugs": {
     "url": "https://github.com/dmeehan1968/FestivalAdmin/issues"
   },
-  "homepage": "https://github.com/dmeehan1968/FestivalAdmin#readme"
+  "homepage": "https://github.com/dmeehan1968/FestivalAdmin#readme",
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/node": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "babel-jest": "^24.8.0",
+    "jest": "^24.8.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.js$": "<rootDir>/config/jest/transform.js"
+    },
+    "testRegex": [ ".+\\.spec\\.js" ]
+  }
 }
