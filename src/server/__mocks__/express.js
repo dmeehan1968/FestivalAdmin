@@ -9,7 +9,8 @@ const express = jest.fn(() => {
           }
         }
       }
-    })
+    }),
+    use: jest.fn(),
   }
 })
 

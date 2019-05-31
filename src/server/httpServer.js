@@ -1,4 +1,5 @@
 import express from 'express'
+import middlewares from './middlewares'
 
 export default (options = {}) => {
   const defaults = {
@@ -8,6 +9,11 @@ export default (options = {}) => {
 
   return new Promise((resolve) => {
     const app = express()
+
+    middlewares.forEach(middleware => {
+      app.use(...middleware)
+    })
+
     const listener = app.listen(options.port, () => {
       resolve(listener.address())
     })

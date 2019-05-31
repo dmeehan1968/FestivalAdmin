@@ -25,4 +25,23 @@ describe("server", () => {
     });
 
   });
+
+  describe("graphql", () => {
+
+    it("loads graphqlHTTP", () => {
+      expect.assertions(1)
+      return httpServer().then(() => {
+        const app = express.mock.results.slice(-1)[0].value
+        const graphqlMiddlewareMatcher = {
+          asymmetricMatch: actual => {
+            return (
+              typeof actual === 'function'
+              && actual.name === 'graphqlMiddleware'
+            )
+          },
+        }
+        expect(app.use).toHaveBeenCalledWith('/graphql', graphqlMiddlewareMatcher)
+      })
+    });
+  });
 });
