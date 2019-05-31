@@ -1,5 +1,5 @@
 const mockServer = jest.fn(() => Promise.resolve({}))
-jest.mock('./server', () => mockServer)
+jest.mock('./httpServer', () => mockServer)
 
 const mockConsole = () => {
   const originalConsole = Object.assign({}, global.console)
@@ -36,7 +36,7 @@ describe("index", () => {
   beforeEach(() => {
     restoreConsole = mockConsole()
     restoreObjectKey = preserveObjectKey(process.env, 'PORT')
-    server = require('./server')
+    server = require('./httpServer')
     server.mockClear()
     bootstrap = require('./index').bootstrap
   });

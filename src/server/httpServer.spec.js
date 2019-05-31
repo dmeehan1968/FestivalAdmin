@@ -1,4 +1,4 @@
-import server from './server'
+import httpServer from './httpServer'
 import express from 'express'
 
 jest.resetModules()
@@ -10,7 +10,7 @@ describe("server", () => {
 
     it("listens on port 8000 as default", () => {
       expect.assertions(1)
-      return server().then(() => {
+      return httpServer().then(() => {
         const app = express.mock.results.slice(-1)[0].value
         expect(app.listen).toHaveBeenCalledWith(8000, expect.any(Function))
       })
@@ -18,7 +18,7 @@ describe("server", () => {
 
     it("listens on options port", () => {
       expect.assertions(1)
-      return server({ port: 8888 }).then(() => {
+      return httpServer({ port: 8888 }).then(() => {
         const app = express.mock.results.slice(-1)[0].value
         expect(app.listen).toHaveBeenCalledWith(8888, expect.any(Function))
       })
