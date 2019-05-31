@@ -1,11 +1,7 @@
-import httpServer from './httpServer'
+import server from './server'
 
 export const bootstrap = () => {
-  let port = Number(process.env.PORT)
-  port = isNaN(port) ? undefined : port
-  httpServer({ port }).then(address => {
-    console.log(`Listening on ${address.port}`);
-  })
+    server()
 }
 
 if (!module.parent) {

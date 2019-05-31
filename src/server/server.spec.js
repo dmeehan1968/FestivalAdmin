@@ -38,7 +38,7 @@ describe("index", () => {
     restoreObjectKey = preserveObjectKey(process.env, 'PORT')
     server = require('./httpServer')
     server.mockClear()
-    bootstrap = require('./index').bootstrap
+    bootstrap = require('./server').default
   });
 
   afterEach(() => {
