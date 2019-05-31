@@ -1,7 +1,15 @@
-export default (app, options = {}) => {
+import express from 'express'
 
-  const listener = app.listen(options.port || Number(process.env.PORT) || 8000, () => {
-    console.log(`Listening on ${listener.address().port}`);
+export default (options = {}) => {
+  const defaults = {
+    port: 8000
+  }
+  options.port = options.port || defaults.port
+
+  return new Promise((resolve) => {
+    const app = express()
+    const listener = app.listen(options.port, () => {
+      resolve(listener.address())
+    })
   })
-
 }
