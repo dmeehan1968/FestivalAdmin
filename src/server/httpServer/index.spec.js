@@ -1,4 +1,4 @@
-import httpServer from './httpServer'
+import httpServer from './index'
 import express from 'express'
 
 jest.resetModules()
