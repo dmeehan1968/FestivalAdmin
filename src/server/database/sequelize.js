@@ -1,6 +1,8 @@
 import Sequelize from 'sequelize'
 import assert from 'assert'
 import debug from 'debug'
+import casual from 'casual'
+
 const log = debug('app:database')
 const logMysql = debug('app:database:mysql')
 
@@ -47,8 +49,14 @@ export default (options = {}) => {
   .then(() => {
     // seed
     const Contact = db.models['contact']
-    const dave = Contact.build({ id: 0, firstName: 'Dave', lastName: 'Meehan' })
-    return dave.save()
+    const contacts = Array(3).fill(undefined).map(() => {
+      const contact = new Contact({
+        firstName: casual.first_name,
+        lastName: casual.last_name,
+      })
+      return contact.save()
+    })
+    return Promise.all(contacts)
   })
   .then(() => db)
   .catch(err => {
