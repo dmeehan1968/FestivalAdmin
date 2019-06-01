@@ -27,7 +27,7 @@ export default (options = {}) => {
       host: options.host,
       dialect: options.dialect,
       logging: options.logging ? logMysql : false,
-      timezome: options.timezone,
+      timezone: options.timezone,
     }
   )
 
