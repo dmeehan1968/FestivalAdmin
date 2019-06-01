@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watch --no-cache",
-    "start": "nodemon --exec babel-node --presets @babel/preset-env src/server"
+    "start": "DEBUG=app:*,-app:database:mysql nodemon --exec babel-node --presets @babel/preset-env src/server"
   },
   "repository": {
     "type": "git",
@@ -35,9 +35,13 @@
     ]
   },
   "dependencies": {
+    "debug": "^4.1.1",
+    "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "express-graphql": "^0.8.0",
-    "graphql": "^14.3.1"
+    "graphql": "^14.3.1",
+    "mysql2": "^1.6.5",
+    "sequelize": "^5.8.7"
   },
   "nodemonConfig": {
     "ignore": [
