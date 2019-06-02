@@ -12,7 +12,7 @@ export default () => {
   let port = Number(process.env.PORT)
   port = isNaN(port) ? undefined : port
 
-  database({
+  return database({
     host: process.env.DB_HOST,
     schema: process.env.DB_SCHEMA,
     user: process.env.DB_USER,
@@ -21,9 +21,14 @@ export default () => {
     dialect: process.env.DB_DIALECT,
     logging: true,
   })
-    .then(models => httpServer({ port, models }))
+    .then(models => {
+      return httpServer({ port, models })
+    })
     .then(address => {
       log(`Server running on ${address.port}`);
     })
-    .catch(() => console.error('Failed'))
+    .catch(err => {
+      console.error('Failed')
+      throw err
+    })
 }
