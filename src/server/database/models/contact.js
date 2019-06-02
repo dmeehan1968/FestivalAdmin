@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  return sequelize.define('contact', {
+  const Contact = sequelize.define('contact', {
     // attributes
     id: {
       type: DataTypes.INTEGER(10).UNSIGNED,
@@ -17,6 +17,14 @@ export default (sequelize, DataTypes) => {
     },
   }, {
     // options
-    initialAutoIncrement: 1
+    initialAutoIncrement: 1,
+    // modelName: 'Contact',
   })
+
+  Contact.associate = models => {
+    // Contact.belongsToMany(models['event'], { through: 'contactEvents'})
+    Contact.hasOne(models['event'])
+  }
+
+  return Contact
 }

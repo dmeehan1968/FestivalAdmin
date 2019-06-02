@@ -40,6 +40,14 @@ export default (options = {}) => {
   })
   .then(() => {
     db.import('./models/contact')
+    db.import('./models/event')
+  })
+  .then(() => {
+    Object.keys(db.models).forEach(key => {
+      if (typeof db.models[key].associate === 'function') {
+        db.models[key].associate(db.models)
+      }
+    })
   })
   .then(() => {
     return db.sync({
@@ -48,13 +56,18 @@ export default (options = {}) => {
   })
   .then(() => {
     // seed
-    const Contact = db.models['contact']
+    const { contact: Contact, event: Event } = db.models
     const contacts = Array(10).fill(undefined).map(() => {
-      const contact = new Contact({
+      return Contact.create({
         firstName: casual.first_name,
         lastName: casual.last_name,
+      }).then(contact => {
+        const event = Event.build({
+          title: casual.title,
+        })
+        return contact.setEvent(event)
+        // return contact.save()
       })
-      return contact.save()
     })
     return Promise.all(contacts)
   })
@@ -66,7 +79,6 @@ export default (options = {}) => {
     })
   })
   .catch(err => {
-    log(`Database error: ${err.message}`)
     log(err.stack)
     throw err
   })
