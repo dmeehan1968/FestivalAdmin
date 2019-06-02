@@ -1,4 +1,6 @@
 import dotenv from 'dotenv'
+import debug from 'debug'
+const log = debug('app:server')
 
 import httpServer from './httpServer'
 import database from './database'
@@ -19,9 +21,9 @@ export default () => {
     dialect: process.env.DB_DIALECT,
     logging: true,
   })
-    .then(db => httpServer({ port, db }))
+    .then(models => httpServer({ port, models }))
     .then(address => {
-      console.log(`Server running on ${address.port}`);
+      log(`Server running on ${address.port}`);
     })
     .catch(() => console.error('Failed'))
 }

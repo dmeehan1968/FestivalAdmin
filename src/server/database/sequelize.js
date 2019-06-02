@@ -49,7 +49,7 @@ export default (options = {}) => {
   .then(() => {
     // seed
     const Contact = db.models['contact']
-    const contacts = Array(3).fill(undefined).map(() => {
+    const contacts = Array(10).fill(undefined).map(() => {
       const contact = new Contact({
         firstName: casual.first_name,
         lastName: casual.last_name,
@@ -58,7 +58,13 @@ export default (options = {}) => {
     })
     return Promise.all(contacts)
   })
-  .then(() => db)
+  .then(() => {
+    return ({
+      ...db.models,
+      sequelize: db,
+      Sequelize: Sequelize,
+    })
+  })
   .catch(err => {
     log(`Database error: ${err.message}`)
     log(err.stack)
