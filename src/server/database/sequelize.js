@@ -57,19 +57,20 @@ export default (options = {}) => {
   .then(() => {
     // seed
     const { contact: Contact, event: Event } = db.models
-    const contacts = Array(10).fill(undefined).map(() => {
-      return Contact.create({
-        firstName: casual.first_name,
-        lastName: casual.last_name,
-      }).then(contact => {
-        const event = Event.build({
-          title: casual.title,
+    return db.transaction(t => {
+      const contacts = Array(10).fill(undefined).map(() => {
+        return Contact.create({
+          firstName: casual.first_name,
+          lastName: casual.last_name,
+        }, { transaction: t }).then(contact => {
+          const event = Event.build({
+            title: casual.title,
+          })
+          return contact.setEvent(event, { transaction: t })
         })
-        return contact.setEvent(event)
-        // return contact.save()
       })
+      return Promise.all(contacts)
     })
-    return Promise.all(contacts)
   })
   .then(() => {
     return ({
