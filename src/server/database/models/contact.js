@@ -18,12 +18,10 @@ export default (sequelize, DataTypes) => {
   }, {
     // options
     initialAutoIncrement: 1,
-    // modelName: 'Contact',
   })
 
   Contact.associate = models => {
-    // Contact.belongsToMany(models['event'], { through: 'contactEvents'})
-    Contact.hasOne(models['event'])
+    Contact.belongsToMany(models['event'], { through: 'contactEvents'})
   }
 
   return Contact

@@ -14,11 +14,10 @@ export default (sequelize, DataTypes) => {
   }, {
     // options
     initialAutoIncrement: 1,
-    // modelName: 'Event',
   })
 
   Event.associate = models => {
-    // Event.belongsToMany(models['contact'], { through: 'contactEvents'})
+    Event.belongsToMany(models['contact'], { through: 'contactEvents'})
   }
 
   return Event
