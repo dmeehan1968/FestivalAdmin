@@ -56,7 +56,7 @@ export default (options = {}) => {
   })
   .then(() => {
     // seed
-    const { contact: Contact, event: Event, contactEvents: ContactEvents } = db.models
+    const { Contact, Event } = db.models
     return db.transaction(t => {
       const contacts = Array(10).fill(undefined).map(() => {
         return Contact.create({

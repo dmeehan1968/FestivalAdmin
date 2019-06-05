@@ -1,5 +1,8 @@
+import { Model } from 'sequelize'
+
 export default (sequelize, DataTypes) => {
-  const Contact = sequelize.define('contact', {
+  class Contact extends Model {}
+  Contact.init({
     // attributes
     id: {
       type: DataTypes.INTEGER(10).UNSIGNED,
@@ -18,10 +21,17 @@ export default (sequelize, DataTypes) => {
   }, {
     // options
     initialAutoIncrement: 1,
+    sequelize: sequelize,
+    name: {
+      singular: 'contact',
+      plural: 'contacts',
+    },
+    tableName: 'contacts',
+    modelName: 'Contact',
   })
 
   Contact.associate = models => {
-    Contact.belongsToMany(models['event'], { through: 'contactEvents'})
+    Contact.belongsToMany(models['Event'], { through: 'contactEvents'})
   }
 
   return Contact

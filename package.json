@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watch --no-cache",
-    "start": "DEBUG=app:*,-app:database:mysql nodemon --exec babel-node --presets @babel/preset-env src/server"
+    "start": "DEBUG=app:*,-app:database:mysql nodemon --exec babel-node src/server"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,18 @@
     "casual": "^1.6.2",
     "jest": "^24.8.0",
     "nodemon": "^1.19.1"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": true
+          }
+        }
+      ]
+    ]
   },
   "jest": {
     "transform": {
