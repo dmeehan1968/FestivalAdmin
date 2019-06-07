@@ -62,6 +62,10 @@ export default (options = {}) => {
         return Contact.create({
           firstName: casual.first_name,
           lastName: casual.last_name,
+          address1: [ casual.building_number, casual.street ].join(' '),
+          city: casual.city,
+          state: casual.state,
+          postcode: casual.zip(),
           events: [
             { title: casual.title },
           ]
