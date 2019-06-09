@@ -1,19 +1,26 @@
 import path from 'path'
 import Config from 'webpack-chain'
 import ManifestPlugin from 'webpack-manifest-plugin'
+import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 
-export default (new Config())
+const config = new Config()
+
+export default config
+
+config
   .name('client.base')
   .target('web')
   .entry('bundle')
     .add(path.resolve(process.cwd(), 'src/client/index.js'))
-    .end()
+
+config
   .output
     .path(path.resolve(process.cwd(), 'build'))
     .filename('client.bundle.js')
     .publicPath('/static/')
     .chunkFilename('[name].[chunkhash:8].chunk.js')
-    .end()
+
+config
   .module
     .rule('compile')
       .test(/\.jsx?$/)
@@ -46,9 +53,11 @@ export default (new Config())
             ],
           ],
         })
-        .end()
-      .end()
-    .end()
+
+config
   .plugin('manifest')
     .use(ManifestPlugin)
-    .end()
+
+config
+  .plugin('clean')
+    .use(CleanWebpackPlugin)

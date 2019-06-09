@@ -151,9 +151,21 @@ describe('client base', () => {
     })
 
     it('creates a build manifest', () => {
-      expect(plugin).toBeDefined()
       expect(plugin.values()[1].name).toBe('ManifestPlugin')
     })
 
+  })
+
+  describe('clean build products', () => {
+
+    let plugin
+
+    beforeEach(() => {
+      plugin = base.plugin('clean')
+    })
+
+    it('cleans build products on build', () => {
+      expect(plugin.values()[1].name).toBe('CleanWebpackPlugin')
+    })
   })
 })
