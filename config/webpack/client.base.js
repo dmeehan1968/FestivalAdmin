@@ -1,6 +1,6 @@
 import path from 'path'
-
 import Config from 'webpack-chain'
+import ManifestPlugin from 'webpack-manifest-plugin'
 
 export default (new Config())
   .name('client.base')
@@ -48,4 +48,7 @@ export default (new Config())
         })
         .end()
       .end()
+    .end()
+  .plugin('manifest')
+    .use(ManifestPlugin)
     .end()

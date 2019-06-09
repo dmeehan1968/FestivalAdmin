@@ -141,4 +141,19 @@ describe('client base', () => {
       })
     })
   })
+
+  describe('manifest', () => {
+
+    let plugin
+
+    beforeEach(() => {
+      plugin = base.plugin('manifest')
+    })
+
+    it('creates a build manifest', () => {
+      expect(plugin).toBeDefined()
+      expect(plugin.values()[1].name).toBe('ManifestPlugin')
+    })
+
+  })
 })

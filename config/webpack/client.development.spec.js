@@ -1,5 +1,4 @@
 import development from './client.development'
-const cfg = development.toConfig()
 
 describe('client development', () => {
 

@@ -15,7 +15,7 @@ export default base
               [
                 '@babel/preset-env',
                 {
-                  target: '> 0.25%, not dead'
+                  targets: '> 0.25%, not dead'
                 },
               ]
             ],

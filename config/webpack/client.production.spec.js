@@ -24,7 +24,7 @@ describe('client production', () => {
       const loader = production.module.rule('compile').use('babel').loader('babel-loader')
       const preset = loader.get('options').presets.find(preset => preset[0] === '@babel/preset-env')
       const options = preset[1]
-      expect(options.target).toBe('> 0.25%, not dead')
+      expect(options.targets).toBe('> 0.25%, not dead')
     })
   })
 })
