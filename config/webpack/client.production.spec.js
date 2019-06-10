@@ -27,4 +27,9 @@ describe('client production', () => {
       expect(options.targets).toBe('> 0.25%, not dead')
     })
   })
+
+  it('uses config name in output path', () => {
+    expect(production.output.get('path')).toMatch(new RegExp(`${production.get('name')}$`))
+  })
+
 })

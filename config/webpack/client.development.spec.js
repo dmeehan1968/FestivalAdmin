@@ -21,4 +21,8 @@ describe('client development', () => {
   it('includes react-devtools', () => {
     expect(development.entry('bundle').values()).toContain('react-devtools')
   })
+
+  it('uses config name in output path', () => {
+    expect(development.output.get('path')).toMatch(new RegExp(`${development.get('name')}$`))
+  })
 })

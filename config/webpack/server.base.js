@@ -74,9 +74,3 @@ config
 
 config
   .stats('normal')
-
-config
-  .resolve
-    .alias
-      .set('client', path.resolve(process.cwd(), 'src/client/'))
-      .set('server', path.resolve(process.cwd(), 'src/server/'))
