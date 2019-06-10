@@ -15,8 +15,8 @@ config
 
 config
   .output
-    .path(path.resolve(process.cwd(), 'build'))
-    .filename('client.bundle.js')
+    .path(path.resolve(process.cwd(), 'build/client'))
+    .filename('index.js')
     .publicPath('/static/')
     .chunkFilename('[name].[chunkhash:8].chunk.js')
 
@@ -61,3 +61,6 @@ config
 config
   .plugin('clean')
     .use(CleanWebpackPlugin)
+
+config
+  .stats('normal')

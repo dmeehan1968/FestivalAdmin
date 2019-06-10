@@ -1,8 +1,5 @@
-import { Model } from 'sequelize'
-
-export default (sequelize, DataTypes) => {
-  class Contact extends Model {}
-  Contact.init({
+module.exports = function(sequelize, DataTypes) {
+  const Contact = sequelize.define('Contact', {
     // attributes
     id: {
       type: DataTypes.INTEGER(10).UNSIGNED,

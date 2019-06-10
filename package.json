@@ -8,7 +8,7 @@
     "build": "NODE_ENV=production babel-node --presets @babel/preset-env src/build",
     "build:watch": "NODE_ENV=production nodemon --exec babel-node --ignore build/ -- --presets @babel/preset-env src/build",
     "build:development": "NODE_ENV=development babel-node --presets @babel/preset-env src/build",
-    "start": "DEBUG=app:*,-app:database:mysql nodemon --exec babel-node src/server"
+    "start": "DEBUG=app:*,-app:database:mysql node build/server/index.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-jest": "^24.8.0",
     "babel-loader": "^8.0.6",
+    "babel-plugin-inline-dotenv": "^1.3.3",
     "babel-plugin-styled-components": "^1.10.0",
     "casual": "^1.6.2",
     "clean-webpack-plugin": "^3.0.0",
@@ -35,7 +36,8 @@
     "nodemon": "^1.19.1",
     "webpack": "^4.33.0",
     "webpack-chain": "^6.0.0",
-    "webpack-manifest-plugin": "^2.0.4"
+    "webpack-manifest-plugin": "^2.0.4",
+    "webpack-node-externals": "^1.7.2"
   },
   "babel": {
     "presets": [
@@ -55,6 +57,10 @@
     },
     "testRegex": [
       ".+\\.spec\\.js"
+    ],
+    "watchPathIgnorePatterns": [
+      "<rootDir>/build/",
+      "<rootDir>/node_modules/"
     ]
   },
   "dependencies": {

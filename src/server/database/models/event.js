@@ -1,8 +1,5 @@
-import { Model } from 'sequelize'
-
-export default (sequelize, DataTypes) => {
-  class Event extends Model {}
-  Event.init({
+module.exports = function(sequelize, DataTypes) {
+  const Event = sequelize.define('Event', {
     // attributes
     id: {
       type: DataTypes.INTEGER(10).UNSIGNED,

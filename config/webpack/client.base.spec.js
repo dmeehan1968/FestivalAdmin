@@ -19,11 +19,11 @@ describe('client base', () => {
   describe('output', () => {
 
     it('outputs to the build directory', () => {
-      expect(base.output.get('path')).toEqual(path.resolve(process.cwd(), 'build'))
+      expect(base.output.get('path')).toEqual(path.resolve(process.cwd(), 'build/client'))
     })
 
     it('specifies the output filename', () => {
-      expect(base.output.get('filename')).toEqual('client.bundle.js')
+      expect(base.output.get('filename')).toEqual('index.js')
     })
 
     it('specifies the public path', () => {
@@ -167,5 +167,13 @@ describe('client base', () => {
     it('cleans build products on build', () => {
       expect(plugin.values()[1].name).toBe('CleanWebpackPlugin')
     })
+  })
+
+  describe('stats', () => {
+
+    it('uses normal stats', () => {
+      expect(base.get('stats')).toBe('normal')
+    })
+    
   })
 })

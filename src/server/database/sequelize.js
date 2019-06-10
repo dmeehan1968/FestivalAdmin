@@ -2,6 +2,7 @@ import Sequelize from 'sequelize'
 import assert from 'assert'
 import debug from 'debug'
 import casual from 'casual'
+import path from 'path'
 
 const log = debug('app:database')
 const logMysql = debug('app:database:mysql')
@@ -39,8 +40,8 @@ export default (options = {}) => {
     log('connected')
   })
   .then(() => {
-    db.import('./models/contact')
-    db.import('./models/event')
+    db.import(path.resolve(process.cwd(), 'src/server/database/models/contact'))
+    db.import(path.resolve(process.cwd(), 'src/server/database/models/event'))
   })
   .then(() => {
     Object.keys(db.models).forEach(key => {
