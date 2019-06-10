@@ -1,17 +1,22 @@
 import Config from 'webpack-chain'
-import config from './client.base'
+import builder from './client.base'
 import path from 'path'
 
-export default config
+export default ({ withHMR }) => {
 
-config
-  .name(config.get('name')+'.development')
-  .mode('development')
-  .devtool('source-map')
-  .entry('bundle')
-    .add('react-devtools')
-    .end()
+  const config = builder({ withHMR })
 
-config
-  .output
-    .path(path.resolve(config.output.get('path'), config.get('name')))
+  config
+    .name(config.get('name')+'.development')
+    .mode('development')
+    .devtool('source-map')
+    .entry('bundle')
+      .add('react-devtools')
+      .end()
+
+  config
+    .output
+      .path(path.resolve(config.output.get('path'), config.get('name')))
+
+  return config
+}

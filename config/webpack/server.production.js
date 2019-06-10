@@ -1,12 +1,17 @@
-import config from './server.base'
+import builder from './server.base'
 import path from 'path'
 
-export default config
+export default ({ withHMR }) => {
 
-config
-  .name(config.get('name')+'.production')
-  .mode('production')
+  const config = builder({ withHMR })
 
-config
-  .output
-    .path(path.resolve(config.output.get('path'), config.get('name')))
+  config
+    .name(config.get('name')+'.production')
+    .mode('production')
+
+  config
+    .output
+      .path(path.resolve(config.output.get('path'), config.get('name')))
+
+  return config
+}

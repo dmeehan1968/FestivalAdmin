@@ -35,7 +35,7 @@ export const build = (options = {}) => {
   PORT = isNaN(Number(PORT)) && 8000 || Number(PORT)
 
   log('Loading configs...');
-  const configs = webpackConfig({ mode })
+  const configs = webpackConfig({ mode, withHMR })
 
   log('Creating compilers...');
   const webpackRoot = webpack(configs)
@@ -48,7 +48,7 @@ export const build = (options = {}) => {
   log(`${clientCompilers.length} clients, ${serverCompilers.length} servers`)
 
   if (withDevServer) {
-    startDevServers(clientCompilers, PORT+1000, log)
+    startDevServers(clientCompilers, PORT+1000, withHMR, log)
   }
 
   Promise.all(startCompilation([
@@ -153,7 +153,7 @@ export const startCompilation = (compilers, log) => {
 
 }
 
-export const startDevServers = (compilers, basePort, log) => {
+export const startDevServers = (compilers, basePort, withHMR, log) => {
 
   compilers.forEach((compiler, index) => {
 
@@ -189,9 +189,11 @@ export const startDevServers = (compilers, basePort, log) => {
       })
     )
 
-    // app.use(
-    //   webpackHotMiddleware(compiler, { log: false })
-    // )
+    if (withHMR) {
+      app.use(
+        webpackHotMiddleware(compiler, { log: false })
+      )
+    }
 
     app.use(
       compiler.options.output.publicPath,
@@ -216,6 +218,7 @@ if (!module.parent) {
 
   build({
     withDevServer: true,
+    withHMR: true,
     log: debug('build')
   })
 }

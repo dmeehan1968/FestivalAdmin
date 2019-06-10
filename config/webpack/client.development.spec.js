@@ -1,6 +1,12 @@
-import development from './client.development'
+import builder from './client.development'
 
 describe('client development', () => {
+
+  let development
+
+  beforeEach(() => {
+    development = builder({})
+  })
 
   it('operates in development mode', () => {
     expect(development.get('mode')).toEqual('development')

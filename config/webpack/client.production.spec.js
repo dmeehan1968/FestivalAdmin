@@ -1,6 +1,12 @@
-import production from './client.production'
+import builder from './client.production'
 
 describe('client production', () => {
+
+  let production
+
+  beforeEach(() => {
+    production = builder({})
+  })
 
   it('includes production in the name', () => {
     expect(production.get('name')).toMatch(/production/)

@@ -1,22 +1,28 @@
-import config from './server.base'
+import builder from './server.base'
 import path from 'path'
 import { BannerPlugin } from 'webpack'
 
-export default config
+export default ({ withHMR }) => {
 
-config
-  .name(config.get('name')+'.development')
-  .mode('development')
+  const config = builder({ withHMR })
 
-config
-  .output
-    .path(path.resolve(config.output.get('path'), config.get('name')))
+  config
+    .name(config.get('name')+'.development')
+    .mode('development')
 
-config
-  .plugin('banner')
-  .use(BannerPlugin, [{
-      banner: 'require("source-map-support").install();',
-      test: /\.js$/,
-      raw: true,
-      entryOnly: false
-    }])
+  config
+    .output
+      .path(path.resolve(config.output.get('path'), config.get('name')))
+
+  config
+    .plugin('banner')
+    .use(BannerPlugin, [{
+        banner: 'require("source-map-support").install();',
+        test: /\.js$/,
+        raw: true,
+        entryOnly: false
+      }])
+
+  return config
+
+}

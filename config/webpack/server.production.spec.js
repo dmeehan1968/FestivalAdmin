@@ -1,7 +1,13 @@
-import production from './server.production'
+import builder from './server.production'
 
 describe('server production', () => {
 
+  let production
+
+  beforeEach(() => {
+    production = builder({})
+  })
+  
   it('operates in production mode', () => {
     expect(production.get('mode')).toEqual('production')
   })

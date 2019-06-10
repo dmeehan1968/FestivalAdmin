@@ -1,6 +1,12 @@
-import development from './server.development'
+import builder from './server.development'
 
 describe('server development', () => {
+
+  let development
+
+  beforeEach(() => {
+    development = builder({})
+  })
 
   it('operates in development mode', () => {
     expect(development.get('mode')).toEqual('development')

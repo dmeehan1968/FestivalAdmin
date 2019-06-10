@@ -1,8 +1,14 @@
 import path from 'path'
 
-import base from './client.base'
+import builder from './client.base'
 
 describe('client base', () => {
+
+  let base
+
+  beforeEach(() => {
+    base = builder({})
+  })
 
   it('targets the web', () => {
     expect(base.get('target')).toEqual('web')

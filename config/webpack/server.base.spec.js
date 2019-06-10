@@ -1,8 +1,14 @@
 import path from 'path'
 
-import base from './server.base'
+import builder from './server.base'
 
 describe('server base', () => {
+
+  let base
+
+  beforeEach(() => {
+    base = builder({})
+  })
 
   it('targets the web', () => {
     expect(base.get('target')).toEqual('node')
