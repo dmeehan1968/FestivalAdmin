@@ -5,10 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watch --no-cache",
-    "build": "NODE_ENV=production babel-node --presets @babel/preset-env src/build",
-    "build:watch": "NODE_ENV=production nodemon --exec babel-node --ignore build/ -- --presets @babel/preset-env src/build",
-    "build:development": "NODE_ENV=development babel-node --presets @babel/preset-env src/build",
-    "start": "DEBUG=app:*,-app:database:mysql node build/server/index.js"
+    "build": "babel-node --presets @babel/preset-env src/build",
+    "build:watch": "nodemon --exec babel-node --watch src/build.js --watch .env -- --presets @babel/preset-env src/build"
   },
   "repository": {
     "type": "git",
@@ -34,8 +32,11 @@
     "clean-webpack-plugin": "^3.0.0",
     "jest": "^24.8.0",
     "nodemon": "^1.19.1",
+    "react-devtools": "^3.6.1",
     "webpack": "^4.33.0",
     "webpack-chain": "^6.0.0",
+    "webpack-dev-middleware": "^3.7.0",
+    "webpack-hot-middleware": "^2.25.0",
     "webpack-manifest-plugin": "^2.0.4",
     "webpack-node-externals": "^1.7.2"
   },
@@ -70,7 +71,7 @@
     "express-graphql": "^0.8.0",
     "graphql": "^14.3.1",
     "mysql2": "^1.6.5",
-    "sequelize": "^5.8.7",
+    "sequelize": "^5.8.8",
     "sequelize-graphql-schema": "^0.1.66"
   },
   "nodemonConfig": {

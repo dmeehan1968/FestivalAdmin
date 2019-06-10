@@ -25,7 +25,7 @@ export default () => {
       return httpServer({ port, models })
     })
     .then(address => {
-      log(`Server running on ${address.port}`);
+      log(`running on ${address.port}`);
     })
     .catch(err => {
       console.error('Failed')

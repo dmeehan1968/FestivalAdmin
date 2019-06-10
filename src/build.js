@@ -2,27 +2,100 @@ import webpackConfig from '../config/webpack'
 import webpack from 'webpack'
 import fs from 'fs'
 import path from 'path'
+import nodemon from 'nodemon'
+import express from 'express'
+import webpackDevMiddleware from 'webpack-dev-middleware'
+import webpackHotMiddleware from 'webpack-hot-middleware'
+import webpackDevMiddlewareReporter from 'webpack-dev-middleware/lib/reporter'
+import debug from 'debug'
 
-export const build = ({
-  // options
-} = {
-  // defaults
-}) => {
+export const build = (options = {}) => {
 
-  const configs = webpackConfig({ mode: process.env.NODE_ENV })
+  const defaults = {
+    mode: process.env.NODE_ENV,
+    PORT: process.env.PORT,
+    withDevServer: false,
+    withHMR: false,
+    log: () => {},
+  }
+
+  options = Object.assign({}, defaults, options)
+
+  const {
+    mode,
+    withDevServer,
+    withHMR,
+    log,
+  } = options
+
+  let {
+    PORT
+  } = options
+
+  PORT = isNaN(Number(PORT)) && 8000 || Number(PORT)
+
+  log('Loading configs...');
+  const configs = webpackConfig({ mode })
+
+  log('Creating compilers...');
   const webpackRoot = webpack(configs)
 
-  // console.log(JSON.stringify(configs, undefined, 2));
+  // log(JSON.stringify(configs, undefined, 2));
 
-  const clientConfigs = webpackRoot.compilers.filter(compiler => compiler.name && compiler.name.match(/^client/))
-  const serverConfigs = webpackRoot.compilers.filter(compiler => compiler.name && compiler.name.match(/^server/))
+  const clientCompilers = webpackRoot.compilers.filter(compiler => compiler.name && compiler.name.match(/^client/))
+  const serverCompilers = webpackRoot.compilers.filter(compiler => compiler.name && compiler.name.match(/^server/))
 
-  console.log(`${clientConfigs.length} clients, ${serverConfigs.length} servers`)
+  log(`${clientCompilers.length} clients, ${serverCompilers.length} servers`)
 
-  Promise.all(startCompilation([ ...clientConfigs, ...serverConfigs ]))
+  if (withDevServer) {
+    startDevServers(clientCompilers, PORT+1000, log)
+  }
+
+  Promise.all(startCompilation([
+    ...(withDevServer && [] || clientCompilers),
+    ...serverCompilers
+  ], log))
   .then(compilers => {
-    console.log(`Compiled ${compilers.length} of ${webpackRoot.compilers.length} configurations`)
-    process.exit()
+    log(`Compiled ${compilers.length} configurations`)
+
+    if (!withDevServer) {
+      process.exit()
+    }
+
+    compilers.forEach((compiler, index) => {
+      const script = nodemon({
+        script: path.resolve(compiler.options.output.path, compiler.options.output.filename),
+        watch: [
+          compiler.options.output.path,
+          path.resolve(process.cwd(), '.env'),
+        ],
+        ignore: [
+          path.resolve(process.cwd(), 'build/stats'),
+        ],
+        env: {
+          DEBUG: 'app:*,-app:database:mysql',
+          PORT: PORT+index,
+        },
+      });
+
+      script.on('restart', (files) => {
+        files.forEach(file => {
+          log(`${compiler.options.name}: changed - ${path.relative(process.cwd(), file)}`)
+        })
+        log(`${compiler.options.name}: restarting`);
+      });
+
+      script.on('quit', () => {
+        log(`${compiler.options.name}: process ended`);
+        process.exit();
+      });
+
+      script.on('error', () => {
+        log(`${compiler.options.name}: an error occured`);
+        process.exit(1);
+      });
+
+    })
   })
   .catch(err => {
     console.error(err);
@@ -30,17 +103,22 @@ export const build = ({
   })
 }
 
-export const startCompilation = (compilers) => {
+export const writeStats = (output, stats, options) => {
+  fs.mkdirSync(path.dirname(output), { recursive: true })
+  fs.writeFileSync(output, JSON.stringify(stats.toJson(options)))
+}
+
+export const startCompilation = (compilers, log) => {
 
   return compilers.map(compiler => {
 
     const promise = new Promise((resolve, reject) => {
       compiler.hooks.compile.tap('Builder', () => {
-        console.log(`${compiler.name}: Compiling`)
+        log(`${compiler.name}: Compiling`)
       })
 
       compiler.hooks.done.tap('Builder', stats => {
-        console.log(`${compiler.name}: Compiled`)
+        log(`${compiler.name}: Compiled`)
         if (stats.hasErrors()) {
           return reject(`${compiler.name}: Failed to compile`)
         }
@@ -63,9 +141,11 @@ export const startCompilation = (compilers) => {
         console.error(`${compiler.name}: ${message}`)
       }
 
-      const dir = path.resolve(compiler.options.output.path, '../stats')
-      fs.mkdirSync(dir, { recursive: true })
-      fs.writeFileSync(path.resolve(dir, `${compiler.options.name}.json`), JSON.stringify(stats.toJson(compiler.options.stats)))
+      writeStats(
+        path.resolve(compiler.options.output.path, '../stats', `${compiler.options.name}.json`),
+        stats,
+        compiler.options.stats)
+
     })
 
     return promise
@@ -73,6 +153,69 @@ export const startCompilation = (compilers) => {
 
 }
 
+export const startDevServers = (compilers, basePort, log) => {
+
+  compilers.forEach((compiler, index) => {
+
+    const app = express()
+
+    app.use((req, res, next) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        return next();
+    });
+
+    app.use(
+      webpackDevMiddleware(compiler, {
+        publicPath: compiler.options.output.publicPath,
+        stats: compiler.options.stats,
+        watchOptions: {
+          ignored: /^node_modules/,
+          // stats: compiler.options.stats,
+        },
+        writeToDisk: true,
+        logLevel: 'warn',
+        reporter(middlewareOptions, options) {
+          const { state, stats } = options
+          if (state) {
+            if (!stats.hasErrors()) {
+              writeStats(
+                path.resolve(compiler.options.output.path, '../stats', `${compiler.options.name}.json`),
+                stats,
+                compiler.options.stats)
+            }
+          }
+          webpackDevMiddlewareReporter(middlewareOptions, options)
+        }
+      })
+    )
+
+    // app.use(
+    //   webpackHotMiddleware(compiler, { log: false })
+    // )
+
+    app.use(
+      compiler.options.output.publicPath,
+      express.static(compiler.options.output.path)
+    );
+
+    const listener = app.listen(basePort+index, () => {
+      log(`DevServer listening on PORT ${listener.address().port}`);
+    });
+
+  })
+
+}
+
+
+import dotenv from 'dotenv'
+
 if (!module.parent) {
-  build()
+
+  dotenv.config()
+  debug.enable(process.env.DEBUG)
+
+  build({
+    withDevServer: true,
+    log: debug('build')
+  })
 }

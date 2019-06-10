@@ -1,5 +1,6 @@
 import config from './server.base'
 import path from 'path'
+import { BannerPlugin } from 'webpack'
 
 export default config
 
@@ -10,3 +11,12 @@ config
 config
   .output
     .path(path.resolve(config.output.get('path'), config.get('name')))
+
+config
+  .plugin('banner')
+  .use(BannerPlugin, [{
+      banner: 'require("source-map-support").install();',
+      test: /\.js$/,
+      raw: true,
+      entryOnly: false
+    }])
