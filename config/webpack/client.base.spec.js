@@ -19,7 +19,7 @@ describe('client base', () => {
   describe('output', () => {
 
     it('outputs to the build directory', () => {
-      expect(base.output.get('path')).toEqual(path.resolve(process.cwd(), 'build/client'))
+      expect(base.output.get('path')).toEqual(path.resolve(process.cwd(), 'build'))
     })
 
     it('specifies the output filename', () => {
@@ -174,6 +174,6 @@ describe('client base', () => {
     it('uses normal stats', () => {
       expect(base.get('stats')).toBe('normal')
     })
-    
+
   })
 })

@@ -3,24 +3,23 @@ import webpack from 'webpack'
 import fs from 'fs'
 import path from 'path'
 
-const configs = webpackConfig({ mode: process.env.NODE_ENV })
-
 export const build = ({
   // options
 } = {
   // defaults
 }) => {
 
+  const configs = webpackConfig({ mode: process.env.NODE_ENV })
   const webpackRoot = webpack(configs)
 
   // console.log(JSON.stringify(configs, undefined, 2));
 
-  const clientCompilers = webpackRoot.compilers.filter(compiler => compiler.name && compiler.name.match(/^client/))
-  const serverCompilers = webpackRoot.compilers.filter(compiler => compiler.name && compiler.name.match(/^server/))
+  const clientConfigs = webpackRoot.compilers.filter(compiler => compiler.name && compiler.name.match(/^client/))
+  const serverConfigs = webpackRoot.compilers.filter(compiler => compiler.name && compiler.name.match(/^server/))
 
-  console.log(`${clientCompilers.length} clients, ${serverCompilers.length} servers`)
+  console.log(`${clientConfigs.length} clients, ${serverConfigs.length} servers`)
 
-  Promise.all(startCompilation([ ...clientCompilers, ...serverCompilers ]))
+  Promise.all(startCompilation([ ...clientConfigs, ...serverConfigs ]))
   .then(compilers => {
     console.log(`Compiled ${compilers.length} of ${webpackRoot.compilers.length} configurations`)
     process.exit()

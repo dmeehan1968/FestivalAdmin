@@ -1,5 +1,6 @@
 import Config from 'webpack-chain'
 import config from './client.base'
+import path from 'path'
 
 export default config
 
@@ -23,6 +24,7 @@ config
             ],
           },
         })
-        .end()
-      .end()
-    .end()
+
+config
+  .output
+    .path(path.resolve(config.output.get('path'), config.get('name')))

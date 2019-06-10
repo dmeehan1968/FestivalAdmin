@@ -16,7 +16,7 @@ config
 
 config
   .output
-    .path(path.resolve(process.cwd(), 'build/server'))
+    .path(path.resolve(process.cwd(), 'build'))
     .filename('index.js')
     .publicPath('/static/')
     .chunkFilename('[name].[chunkhash:8].chunk.js')
