@@ -6,14 +6,14 @@ import debug from 'debug'
 import dotenv from 'dotenv'
 import webpack from 'webpack'
 
+import { writeStats, startCompilation } from './start'
+
 export const build = (options = {}) => {
 
   const defaults = {
     PORT: process.env.PORT || 8000,
     DEVHOST: process.env.DEVHOST || 'http://localhost',
     DEVPORT: process.env.DEVPORT || 9000,
-    withDevServer: false,
-    withHMR: false,
     log: () => {},
     configs: [],
   }
@@ -21,7 +21,6 @@ export const build = (options = {}) => {
   options = Object.assign({}, defaults, options)
 
   const {
-    withHMR,
     log,
   } = options
 
@@ -40,11 +39,12 @@ export const build = (options = {}) => {
 
   log('Loading configs...');
   configs = configs.map(config => {
+    config.options = config.options || {}
     return {
       ...config,
       webpack: require(
         path.resolve(process.cwd(), 'config', 'webpack', config.config))
-          .default({ withHMR, PORT, DEVHOST, DEVPORT }).toConfig()
+          .default({ PORT, DEVHOST, DEVPORT, ...config.options }).toConfig()
     }
   })
 
@@ -55,7 +55,7 @@ export const build = (options = {}) => {
 
   log(`${webpackRoot.compilers.length} configs to compile`)
 
-  Promise.all(startCompilation(webpackRoot.compilers, log))
+  Promise.all(startCompilations(webpackRoot.compilers, log))
   .then(compilers => {
     log(`Compiled ${compilers.length} configurations`)
     process.exit()
@@ -66,53 +66,9 @@ export const build = (options = {}) => {
   })
 }
 
-export const writeStats = (output, stats, options) => {
-  fs.mkdirSync(path.dirname(output), { recursive: true })
-  fs.writeFileSync(output, JSON.stringify(stats.toJson(options)))
-}
+export const startCompilations = (compilers, log) => {
 
-export const startCompilation = (compilers, log) => {
-
-  return compilers.map(compiler => {
-
-    const promise = new Promise((resolve, reject) => {
-      compiler.hooks.compile.tap('Builder', () => {
-        log(`${compiler.name}: Compiling`)
-      })
-
-      compiler.hooks.done.tap('Builder', stats => {
-        log(`${compiler.name}: Compiled`)
-        if (stats.hasErrors()) {
-          return reject(`${compiler.name}: Failed to compile`)
-        }
-        return resolve(compiler)
-      })
-    })
-
-    compiler.watch({
-      // options
-      ignored: /^node_modules/,
-      stats: compiler.options.stats,
-    }, (error, stats) => {
-      // reporter
-      if (error) {
-        console.error(error);
-      }
-
-      if (stats.hasErrors()) {
-        const message = stats.toJson().errors[0].split('\n').slice(0,3).join('\n')
-        console.error(`${compiler.name}: ${message}`)
-      }
-
-      writeStats(
-        path.resolve(compiler.options.output.path, '..', 'webpack-stats.json'),
-        stats,
-        compiler.options.stats)
-
-    })
-
-    return promise
-  })
+  return compilers.map(compiler => startCompilation(compiler, log))
 
 }
 
