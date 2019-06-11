@@ -4,7 +4,7 @@ import Config from 'webpack-chain'
 import nodeExternals from 'webpack-node-externals'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 
-export default () => {
+export default options => {
 
   const config = new Config()
 
@@ -14,11 +14,13 @@ export default () => {
     .entry('bundle')
       .add(path.resolve(process.cwd(), 'src/server/index.js'))
 
+  const pathPrefix = options.withHMR ? `${options.DEVHOST}:${options.DEVPORT}`: ''
+
   config
     .output
       .path(path.resolve(process.cwd(), 'build'))
       .filename('index.js')
-      .publicPath('/static/')
+      .publicPath(`${pathPrefix}/static`)
       .chunkFilename('[name].[chunkhash:8].chunk.js')
 
   config

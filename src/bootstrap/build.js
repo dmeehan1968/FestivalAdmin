@@ -9,7 +9,6 @@ import webpack from 'webpack'
 export const build = (options = {}) => {
 
   const defaults = {
-    mode: process.env.NODE_ENV,
     PORT: process.env.PORT || 8000,
     DEVHOST: process.env.DEVHOST || 'http://localhost',
     DEVPORT: process.env.DEVPORT || 9000,
@@ -22,7 +21,6 @@ export const build = (options = {}) => {
   options = Object.assign({}, defaults, options)
 
   const {
-    mode,
     withHMR,
     log,
   } = options

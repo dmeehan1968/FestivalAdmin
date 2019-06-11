@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watch --no-cache",
+    "start": "nodemon --exec babel-node --watch src/bootstrap/start.js --watch .env --watch package.json --watch config/webpack -- --presets @babel/preset-env src/bootstrap/start",
+    "start:dev": "nodemon --exec babel-node --watch src/bootstrap/start.js --watch .env --watch package.json --watch config/webpack -- --presets @babel/preset-env src/bootstrap/start",
     "build:all": "nodemon --exec babel-node --watch src/bootstrap/build.js --watch .env --watch package.json --watch config/webpack -- --presets @babel/preset-env src/bootstrap/build"
   },
   "repository": {
@@ -103,6 +105,35 @@
           "config": "server.production"
         }
       ]
+    },
+    "start:dev": {
+      "server": {
+        "config": "server.development",
+        "options": {
+          "withHMR": true
+        },
+        "clients": [
+          {
+            "config": "client.development",
+            "options": {
+              "withHMR": true
+            }
+          }
+        ]
+      }
+    },
+    "start": {
+      "server": {
+        "config": "server.production",
+        "clients": [
+          {
+            "config": "client.production"
+          },
+          {
+            "config": "client.production.es6"
+          }
+        ]
+      }
     }
   }
 }
