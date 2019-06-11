@@ -4,6 +4,8 @@ import Config from 'webpack-chain'
 import nodeExternals from 'webpack-node-externals'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 
+import resolvers from './resolvers'
+
 export default options => {
 
   const config = new Config()
@@ -36,9 +38,6 @@ export default options => {
     .module
       .rule('compile')
         .test(/\.jsx?$/)
-        .include
-          .add(path.resolve(process.cwd(), 'src/server/index.js'))
-          .end()
         .use('babel')
           .loader('babel-loader')
           .options({
@@ -76,6 +75,8 @@ export default options => {
 
   config
     .stats('normal')
+
+  resolvers(config)
 
   return config
 }

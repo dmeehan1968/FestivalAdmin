@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watch --no-cache",
-    "start": "nodemon --exec babel-node --watch src/bootstrap/start.js --watch .env --watch package.json --watch config/webpack -- --presets @babel/preset-env src/bootstrap/start",
-    "start:dev": "nodemon --exec babel-node --watch src/bootstrap/start.js --watch .env --watch package.json --watch config/webpack -- --presets @babel/preset-env src/bootstrap/start",
-    "build:all": "nodemon --exec babel-node --watch src/bootstrap/build.js --watch .env --watch package.json --watch config/webpack -- --presets @babel/preset-env src/bootstrap/build"
+    "start": "nodemon --exec babel-node --watch src/bootstrap/start.js --watch .env --watch package.json --watch config/webpack -- src/bootstrap/start",
+    "start:dev": "nodemon --exec babel-node --watch src/bootstrap/start.js --watch .env --watch package.json --watch config/webpack -- src/bootstrap/start",
+    "build:all": "nodemon --exec babel-node --watch src/bootstrap/build.js --watch .env --watch package.json --watch config/webpack -- src/bootstrap/build"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
     "babel-plugin-styled-components": "^1.10.0",
     "casual": "^1.6.2",
     "clean-webpack-plugin": "^3.0.0",
+    "core-js": "^3.1.3",
     "jest": "^24.8.0",
     "nodemon": "^1.19.1",
     "react-devtools": "^3.6.1",
@@ -50,7 +51,8 @@
             "node": true
           }
         }
-      ]
+      ],
+      "@babel/preset-react"
     ]
   },
   "jest": {
@@ -59,6 +61,10 @@
     },
     "testRegex": [
       ".+\\.spec\\.js"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "src"
     ],
     "watchPathIgnorePatterns": [
       "<rootDir>/build/",
@@ -72,6 +78,8 @@
     "express-graphql": "^0.8.0",
     "graphql": "^14.3.1",
     "mysql2": "^1.6.5",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "sequelize": "^5.8.8",
     "sequelize-graphql-schema": "^0.1.66"
   },

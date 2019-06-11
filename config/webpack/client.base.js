@@ -2,6 +2,7 @@ import path from 'path'
 import Config from 'webpack-chain'
 import ManifestPlugin from 'webpack-manifest-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
+import resolvers from './resolvers'
 
 export default options => {
 
@@ -26,9 +27,6 @@ export default options => {
     .module
       .rule('compile')
         .test(/\.jsx?$/)
-        .include
-          .add(path.resolve(process.cwd(), 'src/client/index.js'))
-          .end()
         .use('babel')
           .loader('babel-loader')
           .options({
@@ -66,6 +64,8 @@ export default options => {
 
   config
     .stats('normal')
+
+  resolvers(config)
 
   return config
 }

@@ -120,11 +120,12 @@ export const startAppServer = (compiler, options, log) => {
   const script = nodemon({
     script: path.resolve(compiler.options.output.path, compiler.options.output.filename),
     watch: [
-      compiler.options.output.path,
+      path.dirname(compiler.options.output.path),
       path.resolve(process.cwd(), '.env'),
     ],
     ignore: [
-      path.resolve(compiler.options.output.path, '..'),
+      getStatsFile(compiler.options.output.path),             // stats
+      path.resolve(compiler.options.output.path, 'updates'),  // HMR
     ],
     env: {
       ...(options.DEBUG && { DEBUG: options.DEBUG } || {}),
@@ -132,7 +133,6 @@ export const startAppServer = (compiler, options, log) => {
       ...(options.env || {})
     }
   });
-
   script.on('restart', (files) => {
     files.forEach(file => {
       log(`${compiler.options.name}: changed - ${path.relative(process.cwd(), file)}`)
@@ -152,8 +152,12 @@ export const startAppServer = (compiler, options, log) => {
 
 }
 
+export const getStatsFile = (outputPath) => {
+  return path.resolve(outputPath, '..', 'webpack-stats.json')
+}
+
 export const writeStats = (outputPath, stats) => {
-  const output = path.resolve(outputPath, '..', 'webpack-stats.json')
+  const output = getStatsFile(outputPath)
   fs.mkdirSync(path.dirname(output), { recursive: true })
   fs.writeFileSync(output, JSON.stringify(stats))
 }
