@@ -20,7 +20,7 @@ export default options => {
     .output
       .path(path.resolve(process.cwd(), 'build'))
       .filename('index.js')
-      .publicPath(`${pathPrefix}/static`)
+      .publicPath(`${pathPrefix}/static/`)
       .chunkFilename('[name].[chunkhash:8].chunk.js')
 
   config

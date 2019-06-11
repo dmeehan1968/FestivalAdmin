@@ -12,10 +12,6 @@ describe('client production', () => {
     expect(production.get('name')).toMatch(/production/)
   })
 
-  it('is based on client base', () => {
-    expect(production.get('name')).toMatch(/^client.base/)
-  })
-
   it('operates in production mode', () => {
     expect(production.get('mode')).toEqual('production')
   })
@@ -35,7 +31,7 @@ describe('client production', () => {
   })
 
   it('uses config name in output path', () => {
-    expect(production.output.get('path')).toMatch(new RegExp(`${production.get('name')}$`))
+    expect(production.output.get('path')).toMatch(new RegExp(`${production.get('name')}/static$`))
   })
 
 })
