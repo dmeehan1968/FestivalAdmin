@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watch --no-cache",
-    "build": "babel-node --presets @babel/preset-env src/build",
-    "build:watch": "nodemon --exec babel-node --watch src/build.js --watch .env -- --presets @babel/preset-env src/build"
+    "build:all": "nodemon --exec babel-node --watch src/bootstrap/build.js --watch .env --watch package.json --watch config/webpack -- --presets @babel/preset-env src/bootstrap/build"
   },
   "repository": {
     "type": "git",
@@ -78,5 +77,32 @@
     "ignore": [
       "*.spec.js"
     ]
+  },
+  "config": {
+    "build:all": {
+      "configs": [
+        {
+          "config": "client.development",
+          "options": {
+            "withHMR": true
+          }
+        },
+        {
+          "config": "client.production"
+        },
+        {
+          "config": "client.production.es6"
+        },
+        {
+          "config": "server.development",
+          "options": {
+            "withHMR": true
+          }
+        },
+        {
+          "config": "server.production"
+        }
+      ]
+    }
   }
 }

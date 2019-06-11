@@ -1,5 +1,5 @@
 import Config from 'webpack-chain'
-import builder from './client.base'
+import builder from './client.production'
 import path from 'path'
 
 export default (options) => {
@@ -8,8 +8,6 @@ export default (options) => {
 
   config
     .name(path.basename(__filename, '.js'))
-    .mode('production')
-    .devtool('none')
     .module
       .rule('compile')
         .use('babel')
@@ -20,16 +18,25 @@ export default (options) => {
                 [
                   '@babel/preset-env',
                   {
-                    targets: '> 0.25%, not dead'
+                    targets: {
+                      browsers: [
+                        'Chrome >= 60',
+                        'Safari >= 10.1',
+                        'iOS >= 10.3',
+                        'Firefox >= 54',
+                        'Edge >= 15',
+                      ],
+                    },
                   },
-                ]
+                ],
               ],
             },
           })
 
   config
     .output
-      .path(path.resolve(config.output.get('path'), config.get('name'), 'static'))
+      .path(path.resolve(config.output.get('path'), '..', '..', config.get('name'), 'static'))
+      .publicPath('/static.es6/')
 
   return config
 }

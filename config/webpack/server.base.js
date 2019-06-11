@@ -4,12 +4,12 @@ import Config from 'webpack-chain'
 import nodeExternals from 'webpack-node-externals'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 
-export default ({ withHMR }) => {
+export default () => {
 
   const config = new Config()
 
   config
-    .name('server.base')
+    .name(path.basename(__filename, '.js'))
     .target('node')
     .entry('bundle')
       .add(path.resolve(process.cwd(), 'src/server/index.js'))

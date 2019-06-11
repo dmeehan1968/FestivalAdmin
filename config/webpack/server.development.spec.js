@@ -4,23 +4,64 @@ describe('server development', () => {
 
   let development
 
-  beforeEach(() => {
-    development = builder({})
+  describe('default config', () => {
+
+    beforeEach(() => {
+      development = builder({})
+    })
+
+    it('operates in development mode', () => {
+      expect(development.get('mode')).toEqual('development')
+    })
+
+    it('is based on server base', () => {
+      expect(development.get('name')).toMatch(/^server.base/)
+    })
+
+    it('includes development in the name', () => {
+      expect(development.get('name')).toMatch(/development/)
+    })
+
+    it('uses config name in output path', () => {
+      expect(development.output.get('path')).toMatch(new RegExp(`${development.get('name')}$`))
+    })
+
+    describe('source map support', () => {
+
+      let plugin
+
+      beforeEach(() => {
+        plugin = development.plugin('banner')
+      })
+
+      it('has source map support', () => {
+        expect(development.get('devtool')).toEqual('source-map')
+      })
+
+      it('uses BannerPlugin with source map support', () => {
+        expect(plugin.values()[1].name).toBe('BannerPlugin')
+        expect(plugin.values()[2]).toEqual([
+          {
+            banner: 'require("source-map-support").install();',
+            test: /\.js$/,
+            raw: true,
+            entryOnly: false
+          }
+        ])
+      })
+    })
+
   })
 
-  it('operates in development mode', () => {
-    expect(development.get('mode')).toEqual('development')
-  })
+  describe('with HMR', () => {
 
-  it('is based on server base', () => {
-    expect(development.get('name')).toMatch(/^server.base/)
-  })
+    beforeEach(() => {
+      development = builder({ withHMR: true })
+    })
 
-  it('includes development in the name', () => {
-    expect(development.get('name')).toMatch(/development/)
-  })
+    it('includes HMR plugin', () => {
+      expect(development.plugin('hmr').values()[1].name).toEqual('HotModuleReplacementPlugin')
+    })
 
-  it('uses config name in output path', () => {
-    expect(development.output.get('path')).toMatch(new RegExp(`${development.get('name')}$`))
   })
 })

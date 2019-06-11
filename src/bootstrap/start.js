@@ -1,4 +1,3 @@
-import webpackConfig from '../config/webpack'
 import webpack from 'webpack'
 import fs from 'fs'
 import path from 'path'
@@ -17,6 +16,7 @@ export const build = (options = {}) => {
     withDevServer: false,
     withHMR: false,
     log: () => {},
+    configs: [],
   }
 
   options = Object.assign({}, defaults, options)
@@ -29,16 +29,22 @@ export const build = (options = {}) => {
   } = options
 
   let {
-    PORT
+    PORT,
+    configs,
   } = options
 
   PORT = isNaN(Number(PORT)) && 8000 || Number(PORT)
 
   log('Loading configs...');
-  const configs = webpackConfig({ mode, withHMR })
+  configs = configs.map(config => {
+    return {
+      ...config,
+      webpack: require(path.resolve(process.cwd(), 'config', 'webpack', config.config)).default({ withHMR, PORT }).toConfig()
+    }
+  })
 
   log('Creating compilers...');
-  const webpackRoot = webpack(configs)
+  const webpackRoot = webpack(configs.map(config => config.webpack))
 
   // log(JSON.stringify(configs, undefined, 2));
 
@@ -69,9 +75,9 @@ export const build = (options = {}) => {
           compiler.options.output.path,
           path.resolve(process.cwd(), '.env'),
         ],
-        ignore: [
-          path.resolve(process.cwd(), 'build/stats'),
-        ],
+        // ignore: [
+        //   path.resolve(process.cwd(), 'build/stats'),
+        // ],
         env: {
           DEBUG: 'app:*,-app:database:mysql',
           PORT: PORT+index,
@@ -142,7 +148,7 @@ export const startCompilation = (compilers, log) => {
       }
 
       writeStats(
-        path.resolve(compiler.options.output.path, '../stats', `${compiler.options.name}.json`),
+        path.resolve(compiler.options.output.path, '..', 'webpack-stats.json'),
         stats,
         compiler.options.stats)
 
@@ -156,6 +162,14 @@ export const startCompilation = (compilers, log) => {
 export const startDevServers = (compilers, basePort, withHMR, log) => {
 
   compilers.forEach((compiler, index) => {
+
+    if (withHMR) {
+      compiler.options.entry.bundle = compiler.options.entry.bundle.map(entry => {
+        return entry
+          .replace(/{HOST}/g, 'http://localhost')
+          .replace(/{PORT}/g, basePort+index)
+      })
+    }
 
     const app = express()
 
@@ -179,7 +193,7 @@ export const startDevServers = (compilers, basePort, withHMR, log) => {
           if (state) {
             if (!stats.hasErrors()) {
               writeStats(
-                path.resolve(compiler.options.output.path, '../stats', `${compiler.options.name}.json`),
+                path.resolve(compiler.options.output.path, '..', 'webpack-stats.json'),
                 stats,
                 compiler.options.stats)
             }
@@ -216,9 +230,11 @@ if (!module.parent) {
   dotenv.config()
   debug.enable(process.env.DEBUG)
 
+  const packageJson = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json')))
+  const options = packageJson.config[process.env.npm_lifecycle_event]
+
   build({
-    withDevServer: true,
-    withHMR: true,
-    log: debug('build')
+    log: debug('build'),
+    ...options
   })
 }

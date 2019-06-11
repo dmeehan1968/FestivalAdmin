@@ -3,12 +3,12 @@ import Config from 'webpack-chain'
 import ManifestPlugin from 'webpack-manifest-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 
-export default ({ withHMR }) => {
+export default () => {
 
   const config = new Config()
 
   config
-    .name('client.base')
+    .name(path.basename(__filename, '.js'))
     .target('web')
     .entry('bundle')
       .add(path.resolve(process.cwd(), 'src/client/index.js'))
