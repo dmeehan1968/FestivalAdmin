@@ -80,6 +80,7 @@
     "mysql2": "^1.6.5",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-router-dom": "^5.0.1",
     "sequelize": "^5.8.8",
     "sequelize-graphql-schema": "^0.1.66"
   },

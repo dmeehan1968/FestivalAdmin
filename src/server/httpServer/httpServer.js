@@ -15,7 +15,7 @@ export default ({ port, ...settings } = {}) => {
     })
 
     routes.forEach(route => {
-      app.use(route)
+      app.use(...route)
     })
 
     const listener = app.listen(port, () => {
