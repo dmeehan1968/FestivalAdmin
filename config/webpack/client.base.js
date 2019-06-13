@@ -27,6 +27,9 @@ export default options => {
     .module
       .rule('compile')
         .test(/\.jsx?$/)
+        .exclude
+          .add(/node_modules/)
+          .end()
         .use('babel')
           .loader('babel-loader')
           .options({
@@ -34,8 +37,6 @@ export default options => {
               [
                 '@babel/preset-env',
                 {
-                  useBuiltIns: 'usage',
-                  corejs: '3.0.1',
                   modules: false,
                 },
               ],

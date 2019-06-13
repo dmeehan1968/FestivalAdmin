@@ -17,17 +17,18 @@ export const getClientScripts = clients => {
   }, [])
 }
 
-export const toScriptTags = ({ isModule, src }, key) => {
+export const toScriptTags = (noModule, { isModule, src }, key) => {
   if (isModule) {
     return <script key={key} type="module" src={src} />
   } else {
-    return <script key={key} noModule={true} type="text/javascript" src={src} />
+    return <script key={key} noModule={noModule} type="text/javascript" src={src} />
   }
 }
 
 export const withClientScripts = clients => WrappedComponent => {
   return (props) => {
-    const scripts = getClientScripts(clients).map(toScriptTags)
+    const useNoModuleAttribute = clients.find(client=>client.module)
+    const scripts = getClientScripts(clients).map(toScriptTags.bind(null, useNoModuleAttribute))
 
     return (
       <WrappedComponent scripts={scripts} {...props} />

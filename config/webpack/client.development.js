@@ -1,6 +1,7 @@
 import Config from 'webpack-chain'
 import builder from './client.base'
 import path from 'path'
+import { HotModuleReplacementPlugin } from 'webpack'
 
 export default (options) => {
 
@@ -13,6 +14,25 @@ export default (options) => {
     .entry('bundle')
       .add('react-devtools')
       .end()
+
+      .module
+        .rule('compile')
+          .use('babel')
+            .loader('babel-loader')
+            .merge({
+              options: {
+                presets: [
+                  [
+                    '@babel/preset-env',
+                    {
+                      targets: {
+                        esmodules: true,
+                      },
+                    },
+                  ],
+                ],
+              },
+            })
 
   config
     .output
@@ -28,6 +48,10 @@ export default (options) => {
       .output
         .hotUpdateMainFilename('updates/[hash].hot-update.json')
         .hotUpdateChunkFilename('updates/[id].[hash].hot-update.js')
+
+    config
+      .plugin('hmr')
+      .use(HotModuleReplacementPlugin)
 
   }
 

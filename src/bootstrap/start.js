@@ -194,7 +194,7 @@ export const startDevServer = (compiler, options = {}, log) => {
 
   app.use(
     webpackDevMiddleware(compiler, {
-      publicPath: '/',
+      publicPath: 'http://localhost:8001/static/',
       stats: 'error-only',
       watchOptions: {
         ignored: /^node_modules/,
@@ -220,7 +220,7 @@ export const startDevServer = (compiler, options = {}, log) => {
 
     if (options.withHMR) {
       app.use(
-        webpackHotMiddleware(compiler, { log: false })
+        webpackHotMiddleware(compiler, { log: log.extend('HMR') })
       )
     }
 

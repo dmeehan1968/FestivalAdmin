@@ -54,8 +54,9 @@ describe("server", () => {
       }
       server()
       expect(mockDatabase).toHaveBeenCalledTimes(1)
-      expect(mockDatabase.mock.calls[0].length).toEqual(1)
+      expect(mockDatabase.mock.calls[0].length).toEqual(2)
       expect(mockDatabase.mock.calls[0][0]).toEqual(expected)
+      expect(mockDatabase.mock.calls[0][1]).toEqual(expect.any(Function))
     });
 
   });

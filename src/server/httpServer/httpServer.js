@@ -3,6 +3,7 @@ import middlewares from './middlewares'
 import routes from './routes'
 import loadServerManifest from './loadServerManifest'
 import debug from 'debug'
+
 export default ({ port, ...settings } = {}, log = debug('httpServer')) => {
   port = port || 8000
   const logSetting = log.extend('setting')

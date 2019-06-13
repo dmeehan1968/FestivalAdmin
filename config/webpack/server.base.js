@@ -38,6 +38,9 @@ export default options => {
     .module
       .rule('compile')
         .test(/\.jsx?$/)
+        .exclude
+          .add(/node_modules/)
+          .end()
         .use('babel')
           .loader('babel-loader')
           .options({

@@ -83,14 +83,6 @@ describe('client base', () => {
           expect(preset).toBeDefined()
         })
 
-        it('uses built in polyfills', () => {
-          expect(preset[1].useBuiltIns).toBe('usage')
-        })
-
-        it('specifies the core-js version', () => {
-          expect(preset[1].corejs).toBe('3.0.1')
-        })
-
         it('disables module transforms', () => {
           expect(preset[1].modules).toBe(false)
         })
