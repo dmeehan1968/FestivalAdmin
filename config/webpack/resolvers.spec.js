@@ -18,4 +18,11 @@ describe('resolvers', () => {
     expect(config.resolve.alias.get('app')).toBe(path.resolve(process.cwd(), 'src', 'app'))
 
   })
+
+  it('aliases server', () => {
+
+    expect(config.resolve.alias.get('server')).toBe(path.resolve(process.cwd(), 'src', 'server'))
+
+  })
+
 })

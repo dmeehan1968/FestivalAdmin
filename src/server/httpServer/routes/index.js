@@ -1,34 +1,19 @@
 import React from 'react'
-import ReactDomServer from 'react-dom/server'
 
 import AdminApp from 'app/components/AdminApp'
+import renderComponentToHtmlResponse from 'server/httpServer/renderComponentToHtmlResponse'
 
 export const root = (req, res, next) => {
 
   return Promise.resolve()
-    .then(() => render(req.url))
+    .then(() => renderComponentToHtmlResponse(AdminApp, req))
     .then(({ status, payload }) => {
-      res.status(status).send(payload)
+      res.status(status || 200).send(payload).end()
     })
     .catch(next)
 
 }
 
-export const render = (url) => {
-
-  const context = { status: 200 }
-
-  const payload = ReactDomServer.renderToString(
-    <AdminApp location={url} context={context}/>
-  )
-
-  return {
-    status: context.status,
-    payload
-  }
-
-}
-
 export default [
-  [ '/*', root ]
+  [ 'get', '/*', root ]
 ]

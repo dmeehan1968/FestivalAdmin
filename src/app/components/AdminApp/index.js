@@ -1,15 +1,11 @@
 import React from 'react'
-import { StaticRouter } from 'react-router-dom'
 
-export const AdminApp = ({
-  location,
-  context,
-}) => {
+export const AdminApp = ({}) => {
+
   return (
-    <StaticRouter location={location} context={context}>
-      <h1>Hello World</h1>
-    </StaticRouter>
+    <h1>Hello World</h1>
   )
+
 }
 
 export default AdminApp

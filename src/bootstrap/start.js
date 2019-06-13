@@ -56,6 +56,7 @@ export const start = (options = {}) => {
   const clientCompiler = webpack(server.clients.map(client => client.webpack))
 
   startCompilation(serverCompiler, log)
+  .then(() => writeServerClientManifest(server))
   .then(() => {
     return startDevServer(clientCompiler, {
       DEVHOST,
@@ -72,6 +73,17 @@ export const start = (options = {}) => {
     }, log)
   })
 
+}
+
+export const writeServerClientManifest = (server) => {
+  const clientManifests = server.clients.map(client => {
+    return {
+      module: !!client.options.usesModules,
+      manifest: path.resolve(client.webpack.output.path, 'manifest.json')
+    }
+  })
+  fs.mkdirSync(server.webpack.output.path, { recursive: true })
+  fs.writeFileSync(path.resolve(server.webpack.output.path, 'clients.json'), JSON.stringify(clientManifests))
 }
 
 export const startCompilation = (compiler, log) => {
