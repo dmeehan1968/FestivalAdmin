@@ -3,32 +3,31 @@ import path from 'path'
 
 import React from 'react'
 
-export const loadServerManifest = buildDir => {
-  const manifestIndexPath = path.resolve(buildDir, 'clients.json')
-  return JSON.parse(fs.readFileSync(manifestIndexPath))
-}
-
 export const getClientScripts = clients => {
-  return clients.reduce((acc, client, clientIndex) => {
+  return clients.reduce((acc, client) => {
     const manifest = JSON.parse(fs.readFileSync(client.manifest))
     return [ ...acc,
       ...Object.keys(manifest)
         .filter(key => /\.js$/.test(key))
-        .map(key => {
-          if (client.module) {
-            return <script key={clientIndex+key} type="module" src={manifest[key]} />
-          } else {
-            return <script key={clientIndex+key} noModule={true} type="text/javascript" src={manifest[key]} />
-          }
-        })
+        .map(key => ({
+          isModule: client.module,
+          src: manifest[key],
+        }))
       ]
   }, [])
 }
 
-export const withClientScripts = (WrappedComponent) => {
+export const toScriptTags = ({ isModule, src }, key) => {
+  if (isModule) {
+    return <script key={key} type="module" src={src} />
+  } else {
+    return <script key={key} noModule={true} type="text/javascript" src={src} />
+  }
+}
+
+export const withClientScripts = clients => WrappedComponent => {
   return (props) => {
-    const clients = loadServerManifest(__dirname)
-    const scripts = getClientScripts(clients)
+    const scripts = getClientScripts(clients).map(toScriptTags)
 
     return (
       <WrappedComponent scripts={scripts} {...props} />

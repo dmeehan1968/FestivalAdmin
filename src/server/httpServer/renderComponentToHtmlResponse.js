@@ -6,11 +6,12 @@ import withStylesheet from 'server/hocs/withStylesheet'
 import withStaticRouter from 'server/hocs/withStaticRouter'
 import withClientScripts from 'server/hocs/withClientScripts'
 
-export const renderComponentToHtmlResponse = (WrappedRootComponent, req) => {
+export const renderComponentToHtmlResponse = req => WrappedRootComponent => {
 
   const context = {}
+  const manifest = req.app.get('manifest')
 
-  const RenderRoot = withStylesheet(withClientScripts(Html), withStaticRouter(WrappedRootComponent))
+  const RenderRoot = withStylesheet(withClientScripts(manifest.clients)(Html), withStaticRouter(WrappedRootComponent))
 
   const payload = '<!doctype html>' + ReactDomServer.renderToString(
     <RenderRoot location={req.url} context={context}/>

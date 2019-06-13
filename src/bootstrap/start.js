@@ -76,14 +76,19 @@ export const start = (options = {}) => {
 }
 
 export const writeServerClientManifest = (server) => {
-  const clientManifests = server.clients.map(client => {
+  const clients = server.clients.map(client => {
     return {
       module: !!client.options.usesModules,
       manifest: path.resolve(client.webpack.output.path, 'manifest.json')
     }
   })
+
+  const manifest = {
+    clients,
+  }
+
   fs.mkdirSync(server.webpack.output.path, { recursive: true })
-  fs.writeFileSync(path.resolve(server.webpack.output.path, 'clients.json'), JSON.stringify(clientManifests))
+  fs.writeFileSync(path.resolve(server.webpack.output.path, 'clients.json'), JSON.stringify(manifest))
 }
 
 export const startCompilation = (compiler, log) => {

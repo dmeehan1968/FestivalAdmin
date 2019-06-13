@@ -6,9 +6,12 @@ import renderComponentToHtmlResponse from 'server/httpServer/renderComponentToHt
 export const root = (req, res, next) => {
 
   return Promise.resolve()
-    .then(() => renderComponentToHtmlResponse(AdminApp, req))
+    .then(() => renderComponentToHtmlResponse(req)(AdminApp))
     .then(({ status, payload }) => {
-      res.status(status || 200).send(payload).end()
+      return res
+        .status(status || 200)
+        .send(payload)
+        .end()
     })
     .catch(next)
 

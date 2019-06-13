@@ -1,6 +1,7 @@
 import express from 'express'
 import middlewares from './middlewares'
 import routes from './routes'
+import loadServerManifest from './loadServerManifest'
 
 export default ({ port, ...settings } = {}) => {
   port = port || 8000
@@ -9,6 +10,8 @@ export default ({ port, ...settings } = {}) => {
     const app = express()
 
     Object.keys(settings).forEach(setting => app.set(setting, settings[setting]))
+
+    app.set('manifest', loadServerManifest())
 
     middlewares.forEach(middleware => {
       app.use(...middleware(app))
