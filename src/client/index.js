@@ -1,14 +1,29 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { BrowserRouter } from 'react-router-dom'
+
 import AdminApp from 'app/components/AdminApp'
 
-console.log('Client loaded');
+export const client = ({
+  document = global.document,
+  hydrate = ReactDOM.hydrate,
+  console = global.console,
+  module: mod = module,
+} = {}) => {
 
-ReactDOM.hydrate((
-  <AdminApp />
-),
-document.getElementById('root'))
+  hydrate((
+    <BrowserRouter>
+      <AdminApp />
+    </BrowserRouter>
+  ),
+  document.getElementById('root'))
 
-if (module.hot) {
-  module.hot.accept()
+  if (mod && mod.hot) {
+    mod.hot.accept()
+  }
+
+}
+
+if (!module.parent) {
+  client()
 }
