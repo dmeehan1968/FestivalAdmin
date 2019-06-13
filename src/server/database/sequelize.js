@@ -4,10 +4,9 @@ import debug from 'debug'
 import casual from 'casual'
 import path from 'path'
 
-const log = debug('app:database')
-const logMysql = debug('app:database:mysql')
+export default (options = {}, log = debug('sequelize')) => {
 
-export default (options = {}) => {
+  const logMysql = log.extend('mysql')
 
   const defaults = {
     dialect: 'mysql',

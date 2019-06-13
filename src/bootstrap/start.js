@@ -79,12 +79,16 @@ export const writeServerClientManifest = (server) => {
   const clients = server.clients.map(client => {
     return {
       module: !!client.options.usesModules,
-      manifest: path.resolve(client.webpack.output.path, 'manifest.json')
+      manifest: path.resolve(client.webpack.output.path, 'manifest.json'),
+      outputPath: client.webpack.output.path,
+      publicPath: client.webpack.output.publicPath,
     }
   })
 
   const manifest = {
     clients,
+    outputPath: server.webpack.output.path,
+    publicPath: server.webpack.output.publicPath,
   }
 
   fs.mkdirSync(server.webpack.output.path, { recursive: true })

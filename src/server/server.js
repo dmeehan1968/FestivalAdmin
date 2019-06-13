@@ -20,15 +20,15 @@ export default () => {
     timezone: process.env.DB_TIMEZONE,
     dialect: process.env.DB_DIALECT,
     logging: true,
-  })
+  }, log.extend('database'))
     .then(models => {
-      return httpServer({ port, models })
+      return httpServer({ port, models }, log.extend('httpServer'))
     })
     .then(address => {
       log(`running on ${address.port}`);
     })
     .catch(err => {
-      console.error('Failed')
+      log('Failed', error.message)
       throw err
     })
 }
