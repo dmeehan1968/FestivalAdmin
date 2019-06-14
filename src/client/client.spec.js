@@ -6,20 +6,6 @@ jest.mock('console')
 
 import ReactDOM from 'react-dom'
 
-const mockConsole = () => {
-  const console = Object.assign({}, global.console)
-
-  global.console = Object.assign({}, global.console, {
-    log: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
-  })
-
-  return () => {
-    global.console = Object.assign({}, console)
-  }
-}
-
 describe('client', () => {
 
   let wrapper
@@ -29,14 +15,6 @@ describe('client', () => {
     warn: jest.fn(),
     error: jest.fn(),
   }
-
-  beforeAll(() => {
-    // restoreConsole = mockConsole()
-  })
-
-  afterAll(() => {
-    // restoreConsole()
-  })
 
   beforeEach(() => {
     client({ console: mockConsole })
@@ -52,7 +30,7 @@ describe('client', () => {
     })
 
     it('uses AdminApp', () => {
-      expect(wrapper.find('AdminApp')).toHaveLength(1)
+      expect(wrapper.findWhere(n => /AdminApp/.test(n.name()))).toHaveLength(1)
     })
 
   })

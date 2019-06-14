@@ -43,12 +43,12 @@ export const start = (options = {}) => {
 
   log('Loading server config...');
   server.options = server.options || {}
-  server.webpack = require(path.resolve(process.cwd(), 'config', 'webpack', server.config)).default({ PORT, DEVHOST, DEVPORT, ...server.options }).toConfig()
+  server.webpack = require(path.resolve('config', 'webpack', server.config)).default({ PORT, DEVHOST, DEVPORT, ...server.options }).toConfig()
 
   log('Loading client configs...');
   server.clients.forEach(client => {
     client.options = client.options || {}
-    client.webpack = require(path.resolve(process.cwd(), 'config', 'webpack', client.config)).default({ PORT, DEVHOST, DEVPORT, ...client.options }).toConfig()
+    client.webpack = require(path.resolve('config', 'webpack', client.config)).default({ PORT, DEVHOST, DEVPORT, ...client.options }).toConfig()
   })
 
   log('Creating compilers...');
@@ -138,11 +138,12 @@ export const startCompilation = (compiler, log) => {
 
 export const startAppServer = (compiler, options, log) => {
 
-  const script = nodemon({
+  const nodemonOptions = {
     script: path.resolve(compiler.options.output.path, compiler.options.output.filename),
     watch: [
       path.dirname(compiler.options.output.path),
-      path.resolve(process.cwd(), '.env'),
+      path.resolve('.env'),
+      ...(options.watch || []).map(dir => path.resolve(dir)),
     ],
     ignore: [
       getStatsFile(compiler.options.output.path),             // stats
@@ -153,7 +154,10 @@ export const startAppServer = (compiler, options, log) => {
       ...(options.PORT && { PORT: options.PORT } || {}),
       ...(options.env || {})
     }
-  });
+  }
+
+  const script = nodemon(nodemonOptions);
+
   script.on('restart', (files) => {
     files.forEach(file => {
       log(`${compiler.options.name}: changed - ${path.relative(process.cwd(), file)}`)
@@ -245,7 +249,7 @@ if (!module.parent) {
   dotenv.config()
   debug.enable(process.env.DEBUG)
 
-  const packageJson = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json')))
+  const packageJson = JSON.parse(fs.readFileSync(path.resolve('package.json')))
   const options = packageJson.config[process.env.npm_lifecycle_event]
 
   start({

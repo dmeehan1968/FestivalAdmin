@@ -12,13 +12,13 @@ export default options => {
     .name(path.basename(__filename, '.js'))
     .target('web')
     .entry('bundle')
-      .add(path.resolve(process.cwd(), 'src/client/index.js'))
+      .add(path.resolve('src/client/index.js'))
 
   const pathPrefix = options.withHMR ? `${options.DEVHOST}:${options.DEVPORT}`: ''
 
   config
     .output
-      .path(path.resolve(process.cwd(), 'build'))
+      .path(path.resolve('build'))
       .filename('index.js')
       .publicPath(`${pathPrefix}/static/`)
       .chunkFilename('[name].[chunkhash:8].chunk.js')

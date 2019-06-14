@@ -51,5 +51,11 @@ module.exports = function(sequelize, DataTypes) {
     Contact.belongsToMany(models['Event'], { through: 'contactEvents'})
   }
 
+  Contact.graphql = {
+    alias: {
+      fetch: 'contacts',
+    },
+  }
+
   return Contact
 }

@@ -5,9 +5,9 @@ import { shallow } from 'enzyme'
 
 describe('AdminApp', () => {
 
-  it('renders Hello World', () => {
+  it('renders Event title', () => {
     const wrapper = shallow(<AdminApp />)
-    expect(wrapper.text()).toBe('Hello World')
+    expect(wrapper.find('h1').text()).toBe('Events')
   })
 
 })

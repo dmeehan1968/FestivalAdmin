@@ -17,7 +17,7 @@ describe('client base', () => {
   describe('entry point', () => {
 
     it('includes the client app', () => {
-      expect(base.entry('bundle').values()).toContain(path.resolve(process.cwd(), 'src/client/index.js'))
+      expect(base.entry('bundle').values()).toContain(path.resolve('src/client/index.js'))
     })
 
   })
@@ -25,7 +25,7 @@ describe('client base', () => {
   describe('output', () => {
 
     it('outputs to the build directory', () => {
-      expect(base.output.get('path')).toEqual(path.resolve(process.cwd(), 'build'))
+      expect(base.output.get('path')).toEqual(path.resolve('build'))
     })
 
     it('specifies the output filename', () => {
