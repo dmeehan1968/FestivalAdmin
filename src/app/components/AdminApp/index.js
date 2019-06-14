@@ -1,51 +1,50 @@
-import React from 'react'
-
-const dummyEvents = [
-  {
-    id: 1,
-    title: 'my first event',
-    contacts: [
-      {
-        id: 1,
-        firstName: 'Joe',
-        lastName: 'Blow',
-      }
-    ]
-  },
-  {
-    id: 2,
-    title: 'my second event',
-    contacts: [
-      {
-        id: 2,
-        firstName: 'Betty',
-        lastName: 'Boop',
-      }
-    ]
-  },
-]
+import React, { useRef } from 'react'
 
 export const AdminApp = ({
-  events = dummyEvents,
+  events = [],
+  eventAdd = () => {},
 }) => {
+  const eventTitleRef = useRef(null)
+
+  const handleSubmit = e => {
+    e.preventDefault()
+    eventAdd({
+      variables: {
+        event: {
+          title: eventTitleRef.current.value
+        }
+      }
+    })
+    eventTitleRef.current.value = ''
+  }
 
   return (
     <section>
       <h1>Events</h1>
-      <ul>
-        {events.map(event => (
-          <li key={event.id}>
-            {event.title}
-            {event.contacts && event.contacts.length &&
-              <ul>
-                {event.contacts.map(contact => (
-                  <li key={contact.id}>{contact.firstName} {contact.lastName}</li>
-                ))}
-              </ul>
-            }
-          </li>
-        ))}
-      </ul>
+      {events && events.length &&
+        <ul>
+          {events.map(event => (
+            <li key={event.id}>
+              {event.title}
+              {event.contacts && event.contacts.length &&
+                <ul>
+                  {event.contacts.map(contact => (
+                    <li key={contact.id}>{contact.firstName} {contact.lastName}</li>
+                  ))}
+                </ul>
+              || null}
+            </li>
+          ))}
+        </ul>
+      || null}
+      {(!events || !events.length) &&
+        <div>No Events</div>
+      || null}
+      <form onSubmit={handleSubmit}>
+        <label>Title</label>
+        <input type="text" ref={eventTitleRef} />
+        <button type="submit">Add Event</button>
+      </form>
     </section>
   )
 
@@ -117,8 +116,76 @@ export const withApolloQuery = (query, options = {}) => WrappedComponent => {
 
 ///////////////////////////////////
 
+import { Mutation } from 'react-apollo'
+
+export const withApolloMutation = (mutation, options) => WrappedComponent => {
+  const defaults = {
+    propName: 'mutate',
+  }
+  const {
+    propName,
+  } = {
+    ...defaults,
+    ...options,
+  }
+  const Component = props => {
+    return (
+      <Mutation
+        mutation={mutation}
+        update={(cache, { data: { [propName]: result } }) => {
+          const { events } = cache.readQuery({ query: Events })
+          cache.writeQuery({
+            query: Events,
+            data: { events: [...events, result ]}
+          })
+          console.log(result, events);
+        }}
+      >
+        {( mutate, { data }) => (
+          <WrappedComponent {...props} {...{ [propName]: mutate }} />
+        )}
+      </Mutation>
+    )
+  }
+  Component.displayName = `withApolloMutation(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`
+  return Component
+}
+
+
+///////////////////////////////////
+
 import { gql } from 'apollo-boost'
 
+const Events = gql`
+  {
+    events
+    {
+      id
+      title
+      contacts {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+`
+
+const EventAdd = gql`
+  mutation EventAdd($event: EventInput!) {
+    eventAdd(Event:$event) {
+      id
+      title
+      contacts {
+        firstName
+        lastName
+      }
+    }
+  }
+`
+
 export default withApolloClient(
-  withApolloQuery(gql`{ events { id title contacts { id firstName lastName }}}`)(AdminApp)
+  withApolloQuery(Events)(
+    withApolloMutation(EventAdd, { propName: 'eventAdd' })(AdminApp)
+  )
 )
