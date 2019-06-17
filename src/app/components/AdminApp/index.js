@@ -16,7 +16,7 @@ export const AdminApp = ({
   )
 }
 
-export default props => {
+export const AdminAppProvider = props => {
   const client = new ApolloClient()
   return (
     <ApolloProvider client={client}>
@@ -24,3 +24,5 @@ export default props => {
     </ApolloProvider>
   )
 }
+
+export default AdminAppProvider

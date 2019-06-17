@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 
-import AdminApp from 'app/components/AdminApp'
+import AdminAppProvider from 'app/components/AdminApp'
 
 export const client = ({
   document = global.document,
@@ -13,7 +13,7 @@ export const client = ({
 
   hydrate((
     <BrowserRouter>
-      <AdminApp />
+      <AdminAppProvider />
     </BrowserRouter>
   ),
   document.getElementById('root'))

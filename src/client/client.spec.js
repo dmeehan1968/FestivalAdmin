@@ -30,7 +30,7 @@ describe('client', () => {
     })
 
     it('uses AdminApp', () => {
-      expect(wrapper.findWhere(n => /AdminApp/.test(n.name()))).toHaveLength(1)
+      expect(wrapper.find('AdminAppProvider')).toHaveLength(1)
     })
 
   })

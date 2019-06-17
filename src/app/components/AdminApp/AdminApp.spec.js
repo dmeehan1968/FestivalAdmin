@@ -7,28 +7,20 @@ describe('AdminApp', () => {
 
   let wrapper
 
-  describe('without events', () => {
+  beforeEach(() => {
+    wrapper = shallow(<AdminApp />)
+  })
 
-    beforeEach(() => {
-      wrapper = shallow(<AdminApp />)
-    })
+  it('renders Event title', () => {
+    expect(wrapper.find('h1').text()).toBe('Events')
+  })
 
-    it('renders Event title', () => {
-      expect(wrapper.find('h1').text()).toBe('Events')
-    })
+  it('renders the event list', () => {
+    expect(wrapper.find('Apollo(EventList)')).toHaveLength(1)
+  })
 
-    it('renders No Events text', () => {
-      expect(wrapper.text()).toMatch(/No Events/)
-    })
-
-    it('does not render lists', () => {
-      expect(wrapper.find('ul')).toHaveLength(0)
-    })
-
-    it('does not render list items', () => {
-      expect(wrapper.find('li')).toHaveLength(0)
-    })
-
+  it('renders the event add form', () => {
+    expect(wrapper.find('Apollo(EventAddForm)')).toHaveLength(1)
   })
 
 })
