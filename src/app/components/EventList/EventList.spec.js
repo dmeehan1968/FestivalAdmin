@@ -1,34 +1,16 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import { useQuery } from 'react-apollo-hooks'
-
 import EventList from './index'
-import eventsQuery from 'app/graphql/eventsQuery'
-
-jest.mock('react-apollo-hooks')
 
 describe('EventList', () => {
 
   let wrapper
 
-  beforeEach(() => {
-    useQuery.mockReset()
-  })
-
-  describe('query', () => {
-
-    it('uses eventsQuery', () => {
-      wrapper = shallow(<EventList />)
-      expect(useQuery).toHaveBeenCalledWith(eventsQuery)
-    })
-  })
-
   describe('loading', () => {
 
     beforeEach(() => {
-      useQuery.mockImplementation(() => ({ loading: true, data: {events: []} }))
-      wrapper = shallow(<EventList />)
+      wrapper = shallow(<EventList loading={true} />)
     })
 
     it('shows loading', () => {
@@ -40,8 +22,7 @@ describe('EventList', () => {
   describe('error', () => {
 
     beforeEach(() => {
-      useQuery.mockImplementation(() => ({ error: { message: 'Arrgh!' } }))
-      wrapper = shallow(<EventList />)
+      wrapper = shallow(<EventList error={{ message: 'Arrgh!' }} />)
     })
 
     it('shows error', () => {
@@ -53,8 +34,7 @@ describe('EventList', () => {
   describe('No data', () => {
 
     beforeEach(() => {
-      useQuery.mockImplementation(() => ({ loading: false, data: {events: []} }))
-      wrapper = shallow(<EventList />)
+      wrapper = shallow(<EventList events={[]}/>)
     })
 
     it('shows no events', () => {
@@ -77,8 +57,7 @@ describe('EventList', () => {
     ]
 
     beforeEach(() => {
-      useQuery.mockImplementation(() => ({ data: { events } }))
-      wrapper = shallow(<EventList />)
+      wrapper = shallow(<EventList events={events} />)
     })
 
     it('shows expected events', () => {

@@ -1,20 +1,12 @@
 import React from 'react'
 
-import { useQuery } from 'react-apollo-hooks'
-
-import eventsQuery from 'app/graphql/eventsQuery'
-
 import Event from 'app/components/Event'
 
-export const EventList = ({}) => {
-
-  const {
-    loading,
-    error,
-    data: {
-      events = []
-    } = {}
-  } = useQuery(eventsQuery) || {}
+export const EventList = ({
+  loading,
+  error,
+  events,
+}) => {
 
   if (loading) {
     return (<div>Loading...</div>)
