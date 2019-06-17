@@ -58,7 +58,7 @@ export default (options = {}, log = debug('sequelize')) => {
     // seed
     const { Contact, Event } = db.models
     return db.transaction(t => {
-      const contacts = Array(10).fill(undefined).map(() => {
+      const contacts = Array(5).fill(undefined).map(() => {
         return Contact.create({
           firstName: casual.first_name,
           lastName: casual.last_name,
