@@ -16,11 +16,11 @@ describe('AdminApp', () => {
   })
 
   it('renders the event list', () => {
-    expect(wrapper.find('Apollo(EventList)')).toHaveLength(1)
+    expect(wrapper.find('EventList')).toHaveLength(1)
   })
 
   it('renders the event add form', () => {
-    expect(wrapper.find('Apollo(EventAddForm)')).toHaveLength(1)
+    expect(wrapper.find('EventAddForm')).toHaveLength(1)
   })
 
 })

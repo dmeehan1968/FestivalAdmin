@@ -1,16 +1,20 @@
 import React from 'react'
 
-import { Query, graphql } from 'react-apollo'
+import { useQuery } from 'react-apollo-hooks'
 
 import eventsQuery from 'app/graphql/eventsQuery'
 
 import Event from 'app/components/Event'
 
-export const EventList = ({
-  loading,
-  error,
-  data: { events = [] } = {}
-}) => {
+export const EventList = ({}) => {
+
+  const {
+    loading,
+    error,
+    data: {
+      events = []
+    } = {}
+  } = useQuery(eventsQuery) || {}
 
   if (loading) {
     return (<div>Loading...</div>)
@@ -26,4 +30,4 @@ export const EventList = ({
   return events.map(event => <Event key={event.id} event={event} />)
 }
 
-export default graphql(eventsQuery)(EventList)
+export default EventList

@@ -1,22 +1,33 @@
 import React, { useRef } from 'react'
-import { Mutation, graphql } from 'react-apollo'
+import { useMutation } from 'react-apollo-hooks'
 
 import eventAddMutation from 'app/graphql/eventAddMutation'
 import eventsQuery from 'app/graphql/eventsQuery'
 
-export const EventAddForm = ({
-  mutate: eventAdd = () => console.error('eventAdd not passed in component props'),
-}) => {
+export const EventAddForm = ({}) => {
 
   const eventTitleRef = useRef(null)
+  const eventAdd = useMutation(eventAddMutation, {
+    update: (cache, { data: { eventAdd: event } }) => {
+      try {
+        const { events } = cache.readQuery({ query: eventsQuery })
+        cache.writeQuery({
+          query: eventsQuery,
+          data: { events: [...events, event ]}
+        })
+      } catch(err) {
+        console.log(err);
+      }
+    }
+  })
 
   const handleSubmit = e => {
     e.preventDefault()
     eventAdd({
       variables: {
         event: {
-          title: eventTitleRef.current.value
-        }
+          title: eventTitleRef.current.value,
+        },
       }
     })
     eventTitleRef.current.value = ''
@@ -31,18 +42,4 @@ export const EventAddForm = ({
   )
 }
 
-export default graphql(eventAddMutation, {
-  options: {
-    update: (cache, { data: { eventAdd: event } }) => {
-      try {
-        const { events } = cache.readQuery({ query: eventsQuery })
-        cache.writeQuery({
-          query: eventsQuery,
-          data: { events: [...events, event ]}
-        })
-      } catch(err) {
-        console.log(err);
-      }
-    },
-  },
-})(EventAddForm)
+export default EventAddForm

@@ -1,6 +1,6 @@
 import React from 'react'
 import ApolloClient from 'apollo-boost'
-import { ApolloProvider } from 'react-apollo'
+import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks'
 
 import EventList from 'app/components/EventList'
 import EventAddForm from 'app/components/EventAddForm'
@@ -19,9 +19,9 @@ export const AdminApp = ({
 export const AdminAppProvider = props => {
   const client = new ApolloClient()
   return (
-    <ApolloProvider client={client}>
+    <ApolloHooksProvider client={client}>
       <AdminApp {...props} />
-    </ApolloProvider>
+    </ApolloHooksProvider>
   )
 }
 
