@@ -6,12 +6,12 @@ import AdminAppProvider from 'app/components/AdminApp'
 
 export const client = ({
   document = global.document,
-  hydrate = ReactDOM.hydrate,
+  render = ReactDOM.render,
   console = global.console,
   module: mod = module,
 } = {}) => {
 
-  hydrate((
+  render((
     <BrowserRouter>
       <AdminAppProvider />
     </BrowserRouter>
