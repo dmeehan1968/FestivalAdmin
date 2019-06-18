@@ -1,23 +1,28 @@
-import React, { useRef } from 'react'
+import React, { useState } from 'react'
 
 export const EventAddForm = ({
   eventAdd
 }) => {
 
-  const eventTitleRef = useRef(null)
+  const [ eventTitle, setEventTitle ] = useState('')
 
   const handleSubmit = e => {
     e.preventDefault()
     eventAdd({
-      title: eventTitleRef.current.value,
+      title: eventTitle,
     })
-    eventTitleRef.current.value = ''
+    setEventTitle('')
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>Title</label>
-      <input type="text" ref={eventTitleRef} />
+      <label>Title
+        <input
+          type="text"
+          value={eventTitle}
+          onChange={e=>setEventTitle(e.target.value)}
+        />
+      </label>
       <button type="submit">Add Event</button>
     </form>
   )
