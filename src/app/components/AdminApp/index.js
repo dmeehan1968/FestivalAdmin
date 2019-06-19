@@ -7,9 +7,11 @@ import { makeStyles } from '@material-ui/core/styles'
 // Core
 import AppBar from '@material-ui/core/AppBar'
 import Button from '@material-ui/core/Button'
+import Container from '@material-ui/core/Container'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Divider from '@material-ui/core/Divider'
 import Drawer from '@material-ui/core/Drawer'
+import Grid from '@material-ui/core/Grid'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -33,28 +35,9 @@ const useStyles = makeStyles(theme => ({
   },
   appBar: {
     zIndex: theme.zIndex.drawer+1,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
   },
   toolbar: {
     paddingRight: 24,
-  },
-  toolbarIcon: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: '0 8px',
-    ...theme.mixins.toolbar,
   },
   menuIcon: {
     marginRight: theme.spacing(2),
@@ -85,9 +68,16 @@ const useStyles = makeStyles(theme => ({
   menuButton: {
     marginRight: 36,
   },
-  menuButtonHidden: {
-    display: 'none',
+  content: {
+    flexGrow: 1,
+    height: '100vh',
+    overflow: 'auto',
   },
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+  },
+  appBarSpacer: theme.mixins.toolbar,
 }))
 
 export const AdminApp = ({
@@ -108,7 +98,7 @@ export const AdminApp = ({
       <CssBaseline />
       <AppBar
         position="absolute"
-        className={clsx(classes.appBar, isDrawerOpen && classes.appBarShift)}
+        className={classes.appBar}
       >
         <Toolbar className={classes.toolbar}>
           <IconButton
@@ -116,8 +106,8 @@ export const AdminApp = ({
             className={classes.menuIcon}
             color="inherit"
             aria-label="Menu"
-            onClick={()=>setIsDrawerOpen(true)}
-            className={clsx(classes.menuButton, isDrawerOpen && classes.menuButtonHidden)}
+            onClick={()=>setIsDrawerOpen(!isDrawerOpen)}
+            className={classes.menuButton}
           >
             <MenuIcon />
           </IconButton>
@@ -136,12 +126,7 @@ export const AdminApp = ({
         }}
         open={isDrawerOpen}
       >
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={()=>setIsDrawerOpen(false)}>
-            <ChevronLeftIcon/>
-          </IconButton>
-        </div>
-        <Divider />
+        <div className={classes.appBarSpacer} />
         <List>
           <div>
             <ListItem button>
@@ -154,6 +139,23 @@ export const AdminApp = ({
         </List>
         <Divider />
       </Drawer>
+      <main className={classes.content}>
+        <div className={classes.appBarSpacer} />
+        <AppBar color="default" position="static">
+          <Toolbar>
+            <Typography variant="h6" color="inherit">
+              Heading
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Container maxWidth="lg" className={classes.container}>
+          <Grid container>
+            <Grid item>
+              <p>This is some content</p>
+            </Grid>
+          </Grid>
+        </Container>
+      </main>
     </div>
   )
 }
