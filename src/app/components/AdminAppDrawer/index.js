@@ -14,6 +14,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 
 // Icons
 import DashboardIcon from '@material-ui/icons/Dashboard'
+import EventIcon from '@material-ui/icons/Event'
 
 const drawerWidth = 240
 
@@ -34,9 +35,6 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     width: theme.spacing(7),
-    [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(9),
-    },
   },
   appBarSpacer: theme.mixins.toolbar,
 }))
@@ -55,14 +53,21 @@ export const AdminAppDrawer = ({
     >
       <div className={classes.appBarSpacer} />
       <List>
-        <div>
-          <ListItem button>
-            <ListItemIcon>
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard" />
-          </ListItem>
-        </div>
+        <ListItem button>
+          <ListItemIcon>
+            <EventIcon />
+          </ListItemIcon>
+          <ListItemText primary="Event Title" />
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
+        <ListItem button>
+          <ListItemIcon>
+            <DashboardIcon />
+          </ListItemIcon>
+          <ListItemText primary="Dashboard" />
+        </ListItem>
       </List>
       <Divider />
     </Drawer>
