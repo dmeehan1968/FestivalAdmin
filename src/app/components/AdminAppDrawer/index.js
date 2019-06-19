@@ -54,6 +54,80 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const userLinks = [
+  {
+    text: "Profile",
+    to: "/",
+    icon: PersonIcon,
+  },
+  {
+    text: "Events",
+    to: "/events",
+    icon: EventIcon,
+  },
+]
+
+const eventLinks = [
+  {
+    text: "Description",
+    to: "/event/description",
+    icon: FormatQuoteIcon,
+  },
+  {
+    text: "Tags",
+    to: "/event/tags",
+    icon: LabelIcon,
+  },
+  {
+    text: "Opening Times",
+    to: "/event/times",
+    icon: EventIcon,
+  },
+  {
+    text: "Venue",
+    to: "/event/venue",
+    icon: DirectionsIcon,
+  },
+  {
+    text: "Contact",
+    to: "/event/contact",
+    icon: PersonOutlineIcon,
+  },
+  {
+    text: "Images",
+    to: "/event/images",
+    icon: ImageIcon,
+  },
+  {
+    text: "Booking Info",
+    to: "/event/booking",
+    icon: ContactPhoneIcon,
+  },
+  {
+    text: "Further Info",
+    to: "/event/info",
+    icon: AnnouncementIcon,
+  },
+  {
+    text: "Notes",
+    to: "/event/notes",
+    icon: NoteIcon,
+  },
+]
+
+const renderLinks = links => {
+  return links.map(({ text, to, icon: IconComponent }, key) => {
+    return (
+      <ListItem key={key} button component={RouterLink} to={to}>
+        <ListItemIcon>
+          <IconComponent />
+        </ListItemIcon>
+        <ListItemText primary={text} />
+      </ListItem>
+    )
+  })
+}
+
 export const AdminAppDrawer = ({
   isDrawerOpen = false,
 }) => {
@@ -82,22 +156,7 @@ export const AdminAppDrawer = ({
           <ListSubheader>About You</ListSubheader>
         }
       >
-        <Link component={RouterLink} to="/" color="inherit" underline="none">
-          <ListItem button>
-            <ListItemIcon>
-              <PersonIcon />
-            </ListItemIcon>
-            <ListItemText primary="Profile" />
-          </ListItem>
-        </Link>
-        <Link component={RouterLink} to="/events" color="inherit" underline="none">
-          <ListItem button>
-            <ListItemIcon>
-              <EventIcon />
-            </ListItemIcon>
-            <ListItemText primary="Events" />
-          </ListItem>
-        </Link>
+        {renderLinks(userLinks)}
       </List>
       <Divider />
       <List
@@ -106,79 +165,8 @@ export const AdminAppDrawer = ({
           <ListSubheader>About the Event</ListSubheader>
         }
       >
-        <Link component={RouterLink} to="/event/description" color="inherit" underline="none">
-          <ListItem button>
-            <ListItemIcon>
-              <FormatQuoteIcon />
-            </ListItemIcon>
-            <ListItemText primary="Description" />
-          </ListItem>
-        </Link>
-        <Link component={RouterLink} to="/event/tags" color="inherit" underline="none">
-          <ListItem button>
-            <ListItemIcon>
-              <LabelIcon />
-            </ListItemIcon>
-            <ListItemText primary="Tags" />
-          </ListItem>
-        </Link>
-        <Link component={RouterLink} to="/event/times" color="inherit" underline="none">
-          <ListItem button>
-            <ListItemIcon>
-              <EventIcon />
-            </ListItemIcon>
-            <ListItemText primary="Opening Times" />
-          </ListItem>
-        </Link>
-        <Link component={RouterLink} to="/event/venue" color="inherit" underline="none">
-          <ListItem button>
-            <ListItemIcon>
-              <DirectionsIcon />
-            </ListItemIcon>
-            <ListItemText primary="Venue" />
-          </ListItem>
-        </Link>
-        <Link component={RouterLink} to="/event/contact" color="inherit" underline="none">
-          <ListItem button>
-            <ListItemIcon>
-              <PersonOutlineIcon />
-            </ListItemIcon>
-            <ListItemText primary="Contact" />
-          </ListItem>
-        </Link>
-        <Link component={RouterLink} to="/event/images" color="inherit" underline="none">
-          <ListItem button>
-            <ListItemIcon>
-              <ImageIcon />
-            </ListItemIcon>
-            <ListItemText primary="Images" />
-          </ListItem>
-        </Link>
-        <Link component={RouterLink} to="/event/booking" color="inherit" underline="none">
-          <ListItem button>
-            <ListItemIcon>
-              <ContactPhoneIcon />
-            </ListItemIcon>
-            <ListItemText primary="Booking Info" />
-          </ListItem>
-        </Link>
-        <Link component={RouterLink} to="/event/info" color="inherit" underline="none">
-          <ListItem button>
-            <ListItemIcon>
-              <AnnouncementIcon />
-            </ListItemIcon>
-            <ListItemText primary="Further Info" />
-          </ListItem>
-        </Link>
-        <Link component={RouterLink} to="/event/notes" color="inherit" underline="none">
-          <ListItem button>
-            <ListItemIcon>
-              <NoteIcon />
-            </ListItemIcon>
-            <ListItemText primary="Notes" />
-          </ListItem>
-        </Link>
-        </List>
+        {renderLinks(eventLinks)}
+      </List>
       <Divider />
     </Drawer>
   )
