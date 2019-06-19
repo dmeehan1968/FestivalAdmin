@@ -74,8 +74,18 @@ export const AdminApp = ({
         <div className={classes.appBarSpacer} />
         <Switch>
           <Route exact path="/">
+            <Page title="Your Profile">
+              <div>Pending</div>
+            </Page>
+          </Route>
+          <Route exact path="/events">
             <Page title="Events">
               <EventsGrid events={events}/>
+            </Page>
+          </Route>
+          <Route>
+            <Page title="Under Construction">
+              <div>Not Yet Implemented</div>
             </Page>
           </Route>
         </Switch>
