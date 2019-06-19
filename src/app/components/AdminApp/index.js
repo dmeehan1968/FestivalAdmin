@@ -17,6 +17,7 @@ import AdminAppBar from 'app/components/AdminAppBar'
 import AdminAppDrawer from 'app/components/AdminAppDrawer'
 import PageBar from 'app/components/PageBar'
 import EventsGrid from 'app/components/EventsGrid'
+import UserProfile from 'app/components/UserProfile'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -75,7 +76,7 @@ export const AdminApp = ({
         <Switch>
           <Route exact path="/">
             <Page title="Your Profile">
-              <div>Pending</div>
+              <UserProfile />
             </Page>
           </Route>
           <Route exact path="/events">
