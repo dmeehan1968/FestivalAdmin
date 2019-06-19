@@ -13,6 +13,8 @@ import Typography from '@material-ui/core/Typography'
 
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 
+import faker from 'faker'
+
 const useStyles = makeStyles(theme => ({
   media: {
     height: 0,
@@ -24,13 +26,27 @@ export const EventCard = ({
   event = {},
 }) => {
   const classes = useStyles()
+  const fakeTitle = (options = { min: 2, max: 8 }) => {
+    return faker.lorem.words(faker.random.number(options)).replace(/\b\w/g, l => l.toUpperCase())
+  }
+  const {
+    id = faker.random.number(),
+    title = fakeTitle(),
+    subtitle = fakeTitle(),
+    preferred_image = {
+      url: faker.image.imageUrl(300, 300, undefined, true),
+      title: fakeTitle(),
+    }
+  } = event
 
   return (
     <Card>
 
       <CardHeader
-        title={event.title}
-        subheader={event.subtitle}
+        title={title}
+        titleTypographyProps={{ variant: 'subtitle1' }}
+        subheader={subtitle}
+        subheaderTypographyProps={{ variant: 'subtitle2' }}
         action={
           <IconButton>
             <MoreVertIcon />
@@ -38,11 +54,11 @@ export const EventCard = ({
         }
       />
 
-      {event.preferred_image &&
+      {preferred_image &&
         <CardMedia
           className={classes.media}
-          image={event.preferred_image.url}
-          title={event.preferred_image.title}
+          image={preferred_image.url}
+          title={preferred_image.title}
         />
       }
       <CardActions>

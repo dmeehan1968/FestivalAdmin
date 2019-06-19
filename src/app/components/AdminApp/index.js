@@ -57,26 +57,7 @@ export const AdminApp = ({
 }) => {
   const classes = useStyles()
   const [ isDrawerOpen, setIsDrawerOpen ] = useState(true)
-  const events = [
-    {
-      id: 1,
-      title: 'My First Event',
-      subtitle: 'This is going to be epic',
-      preferred_image: {
-        url: 'http://picsum.photos/400?random=1',
-        title: 'My First Event Image Title',
-      }
-    },
-    {
-      id: 2,
-      title: 'My Second Event with A Very Long Title',
-      subtitle: 'The stuff of legends',
-      preferred_image: {
-        url: 'http://picsum.photos/400?random=2',
-        title: 'My Second Event Image Title',
-      }
-    },
-  ]
+  const events = Array(10).fill({})
   return (
     <div className={classes.root}>
       <Helmet>

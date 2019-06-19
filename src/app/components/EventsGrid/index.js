@@ -10,9 +10,9 @@ export const EventsGrid = ({
 }) => {
   return (
     <Grid container spacing={3}>
-      {events.length && events.map(event => {
+      {events.length && events.map((event, key) => {
         return (
-          <Grid key={event.id} item xs={3}>
+          <Grid key={key} item xs={3}>
             <EventCard event={event} />
           </Grid>
         )
