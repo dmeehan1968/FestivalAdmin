@@ -14,6 +14,7 @@ import Typography from '@material-ui/core/Typography'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 
 import faker from 'faker'
+faker.locale = 'en_GB'
 
 const useStyles = makeStyles(theme => ({
   media: {

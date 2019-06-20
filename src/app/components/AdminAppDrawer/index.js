@@ -56,8 +56,28 @@ const useStyles = makeStyles(theme => ({
 
 const userLinks = [
   {
-    text: "Profile",
-    to: "/",
+    text: "Personal Info",
+    to: "/user",
+    icon: PersonIcon,
+  },
+  {
+    text: "Address",
+    to: "/user/address",
+    icon: PersonIcon,
+  },
+  {
+    text: "Location",
+    to: "/user/location",
+    icon: PersonIcon,
+  },
+  {
+    text: "Security",
+    to: "/user/security",
+    icon: PersonIcon,
+  },
+  {
+    text: "Notes",
+    to: "/user/notes",
     icon: PersonIcon,
   },
   {

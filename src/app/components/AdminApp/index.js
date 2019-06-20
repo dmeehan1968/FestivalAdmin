@@ -74,9 +74,34 @@ export const AdminApp = ({
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Switch>
-          <Route exact path="/">
-            <Page title="Your Profile">
+          <Route exact path="/user">
+            <Page title="About You">
               <UserProfile />
+            </Page>
+          </Route>
+          <Route exact path="/user/address">
+            <Page title="Address">
+              <div>Pending</div>
+            </Page>
+          </Route>
+          <Route exact path="/user/location">
+            <Page title="Location">
+              <div>Not Yet Implemented</div>
+            </Page>
+          </Route>
+          <Route exact path="/user/permissions">
+            <Page title="Permissions">
+              <div>Not Yet Implemented</div>
+            </Page>
+          </Route>
+          <Route exact path="/user/tags">
+            <Page title="Tags">
+              <div>Not Yet Implemented</div>
+            </Page>
+          </Route>
+          <Route exact path="/user/notes">
+            <Page title="Notes">
+              <div>Not Yet Implemented</div>
             </Page>
           </Route>
           <Route exact path="/events">
