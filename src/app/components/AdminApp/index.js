@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
 import { Switch, Route } from 'react-router-dom'
 
+import ApolloClient from 'apollo-boost'
+import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks'
+import { ApolloProvider } from 'react-apollo'
+
 // Styles
 import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
@@ -18,6 +22,7 @@ import AdminAppDrawer from 'app/components/AdminAppDrawer'
 import PageBar from 'app/components/PageBar'
 import EventsGrid from 'app/components/EventsGrid'
 import UserProfile from 'app/components/UserProfile'
+import EventDescription from 'app/components/EventDescription'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -109,6 +114,11 @@ export const AdminApp = ({
               <EventsGrid events={events}/>
             </Page>
           </Route>
+          <Route exact path="/event/description">
+            <Page title="Event Description">
+              <EventDescription id={1} />
+            </Page>
+          </Route>
           <Route>
             <Page title="Under Construction">
               <div>Not Yet Implemented</div>
@@ -120,4 +130,15 @@ export const AdminApp = ({
   )
 }
 
-export default AdminApp
+const AdminAppProvider = props => {
+  const client = new ApolloClient()
+  return (
+    <ApolloProvider client={client}>
+      <ApolloHooksProvider client={client}>
+        <AdminApp {...props} />
+      </ApolloHooksProvider>
+    </ApolloProvider>
+  )
+}
+
+export default AdminAppProvider

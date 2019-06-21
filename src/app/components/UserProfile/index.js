@@ -44,6 +44,7 @@ export const UserProfile = ({
     email: faker.internet.email(),
     website: faker.internet.url(),
   })
+  const setFirstname = ev => setUser({ ...user, firstName: ev.target.value })
 
   return (
     <Grid container spacing={3} direction="column" alignItems="center">
@@ -61,6 +62,8 @@ export const UserProfile = ({
                   margin="normal"
                   autoComplete="fname"
                   value={user.firstName}
+                  onChange={setFirstname}
+                  placeholder="Your first (or given) name"
                 />
               </Grid>
               <Grid item xs={12} md={6}>
