@@ -16,6 +16,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Snackbar from '@material-ui/core/Snackbar'
 
 import withApolloQuery from 'app/hocs/withApolloQuery'
+import withApolloMutation from 'app/hocs/withApolloMutation'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -70,26 +71,6 @@ const eventEditMutationOptions = {
       ...(called && !loading && !error && { event } || {})
     }
   }
-}
-
-const withApolloMutate = ({
-  MutationProps,
-  mapMutateToProps = () => {},
-  mapResultToProps = () => {},
-}) => WrappedComponent => props => {
-  return (
-    <Mutation {...MutationProps}>
-      {(mutate, result) => {
-        return (
-          <WrappedComponent
-            {...props}
-            {...mapMutateToProps(mutate)}
-            {...mapResultToProps(result, props)}
-          />
-        )
-      }}
-    </Mutation>
-  )
 }
 
 export const EventDescription = ({
@@ -269,7 +250,7 @@ const AutoSaveTextField = compose(
 
 export default compose(
   withApolloQuery(eventsQueryOptions),
-  withApolloMutate(eventEditMutationOptions),
+  withApolloMutation(eventEditMutationOptions),
   withLoading(()=><div>Loading...</div>),
   withUpdating,
   withMutateProgress({ fakeLatencyMs: 1000 }),
