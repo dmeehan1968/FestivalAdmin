@@ -18,6 +18,7 @@ import withApolloMutation from 'app/hocs/withApolloMutation'
 import withProps from 'app/hocs/withProps'
 import withOnChangeDebounce from 'app/hocs/withOnChangeDebounce'
 import withProgressAdornment from 'app/hocs/withProgressAdornment'
+import withLoading from 'app/hocs/withLoading'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -161,10 +162,6 @@ const withUpdating = WrappedComponent => props => {
       onEndUpdate={()=>setUpdating({})}
     />
   )
-}
-
-const withLoading = Loading => WrappedComponent => ({loading, ...props}) => {
-  return loading && <Loading /> || <WrappedComponent {...props} />
 }
 
 const withChangeNotification = (SnackbarProps) => WrappedComponent => props => {
