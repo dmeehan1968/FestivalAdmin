@@ -9,7 +9,7 @@ export const withChangeNotification = (SnackbarProps) => WrappedComponent => pro
   const onChange = ev => {
     return Promise
       .resolve((props.onChange || noop)(ev))
-      .then(setSaveNotification({ open: true, key: Math.random() }))
+      .then(() => setSaveNotification({ open: true, key: Math.random() }))
   }
 
   return (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-import { Query, Mutation, compose } from 'react-apollo'
+import { compose } from 'react-apollo'
 import { gql } from 'apollo-boost'
 
 // Styles
@@ -10,21 +10,68 @@ import { makeStyles } from '@material-ui/core/styles'
 // Core
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import TextField from '@material-ui/core/TextField'
 
 import withApolloQuery from 'app/hocs/withApolloQuery'
 import withApolloMutation from 'app/hocs/withApolloMutation'
-import withProps from 'app/hocs/withProps'
-import withOnChangeDebounce from 'app/hocs/withOnChangeDebounce'
-import withProgressAdornment from 'app/hocs/withProgressAdornment'
 import withLoading from 'app/hocs/withLoading'
-import withChangeNotification from 'app/hocs/withChangeNotification'
+import withMutationProgress from 'app/hocs/withMutationProgress'
+
+import AutoSaveTextField from 'app/components/AutoSaveTextField'
 
 const useStyles = makeStyles(theme => ({
   paper: {
     padding: theme.spacing(2),
   },
 }))
+
+export const EventDescription = ({
+  event,
+  eventEdit,
+  id,
+  updating,
+  ...otherProps
+}) => {
+
+  const classes = useStyles()
+
+  const isset = fn => {
+      var value;
+      try {
+          value = fn();
+      } catch (e) {
+          value = undefined;
+      } finally {
+          return value !== undefined;
+      }
+  }
+
+  return (
+    <Grid container spacing={3} direction="column">
+      <Grid item xs={12} md={6}>
+        <Paper className={classes.paper}>
+          <AutoSaveTextField
+            label="Title"
+            value={event.title}
+            updating={isset(() => updating.title) }
+            onChange={ev=>eventEdit({ id, title: ev.target.value })}
+          />
+        </Paper>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Paper className={classes.paper}>
+          <AutoSaveTextField
+            label="Sub Title"
+            value={event.subtitle}
+            updating={isset(() => updating.event.subtitle) }
+            onChange={ev=>eventEdit({ id, subtitle: ev.target.value })}
+          />
+        </Paper>
+      </Grid>
+    </Grid>
+  )
+}
+
+///////////////////////////////////////////////
 
 const eventsQuery = gql`
   query eventsQuery($id: Int) {
@@ -75,110 +122,9 @@ const eventEditMutationOptions = {
   }
 }
 
-export const EventDescription = ({
-  event,
-  eventEdit,
-  id,
-  updating,
-  ...otherProps
-}) => {
-
-  const classes = useStyles()
-
-  const isset = fn => {
-      var value;
-      try {
-          value = fn();
-      } catch (e) {
-          value = undefined;
-      } finally {
-          return value !== undefined;
-      }
-  }
-
-  return (
-    <Grid container spacing={3} direction="column">
-      <Grid item xs={12} md={6}>
-        <Paper className={classes.paper}>
-          <AutoSaveTextField
-            label="Title"
-            value={event.title}
-            updating={isset(() => updating.event.title) }
-            onChange={ev=>eventEdit({ id, title: ev.target.value })}
-          />
-        </Paper>
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Paper className={classes.paper}>
-          <AutoSaveTextField
-            label="Sub Title"
-            value={event.subtitle}
-            updating={isset(() => updating.event.subtitle) }
-            onChange={ev=>eventEdit({ id, subtitle: ev.target.value })}
-          />
-        </Paper>
-      </Grid>
-    </Grid>
-  )
-}
-
-
-const withMutateProgress = ({ fakeLatencyMs = 0 }) => {
-
-  const EnhancedComponent = WrappedComponent => ({
-    mutate,
-    onBeginUpdate,
-    onEndUpdate,
-    ...props
-  }) => {
-
-    return (
-      <WrappedComponent
-        {...props}
-        mutate={options=>{
-          return Promise.resolve()
-          .then(()=>onBeginUpdate(options.variables))
-          .then(()=>new Promise(resolve => setTimeout(resolve, fakeLatencyMs)))
-          .then(()=>mutate(options))
-          .finally(onEndUpdate)
-        }}
-      />
-    )
-
-  }
-
-  return EnhancedComponent
-
-}
-
-
-const withUpdating = WrappedComponent => props => {
-  const [ updating, setUpdating ] = useState({})
-  return (
-    <WrappedComponent
-      {...props}
-      updating={updating}
-      onBeginUpdate={setUpdating}
-      onEndUpdate={()=>setUpdating({})}
-    />
-  )
-}
-
-const AutoSaveTextField = compose(
-  withChangeNotification({ message: <span>Saved</span> }),
-  withProgressAdornment,
-  withOnChangeDebounce({ debounceDelayMs: 500}),
-  withProps({
-    label: 'Text Field',
-    margin: 'normal',
-    fullWidth: true,
-  }),
-)(TextField)
-
 export default compose(
   withApolloQuery(eventsQueryOptions),
   withApolloMutation(eventEditMutationOptions),
   withLoading(()=><div>Loading...</div>),
-  withUpdating,
-  withMutateProgress({ fakeLatencyMs: 1000 }),
+  withMutationProgress({ propName: 'eventEdit', fakeLatencyMs: 0 }),
 )(EventDescription)
