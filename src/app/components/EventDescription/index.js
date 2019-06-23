@@ -89,17 +89,32 @@ const mapMutationResultToProps = ({ called, loading, error, data: { eventEdit: e
   }
 }
 
-const withApolloMutate = (mutation, mapMutateToProps, mapMutationResultToProps) => WrappedComponent => props => {
-  const noop = () => ({})
+const eventEditMutationOptions = {
+  MutationProps: { mutation: eventEditMutation },
+  mapMutateToProps: mutate => ({
+    eventEdit: event => mutate({variables: { event }})
+  }),
+  mapResultToProps: ({ called, loading, error, data: { eventEdit: event = {} } = {} }, props) => {
+    return {
+      ...props,
+      ...(called && !loading && !error && { event } || {})
+    }
+  }
+}
+
+const withApolloMutate = ({
+  MutationProps,
+  mapMutateToProps = () => {},
+  mapResultToProps = () => {},
+}) => WrappedComponent => props => {
   return (
-    <Mutation mutation={mutation}>
+    <Mutation {...MutationProps}>
       {(mutate, result) => {
-        console.log('result', result);
         return (
           <WrappedComponent
             {...props}
-            {...(mapMutateToProps || noop)(mutate)}
-            // {...(mapMutationResultToProps || noop)(result)}
+            {...mapMutateToProps(mutate)}
+            {...mapResultToProps(result, props)}
           />
         )
       }}
@@ -213,8 +228,6 @@ const withOnChangeDebounce = ({ debounceDelayMs }) => WrappedComponent => props 
 
     if (value === props.value) return
 
-    console.log('debouncing', value, props.value);
-
     const timeout = setTimeout(() => {
       props.onChange && props.onChange({ target: { value }})
     }, debounceDelayMs)
@@ -274,7 +287,6 @@ const withChangeNotification = (SnackbarProps) => WrappedComponent => props => {
   const [ saveNotification, setSaveNotification ] = useState({ open: false })
   const noop = () => {}
   const onChange = ev => {
-    console.log('onChange', ev);
     return Promise.resolve((props.onChange || noop)(ev)).then(setSaveNotification({ open: true, key: Math.random() }))
   }
 
@@ -307,7 +319,7 @@ export default compose(
   // graphql(eventsQuery),
   withApolloQuery(eventsQuery, mapResultToProps, mapPropsToVariables),
   // graphql(eventEditMutation),
-  withApolloMutate(eventEditMutation, mapMutateToProps, mapMutationResultToProps),
+  withApolloMutate(eventEditMutationOptions),
   withLoading(()=><div>Loading...</div>),
   withUpdating,
   withMutateProgress({ fakeLatencyMs: 1000 }),
