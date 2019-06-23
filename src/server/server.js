@@ -28,7 +28,7 @@ export default () => {
       log(`running on ${address.port}`);
     })
     .catch(err => {
-      log('Failed', error.message)
+      log('Failed', err.message)
       throw err
     })
 }

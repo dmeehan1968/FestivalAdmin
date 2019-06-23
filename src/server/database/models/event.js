@@ -11,6 +11,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    subtitle: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
   }, {
     // options
     initialAutoIncrement: 1,

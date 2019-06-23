@@ -67,7 +67,10 @@ export default (options = {}, log = debug('sequelize')) => {
           state: casual.state,
           postcode: casual.zip(),
           events: [
-            { title: casual.title },
+            {
+              title: casual.title,
+              subtitle: casual.title,
+            },
           ]
         }, {
           transaction: t,

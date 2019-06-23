@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-import { graphql, compose } from 'react-apollo'
+import { Query, Mutation, graphql, compose } from 'react-apollo'
 import { useQuery, useMutation } from 'react-apollo-hooks'
 import { gql } from 'apollo-boost'
 
@@ -14,6 +14,7 @@ import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Snackbar from '@material-ui/core/Snackbar'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -26,6 +27,7 @@ const eventsQuery = gql`
     events(id: $id) {
       id
       title
+      subtitle
       contacts {
         id
         firstName
@@ -40,6 +42,7 @@ const eventEditMutation = gql`
     eventEdit(Event:$event) {
       id
       title
+      subtitle
       contacts {
         id
         firstName
@@ -49,14 +52,69 @@ const eventEditMutation = gql`
   }
 `
 
+const mapResultToProps = ({
+  loading,
+  error,
+  data: {
+    events: [ event ] = []
+  } = {}
+}) => ({ event, loading, error })
+
+const mapPropsToVariables = ({ id }) => ({ id })
+
+const withApolloQuery = (query, mapResultToProps, mapPropsToVariables) => WrappedComponent => props => {
+  const noop = () => ({})
+  const variables = (mapPropsToVariables || noop)(props)
+  return (
+    <Query query={query} variables={variables}>
+      {result => {
+        return (
+          <WrappedComponent
+            {...props}
+            {...(mapResultToProps || noop)(result)}
+          />
+        )
+      }}
+    </Query>
+  )
+}
+
+const mapMutateToProps = mutate => ({
+  eventEdit: event => mutate({ variables: { event }}),
+})
+
+const mapMutationResultToProps = ({ called, loading, error, data: { eventEdit: event = {} } = {} }) => {
+  if (called && !loading && !error) {
+    return { event }
+  }
+}
+
+const withApolloMutate = (mutation, mapMutateToProps, mapMutationResultToProps) => WrappedComponent => props => {
+  const noop = () => ({})
+  return (
+    <Mutation mutation={mutation}>
+      {(mutate, result) => {
+        console.log('result', result);
+        return (
+          <WrappedComponent
+            {...props}
+            {...(mapMutateToProps || noop)(mutate)}
+            // {...(mapMutationResultToProps || noop)(result)}
+          />
+        )
+      }}
+    </Mutation>
+  )
+}
+
 export const EventDescription = ({
-  data,
-  mutate,
+  event,
+  eventEdit,
   id,
   updating,
   ...otherProps
 }) => {
-  const { events: [ event = {} ] = [] } = data
+
   const classes = useStyles()
 
   const isset = fn => {
@@ -70,18 +128,25 @@ export const EventDescription = ({
       }
   }
 
-  const mutateEventTitle = (id, title) => {
-    return mutate({ variables: { event: { id, title }}})
-  }
-
   return (
     <Grid container spacing={3} direction="column">
       <Grid item xs={12} md={6}>
         <Paper className={classes.paper}>
-          <EventTitleField
+          <AutoSaveTextField
+            label="Title"
             value={event.title}
             updating={isset(() => updating.event.title) }
-            onChange={ev=>mutateEventTitle(id, ev.target.value)}
+            onChange={ev=>eventEdit({ id, title: ev.target.value })}
+          />
+        </Paper>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Paper className={classes.paper}>
+          <AutoSaveTextField
+            label="Sub Title"
+            value={event.subtitle}
+            updating={isset(() => updating.event.subtitle) }
+            onChange={ev=>eventEdit({ id, subtitle: ev.target.value })}
           />
         </Paper>
       </Grid>
@@ -90,9 +155,12 @@ export const EventDescription = ({
 }
 
 
-const withProps = otherProps => WrappedComponent => props => {
+const withProps = injectedProps => WrappedComponent => props => {
   return (
-    <WrappedComponent {...props} {...otherProps} />
+    <WrappedComponent
+      {...injectedProps}
+      {...props}
+    />
   )
 }
 
@@ -197,24 +265,50 @@ const withProgressAdornment = WrappedComponent => ({ updating, ...props}) => {
 //   )
 // }
 
-const withLoading = Loading => WrappedComponent => props => {
-  return props.data.loading && <Loading /> || <WrappedComponent {...props} />
+const withLoading = Loading => WrappedComponent => ({loading, ...props}) => {
+  return loading && <Loading /> || <WrappedComponent {...props} />
 }
 
-const EventTitleField = compose(
+const withChangeNotification = (SnackbarProps) => WrappedComponent => props => {
+
+  const [ saveNotification, setSaveNotification ] = useState({ open: false })
+  const noop = () => {}
+  const onChange = ev => {
+    console.log('onChange', ev);
+    return Promise.resolve((props.onChange || noop)(ev)).then(setSaveNotification({ open: true, key: Math.random() }))
+  }
+
+  return (
+    <>
+      <Snackbar
+        autoHideDuration={1000}
+        {...SnackbarProps}
+        open={saveNotification.open}
+        key={saveNotification.key}
+        onClose={() => setSaveNotification(false)}
+      />
+      <WrappedComponent {...props} onChange={onChange} />
+    </>
+  )
+}
+
+const AutoSaveTextField = compose(
+  withChangeNotification({ message: <span>Saved</span> }),
   withProgressAdornment,
   withOnChangeDebounce({ debounceDelayMs: 500}),
   withProps({
-    label: 'Title',
+    label: 'Text Field',
     margin: 'normal',
     fullWidth: true,
-  })
+  }),
 )(TextField)
 
 export default compose(
-  graphql(eventsQuery),
-  graphql(eventEditMutation),
+  // graphql(eventsQuery),
+  withApolloQuery(eventsQuery, mapResultToProps, mapPropsToVariables),
+  // graphql(eventEditMutation),
+  withApolloMutate(eventEditMutation, mapMutateToProps, mapMutationResultToProps),
   withLoading(()=><div>Loading...</div>),
   withUpdating,
-  withMutateProgress({ fakeLatencyMs: 0 }),
+  withMutateProgress({ fakeLatencyMs: 1000 }),
 )(EventDescription)
