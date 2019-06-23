@@ -11,7 +11,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
-import Snackbar from '@material-ui/core/Snackbar'
 
 import withApolloQuery from 'app/hocs/withApolloQuery'
 import withApolloMutation from 'app/hocs/withApolloMutation'
@@ -19,6 +18,7 @@ import withProps from 'app/hocs/withProps'
 import withOnChangeDebounce from 'app/hocs/withOnChangeDebounce'
 import withProgressAdornment from 'app/hocs/withProgressAdornment'
 import withLoading from 'app/hocs/withLoading'
+import withChangeNotification from 'app/hocs/withChangeNotification'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -161,30 +161,6 @@ const withUpdating = WrappedComponent => props => {
       onBeginUpdate={setUpdating}
       onEndUpdate={()=>setUpdating({})}
     />
-  )
-}
-
-const withChangeNotification = (SnackbarProps) => WrappedComponent => props => {
-
-  const [ saveNotification, setSaveNotification ] = useState({ open: false })
-  const noop = () => {}
-  const onChange = ev => {
-    return Promise
-      .resolve((props.onChange || noop)(ev))
-      .then(setSaveNotification({ open: true, key: Math.random() }))
-  }
-
-  return (
-    <>
-      <Snackbar
-        autoHideDuration={1000}
-        {...SnackbarProps}
-        open={saveNotification.open}
-        key={saveNotification.key}
-        onClose={() => setSaveNotification({ open: false })}
-      />
-      <WrappedComponent {...props} onChange={onChange} />
-    </>
   )
 }
 
