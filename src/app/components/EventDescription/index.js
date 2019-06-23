@@ -126,5 +126,5 @@ export default compose(
   withApolloQuery(eventsQueryOptions),
   withApolloMutation(eventEditMutationOptions),
   withLoading(()=><div>Loading...</div>),
-  withMutationProgress({ propName: 'eventEdit', fakeLatencyMs: 0 }),
+  withMutationProgress({ mutationPropName: 'eventEdit', fakeLatencyMs: 0 }),
 )(EventDescription)

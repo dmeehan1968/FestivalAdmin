@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 export const withMutationProgress = ({
-  propName = 'mutate',
+  mutationPropName = 'mutate',
   fakeLatencyMs = 0,
 }) => {
 
@@ -18,11 +18,11 @@ export const withMutationProgress = ({
         {...props}
         updating={updating}
         {...{
-          [propName]: (...args) => {
+          [mutationPropName]: (...args) => {
             return Promise.resolve()
             .then(()=>setUpdating(...args))
             .then(()=>new Promise(resolve => setTimeout(resolve, fakeLatencyMs)))
-            .then(()=>props[propName](...args))
+            .then(()=>props[mutationPropName](...args))
             .finally(()=>setUpdating({}))
           }
         }}
