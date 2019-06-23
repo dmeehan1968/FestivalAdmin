@@ -28,11 +28,6 @@ const eventsQuery = gql`
       id
       title
       subtitle
-      contacts {
-        id
-        firstName
-        lastName
-      }
     }
   }
 `
@@ -43,11 +38,6 @@ const eventEditMutation = gql`
       id
       title
       subtitle
-      contacts {
-        id
-        firstName
-        lastName
-      }
     }
   }
 `
@@ -62,16 +52,33 @@ const mapResultToProps = ({
 
 const mapPropsToVariables = ({ id }) => ({ id })
 
-const withApolloQuery = (query, mapResultToProps, mapPropsToVariables) => WrappedComponent => props => {
-  const noop = () => ({})
-  const variables = (mapPropsToVariables || noop)(props)
+const eventsQueryOptions = {
+  QueryProps: {
+    query: eventsQuery
+  },
+  mapResultToProps: ({
+    loading,
+    error,
+    data: {
+      events: [ event ] = []
+    } = {}
+  }) => ({ loading, error, event }),
+  mapPropsToVariables: ({ id }) => ({ id })
+}
+
+const withApolloQuery = ({
+  QueryProps,
+  mapResultToProps = () => {},
+  mapPropsToVariables = () => {},
+}) => WrappedComponent => props => {
+  const variables = mapPropsToVariables(props)
   return (
-    <Query query={query} variables={variables}>
+    <Query {...QueryProps} variables={variables}>
       {result => {
         return (
           <WrappedComponent
             {...props}
-            {...(mapResultToProps || noop)(result)}
+            {...mapResultToProps(result)}
           />
         )
       }}
@@ -258,26 +265,6 @@ const withProgressAdornment = WrappedComponent => ({ updating, ...props}) => {
   )
 }
 
-// const withDirty = WrappedComponent => props => {
-//
-//   const [ dirty, setDirty ] = useState(false)
-//
-//   useEffect(() => {
-//     dirty && setDirty(false)
-//   }, [ props.value ])
-//
-//   return (
-//     <WrappedComponent
-//       {...props}
-//       dirty={dirty && 1 || undefined}
-//       onChange={ev=>{
-//         setDirty(true)
-//         props.onChange && props.onChange(ev)
-//       }}
-//     />
-//   )
-// }
-
 const withLoading = Loading => WrappedComponent => ({loading, ...props}) => {
   return loading && <Loading /> || <WrappedComponent {...props} />
 }
@@ -287,7 +274,9 @@ const withChangeNotification = (SnackbarProps) => WrappedComponent => props => {
   const [ saveNotification, setSaveNotification ] = useState({ open: false })
   const noop = () => {}
   const onChange = ev => {
-    return Promise.resolve((props.onChange || noop)(ev)).then(setSaveNotification({ open: true, key: Math.random() }))
+    return Promise
+      .resolve((props.onChange || noop)(ev))
+      .then(setSaveNotification({ open: true, key: Math.random() }))
   }
 
   return (
@@ -297,7 +286,7 @@ const withChangeNotification = (SnackbarProps) => WrappedComponent => props => {
         {...SnackbarProps}
         open={saveNotification.open}
         key={saveNotification.key}
-        onClose={() => setSaveNotification(false)}
+        onClose={() => setSaveNotification({ open: false })}
       />
       <WrappedComponent {...props} onChange={onChange} />
     </>
@@ -316,9 +305,7 @@ const AutoSaveTextField = compose(
 )(TextField)
 
 export default compose(
-  // graphql(eventsQuery),
-  withApolloQuery(eventsQuery, mapResultToProps, mapPropsToVariables),
-  // graphql(eventEditMutation),
+  withApolloQuery(eventsQueryOptions),
   withApolloMutate(eventEditMutationOptions),
   withLoading(()=><div>Loading...</div>),
   withUpdating,
