@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-import { Query, Mutation, graphql, compose } from 'react-apollo'
-import { useQuery, useMutation } from 'react-apollo-hooks'
+import { Query, Mutation, compose } from 'react-apollo'
 import { gql } from 'apollo-boost'
 
 // Styles
@@ -42,16 +41,6 @@ const eventEditMutation = gql`
   }
 `
 
-const mapResultToProps = ({
-  loading,
-  error,
-  data: {
-    events: [ event ] = []
-  } = {}
-}) => ({ event, loading, error })
-
-const mapPropsToVariables = ({ id }) => ({ id })
-
 const eventsQueryOptions = {
   QueryProps: {
     query: eventsQuery
@@ -84,16 +73,6 @@ const withApolloQuery = ({
       }}
     </Query>
   )
-}
-
-const mapMutateToProps = mutate => ({
-  eventEdit: event => mutate({ variables: { event }}),
-})
-
-const mapMutationResultToProps = ({ called, loading, error, data: { eventEdit: event = {} } = {} }) => {
-  if (called && !loading && !error) {
-    return { event }
-  }
 }
 
 const eventEditMutationOptions = {
