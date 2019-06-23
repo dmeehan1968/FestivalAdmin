@@ -17,6 +17,7 @@ import Snackbar from '@material-ui/core/Snackbar'
 
 import withApolloQuery from 'app/hocs/withApolloQuery'
 import withApolloMutation from 'app/hocs/withApolloMutation'
+import withProps from 'app/hocs/withProps'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -120,15 +121,6 @@ export const EventDescription = ({
   )
 }
 
-
-const withProps = injectedProps => WrappedComponent => props => {
-  return (
-    <WrappedComponent
-      {...injectedProps}
-      {...props}
-    />
-  )
-}
 
 const withMutateProgress = ({ fakeLatencyMs = 0 }) => {
 
