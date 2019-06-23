@@ -15,6 +15,8 @@ import InputAdornment from '@material-ui/core/InputAdornment'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Snackbar from '@material-ui/core/Snackbar'
 
+import withApolloQuery from 'app/hocs/withApolloQuery'
+
 const useStyles = makeStyles(theme => ({
   paper: {
     padding: theme.spacing(2),
@@ -55,28 +57,10 @@ const eventsQueryOptions = {
   mapPropsToVariables: ({ id }) => ({ id })
 }
 
-const withApolloQuery = ({
-  QueryProps,
-  mapResultToProps = () => {},
-  mapPropsToVariables = () => {},
-}) => WrappedComponent => props => {
-  const variables = mapPropsToVariables(props)
-  return (
-    <Query {...QueryProps} variables={variables}>
-      {result => {
-        return (
-          <WrappedComponent
-            {...props}
-            {...mapResultToProps(result)}
-          />
-        )
-      }}
-    </Query>
-  )
-}
-
 const eventEditMutationOptions = {
-  MutationProps: { mutation: eventEditMutation },
+  MutationProps: {
+    mutation: eventEditMutation
+  },
   mapMutateToProps: mutate => ({
     eventEdit: event => mutate({variables: { event }})
   }),
