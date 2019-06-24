@@ -9,7 +9,7 @@ import withOnChangeDebounce from 'app/hocs/withOnChangeDebounce'
 import withProps from 'app/hocs/withProps'
 
 export const AutoSaveTextField = compose(
-  withChangeNotification({ message: <span>Saved</span> }),
+  // withChangeNotification({ }),
   withProgressAdornment,
   withOnChangeDebounce({ debounceDelayMs: 500}),
   withProps({

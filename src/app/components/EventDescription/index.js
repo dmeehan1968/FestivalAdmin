@@ -29,10 +29,9 @@ export const EventDescription = ({
   eventEdit,
   id,
   updating,
+  error,
   ...otherProps
 }) => {
-
-  const classes = useStyles()
 
   const isset = fn => {
       var value;
@@ -45,6 +44,8 @@ export const EventDescription = ({
       }
   }
 
+  const classes = useStyles()
+
   return (
     <Grid container spacing={3} direction="column">
       <Grid item xs={12} md={6}>
@@ -52,6 +53,8 @@ export const EventDescription = ({
           <AutoSaveTextField
             label="Title"
             value={event.title}
+            error={!!error.title}
+            helperText={error.title}
             updating={isset(() => updating.title) }
             onChange={ev=>eventEdit({ id, title: ev.target.value })}
           />
@@ -62,6 +65,7 @@ export const EventDescription = ({
           <AutoSaveTextField
             label="Sub Title"
             value={event.subtitle}
+            error={error.subtitle}
             updating={isset(() => updating.event.subtitle) }
             onChange={ev=>eventEdit({ id, subtitle: ev.target.value })}
           />
@@ -97,6 +101,7 @@ const eventsQueryOptions = {
   QueryProps: {
     query: eventsQuery
   },
+
   mapResultToProps: ({
     loading,
     error,
@@ -104,6 +109,7 @@ const eventsQueryOptions = {
       events: [ event ] = []
     } = {}
   }) => ({ loading, error, event }),
+
   mapPropsToVariables: ({ id }) => ({ id })
 }
 
@@ -115,9 +121,20 @@ const eventEditMutationOptions = {
     eventEdit: event => mutate({variables: { event }})
   }),
   mapResultToProps: ({ called, loading, error, data: { eventEdit: event = {} } = {} }, props) => {
+
+    let errorMap = {}
+
+    if (error) {
+      error.graphQLErrors.map(e => {
+        console.log(e);
+        errorMap = e.extensions.exception.errors.reduce((acc,err) => ({ ...acc, [err.path]: e.message }), errorMap)
+      })
+    }
+
     return {
       ...props,
-      ...(called && !loading && !error && { event } || {})
+      ...(called && !loading && !error && { event } || {}),
+      error: errorMap,
     }
   }
 }

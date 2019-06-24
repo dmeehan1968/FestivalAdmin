@@ -1,3 +1,14 @@
+const notEmpty = (field, value) => {
+  if (!value || value.length < 1) throw new Error(`${field} cannot be empty`)
+
+}
+
+const validations = {
+  Event: {
+    title: notEmpty.bind(null, 'Title')
+  }
+}
+
 module.exports = function(sequelize, DataTypes) {
   const Event = sequelize.define('Event', {
     // attributes
@@ -10,6 +21,9 @@ module.exports = function(sequelize, DataTypes) {
     title: {
       type: DataTypes.STRING(255),
       allowNull: false,
+      validate: {
+        custom: validations.Event.title,
+      },
     },
     subtitle: {
       type: DataTypes.STRING(255),

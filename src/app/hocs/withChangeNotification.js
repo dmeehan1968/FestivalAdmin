@@ -2,14 +2,23 @@ import React, { useState } from 'react'
 
 import Snackbar from '@material-ui/core/Snackbar'
 
-export const withChangeNotification = (SnackbarProps) => WrappedComponent => props => {
+const Span = props => <span {...props} />
 
-  const [ saveNotification, setSaveNotification ] = useState({ open: false })
+export const withChangeNotification = (
+  SnackbarProps,
+  {
+    SuccessComponent = Span,
+    ErrorComponent = Span,
+  } = {}
+) => WrappedComponent => props => {
+
+  const [ notification, setNotification ] = useState({ open: false })
   const noop = () => {}
   const onChange = ev => {
     return Promise
       .resolve((props.onChange || noop)(ev))
-      .then(() => setSaveNotification({ open: true, key: Math.random() }))
+      .finally(() => setNotification({ open: true, key: Math.random() }))
+      .catch(()=>{})
   }
 
   return (
@@ -17,11 +26,15 @@ export const withChangeNotification = (SnackbarProps) => WrappedComponent => pro
       <Snackbar
         autoHideDuration={1000}
         {...SnackbarProps}
-        open={saveNotification.open}
-        key={saveNotification.key}
-        onClose={() => setSaveNotification({ open: false })}
+        message={error ? <ErrorComponent>{error}</ErrorComponent> : <SuccessComponent>Saved</SuccessComponent>}
+        open={notification.open}
+        key={notification.key}
+        onClose={() => setNotification({ open: false })}
       />
-      <WrappedComponent {...props} onChange={onChange} />
+      <WrappedComponent
+        {...props}
+        onChange={onChange}
+      />
     </>
   )
 }
