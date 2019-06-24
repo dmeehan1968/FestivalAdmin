@@ -24,6 +24,17 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const isset = fn => {
+    var value;
+    try {
+        value = fn();
+    } catch (e) {
+        value = undefined;
+    } finally {
+        return value !== undefined;
+    }
+}
+
 export const EventDescription = ({
   event,
   eventEdit,
@@ -32,17 +43,6 @@ export const EventDescription = ({
   error,
   ...otherProps
 }) => {
-
-  const isset = fn => {
-      var value;
-      try {
-          value = fn();
-      } catch (e) {
-          value = undefined;
-      } finally {
-          return value !== undefined;
-      }
-  }
 
   const classes = useStyles()
 
