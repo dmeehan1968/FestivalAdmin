@@ -47,9 +47,9 @@ export const EventDescription = ({
   const classes = useStyles()
 
   return (
-    <Grid container spacing={3} direction="column">
-      <Grid item xs={12} md={6}>
-        <Paper className={classes.paper}>
+    <Paper className={classes.paper}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
           <AutoSaveTextField
             label="Title"
             value={event.title}
@@ -58,20 +58,18 @@ export const EventDescription = ({
             updating={isset(() => updating.title) }
             onChange={ev=>eventEdit({ id, title: ev.target.value })}
           />
-        </Paper>
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Paper className={classes.paper}>
+        </Grid>
+        <Grid item xs={12} md={6}>
           <AutoSaveTextField
             label="Sub Title"
             value={event.subtitle}
-            error={error.subtitle}
+            error={!!error.subtitle}
             updating={isset(() => updating.event.subtitle) }
             onChange={ev=>eventEdit({ id, subtitle: ev.target.value })}
           />
-        </Paper>
+        </Grid>
       </Grid>
-    </Grid>
+    </Paper>
   )
 }
 
