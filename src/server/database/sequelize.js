@@ -68,10 +68,10 @@ export default (options = {}, log = debug('sequelize')) => {
           postcode: casual.zip(),
           events: [
             {
-              title: casual.title,
-              subtitle: casual.title,
-              description: casual.short_description,
-              longDescription: casual.description,
+              title: casual.title.slice(0,255),
+              subtitle: casual.title.slice(0,255),
+              description: casual.short_description.slice(0,255),
+              longDescription: casual.description.slice(0,255),
             },
           ]
         }, {
