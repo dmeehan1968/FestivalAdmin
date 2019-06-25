@@ -70,6 +70,8 @@ export default (options = {}, log = debug('sequelize')) => {
             {
               title: casual.title,
               subtitle: casual.title,
+              description: casual.short_description,
+              longDescription: casual.description,
             },
           ]
         }, {

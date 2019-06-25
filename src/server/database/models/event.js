@@ -5,7 +5,8 @@ const notEmpty = (field, value) => {
 
 const validations = {
   Event: {
-    title: notEmpty.bind(null, 'Title')
+    title: notEmpty.bind(null, 'Title'),
+    description: notEmpty.bind(null, 'Description')
   }
 }
 
@@ -26,6 +27,17 @@ module.exports = function(sequelize, DataTypes) {
       },
     },
     subtitle: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    description: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      validate: {
+        custom: validations.Event.description,
+      },
+    },
+    longDescription: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
