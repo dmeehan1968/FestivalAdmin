@@ -102,6 +102,7 @@
     "react-dom": "^16.8.6",
     "react-helmet": "^5.2.1",
     "react-router-dom": "^5.0.1",
+    "recompose": "^0.30.0",
     "sequelize": "^5.8.8",
     "sequelize-graphql-schema": "^0.1.66",
     "styled-components": "^4.3.1"

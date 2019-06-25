@@ -1,28 +1,18 @@
 import React, { useState, useEffect } from 'react'
 
-import { compose } from 'react-apollo'
+import { Query } from 'react-apollo'
+import { branch, compose, mapProps, renderComponent, withProps } from 'recompose'
+
 import { gql } from 'apollo-boost'
 
 // Styles
 import clsx from 'clsx'
-import { makeStyles } from '@material-ui/core/styles'
+import { withStyles } from '@material-ui/core/styles'
 
 // Core
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-
-import withApolloQuery from 'app/hocs/withApolloQuery'
-import withApolloMutation from 'app/hocs/withApolloMutation'
-import withLoading from 'app/hocs/withLoading'
-import withMutationProgress from 'app/hocs/withMutationProgress'
-
-import AutoSaveTextField from 'app/components/AutoSaveTextField'
-
-const useStyles = makeStyles(theme => ({
-  paper: {
-    padding: theme.spacing(2),
-  },
-}))
+import TextField from '@material-ui/core/TextField'
 
 const isset = fn => {
     var value;
@@ -36,36 +26,44 @@ const isset = fn => {
 }
 
 export const EventDescription = ({
-  event,
-  eventEdit,
-  id,
-  updating,
-  error,
-  ...otherProps
+  classes = {},
+  title,
+  subtitle,
+  description,
+  longDescription,
 }) => {
-
-  const classes = useStyles()
 
   return (
     <Paper className={classes.paper}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <AutoSaveTextField
+          <TextField
             label="Title"
-            value={event.title}
-            error={!!error.title}
-            helperText={error.title}
-            updating={isset(() => updating.title) }
-            onChange={ev=>eventEdit({ id, title: ev.target.value })}
+            defaultValue={title}
+            fullWidth
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <AutoSaveTextField
+          <TextField
             label="Sub Title"
-            value={event.subtitle}
-            error={!!error.subtitle}
-            updating={isset(() => updating.event.subtitle) }
-            onChange={ev=>eventEdit({ id, subtitle: ev.target.value })}
+            defaultValue={subtitle}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            label="Description"
+            defaultValue={description}
+            fullWidth
+            multiline
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            label="Long Description"
+            defaultValue={longDescription}
+            fullWidth
+            multiline
           />
         </Grid>
       </Grid>
@@ -76,70 +74,44 @@ export const EventDescription = ({
 ///////////////////////////////////////////////
 
 const eventsQuery = gql`
-  query eventsQuery($id: Int) {
-    events(id: $id) {
+  query findOneEvent($id: Int!) {
+  	events: eventGet(id: $id, limit: 1) {
       id
       title
       subtitle
+      description
+      longDescription
     }
   }
 `
 
-const eventEditMutation = gql`
-  mutation eventEdit($event: EventInput!) {
-    eventEdit(Event:$event) {
-      id
-      title
-      subtitle
-    }
-  }
-`
+///////////////////////////////////////////////
 
-const eventsQueryOptions = {
-  QueryProps: {
-    query: eventsQuery
+const styles = theme => ({
+  paper: {
+    padding: theme.spacing(2),
   },
+})
 
-  mapResultToProps: ({
-    loading,
-    error,
-    data: {
-      events: [ event ] = []
-    } = {}
-  }) => ({ loading, error, event }),
-
-  mapPropsToVariables: ({ id }) => ({ id })
+const withQuery = QueryProps => WrappedComponent => ({ variables, ...props }) => {
+  return (
+    <Query {...QueryProps} variables={variables}>
+      {({ loading, error, data, ...queryResult}) => (
+        <WrappedComponent {...props} {...{loading, error, data}} {...queryResult} />
+      )}
+    </Query>
+  )
 }
 
-const eventEditMutationOptions = {
-  MutationProps: {
-    mutation: eventEditMutation
-  },
-  mapMutateToProps: mutate => ({
-    eventEdit: event => mutate({variables: { event }})
-  }),
-  mapResultToProps: ({ called, loading, error, data: { eventEdit: event = {} } = {} }, props) => {
-
-    let errorMap = {}
-
-    if (error) {
-      error.graphQLErrors.map(e => {
-        console.log(e);
-        errorMap = e.extensions.exception.errors.reduce((acc,err) => ({ ...acc, [err.path]: e.message }), errorMap)
-      })
-    }
-
-    return {
-      ...props,
-      ...(called && !loading && !error && { event } || {}),
-      error: errorMap,
-    }
-  }
-}
+const Loading = () => <div>Loading...</div>
 
 export default compose(
-  withApolloQuery(eventsQueryOptions),
-  withApolloMutation(eventEditMutationOptions),
-  withLoading(()=><div>Loading...</div>),
-  withMutationProgress({ mutationPropName: 'eventEdit', fakeLatencyMs: 0 }),
+  withStyles(styles),
+  withProps(({ id }) => ({ variables: { id }})),
+  withQuery({ query: eventsQuery }),
+  branch(props => props.loading, renderComponent(Loading)),
+  mapProps(({ data: { events: [ event = {} ] = [] } = {}, ...props }) => ({
+    ...props,
+    ...event,
+  })),
 )(EventDescription)

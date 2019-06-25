@@ -57,11 +57,11 @@ module.exports = function(sequelize, DataTypes) {
     Event.belongsToMany(models['Contact'], { through: 'contactEvents' })
   }
 
-  Event.graphql = {
-    alias: {
-      fetch: 'events',
-    },
-  }
-
+  // Event.graphql = {
+  //   alias: {
+  //     fetch: 'events',
+  //   },
+  // }
+  //
   return Event
 }
