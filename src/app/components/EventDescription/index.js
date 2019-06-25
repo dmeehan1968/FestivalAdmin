@@ -13,6 +13,7 @@ import { withStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
+import Typography from '@material-ui/core/Typography'
 
 const isset = fn => {
     var value;
@@ -105,11 +106,31 @@ const withQuery = QueryProps => WrappedComponent => ({ variables, ...props }) =>
 
 const Loading = () => <div>Loading...</div>
 
+const NetworkError = ({
+  title,
+  error,
+  classes = {}
+}) => {
+  return (
+    <Paper className={classes.paper}>
+      <Grid item xs={12}>
+        <Typography variant="h6">
+          {title || 'Error'}
+        </Typography>
+        <Typography variant="body1">
+          {error.message}
+        </Typography>
+      </Grid>
+    </Paper>
+  )
+}
+
 export default compose(
   withStyles(styles),
   withProps(({ id }) => ({ variables: { id }})),
   withQuery({ query: eventsQuery }),
   branch(props => props.loading, renderComponent(Loading)),
+  branch(props => isset(() => props.error.networkError), renderComponent(withProps({ title: "Load Failure" })(NetworkError))),
   mapProps(({ data: { events: [ event = {} ] = [] } = {}, ...props }) => ({
     ...props,
     ...event,
