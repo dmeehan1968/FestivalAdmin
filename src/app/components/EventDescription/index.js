@@ -12,8 +12,9 @@ import { makeStyles } from '@material-ui/core/styles'
 // Core
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
+
+import ValidatedTextField from 'app/components/ValidatedTextField'
 
 import ModelValidationParser from 'app/utils/ModelValidationParser'
 
@@ -67,37 +68,6 @@ const useModelValidations = builders => {
     return parser
   })
 
-}
-
-const useValidation = (validations, wrappedOnChange) => {
-
-  const [ helperText, setHelperText ] = useState()
-
-  const onChange = ev => {
-    const noop = () => {}
-    try {
-      (validations || noop)(ev.target.value)
-      helperText && setHelperText(undefined)
-    } catch(error) {
-      setHelperText(error.message)
-    }
-    return (wrappedOnChange || noop)(ev)
-  }
-
-  return {
-    onChange,
-    helperText,
-    error: !!helperText,
-  }
-}
-
-const ValidatedTextField = ({ validations, ...props }) => {
-
-  const validationProps = useValidation(validations, props.onChange)
-
-  return (
-    <TextField {...props} {...validationProps} />
-  )
 }
 
 export const EventDescription = ({
