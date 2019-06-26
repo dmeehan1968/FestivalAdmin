@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const eventsQuery = gql`
-  query findOneEvent($id: Int!) {
+  query eventGet($id: Int!) {
   	events: eventGet(id: $id, limit: 1) {
       title
       subtitle
@@ -119,8 +119,6 @@ export const EventDescription = ({
   const { models } = useModelValidations(modelBuilders)
 
   if (loading) return <Loading />
-
-  console.log(models);
 
   return (
     <Paper className={classes.paper}>
