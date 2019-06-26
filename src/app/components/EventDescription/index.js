@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 
 import ValidatedTextField from 'app/components/ValidatedTextField'
+import Loading from 'app/components/Loading'
 
 import useModelValidations from 'app/hooks/useModelValidations'
 import useEventGet from 'app/hooks/useEventGet'
@@ -22,7 +23,6 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const Loading = () => (<div>Loading...</div>)
 
 export const EventDescription = ({
   id,
