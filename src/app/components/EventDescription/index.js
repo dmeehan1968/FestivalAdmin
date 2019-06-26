@@ -13,8 +13,10 @@ import { makeStyles } from '@material-ui/core/styles'
 // Core
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import { default as MuiTextField } from '@material-ui/core/TextField'
+import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
+
+import ModelValidationParser from 'app/utils/ModelValidationParser'
 
 const isset = fn => {
     var value;
@@ -59,98 +61,20 @@ const useEventGet = id => {
 
 }
 
-import eventModel from 'server/database/models/event'
+import * as modelBuilders from 'server/database/models'
 
-const notEmpty = (value, args) => {
-  return !(!value || value.length < 1)
-}
-notEmpty.message = '${column} should not be empty'
-
-const len = (value, args) => {
-  const [ min, max ] = args
-  if (value.length < min) {
-    throw new Error(`\${column} must have length greater than or equal to ${min} characters, got ${value.length}`)
-  }
-  if (value.length > max) {
-    throw new Error(`\${column} must have length less than or equal to ${max} characters, got ${value.length}`)
-  }
-  return true
-}
-
-const knownValidations = {
-  notEmpty,
-  len,
-}
-
-const useModelValidations = () => {
+const useModelValidations = builders => {
 
   return useMemo(() => {
 
-    const sequelize = {
-      define(model, attributes, options) {
-        return {
-          columns: Object.keys(attributes).reduce((acc, column) => {
-            return {
-              ...acc,
-              [column]: value => {
-                Object.keys(attributes[column].validate || {}).forEach(key => {
-                  let props = attributes[column].validate[key]
-                  let func
-                  let args
-                  let msg
-                  if (typeof props === 'function') {
-                    func = props
-                    props = undefined
-                  } else {
-                    if (knownValidations[key] !== undefined) {
-                      func = knownValidations[key]
-                      if (typeof props === 'object' && !Array.isArray(props)) {
-                        msg = props.msg
-                        args = props.args
-                      } else {
-                        args = props
-                      }
-                    } else {
-                      throw new Error(`Unknown validation '${key}'`)
-                    }
-                  }
+    const parser = new ModelValidationParser()
 
-                  try {
-                    if (!func) {
-                      throw new Error(`Validation Error: invalid validator specified for ${column}`)
-                    }
-                    if (!func(value, args)) {
-                      throw new Error(msg || func.message || '${column} fails validation ${key}, got \'${value}\'')
-                    }
-                  } catch (error) {
-                    throw new Error(
-                      (msg || error.message)
-                      .replace('${column}', column)
-                      .replace('${key}', key)
-                      .replace('${value}',JSON.stringify(value))
-                    )
-                  }
-                })
-              }
-            }
-          }, {}),
-          validate: options.validate || {}
-        }
-      }
-    }
-    const STRING = () => ({})
-    const INTEGER = () => ({})
+    Object.keys(builders).forEach(builderKey => {
+      const builder = builders[builderKey]
+      const model = builder(parser, ModelValidationParser.DataTypes)
+    })
 
-    const DataTypes = {
-      STRING,
-      INTEGER,
-    }
-
-    const { columns, validate } = eventModel(sequelize, DataTypes)
-    return {
-      event: { columns, validate }
-    }
-
+    return parser
   })
 
 }
@@ -177,12 +101,12 @@ const useValidation = (validations, wrappedOnChange) => {
   }
 }
 
-const TextField = ({ validations, ...props }) => {
+const ValidatedTextField = ({ validations, ...props }) => {
 
   const validationProps = useValidation(validations, props.onChange)
 
   return (
-    <MuiTextField {...props} {...validationProps} />
+    <TextField {...props} {...validationProps} />
   )
 }
 
@@ -202,43 +126,45 @@ export const EventDescription = ({
     }
   } = useEventGet(id)
 
-  const validations = useModelValidations()
+  const { models } = useModelValidations(modelBuilders)
 
   if (loading) return <Loading />
+
+  console.log(models);
 
   return (
     <Paper className={classes.paper}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <TextField
+          <ValidatedTextField
             label="Title"
             defaultValue={title}
-            validations={validations.event.columns.title}
+            validations={models.event.attributes.title}
             fullWidth
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <TextField
+          <ValidatedTextField
             label="Sub Title"
             defaultValue={subtitle}
-            validations={validations.event.columns.subtitle}
+            validations={models.event.attributes.subtitle}
             fullWidth
           />
         </Grid>
         <Grid item xs={12}>
-          <TextField
+          <ValidatedTextField
             label="Description"
             defaultValue={description}
-            validations={validations.event.columns.description}
+            validations={models.event.attributes.description}
             fullWidth
             multiline
           />
         </Grid>
         <Grid item xs={12}>
-          <TextField
+          <ValidatedTextField
             label="Long Description"
             defaultValue={longDescription}
-            validations={validations.event.columns.longDescription}
+            validations={models.event.attributes.longDescription}
             fullWidth
             multiline
           />

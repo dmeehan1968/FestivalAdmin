@@ -106,6 +106,18 @@ describe('client base', () => {
 
       })
 
+      describe('@babel/plugin-proposal-class-properties', () => {
+
+          it('uses plugin', () => {
+            const plugin = loader.get('options').plugins.find(plugin => {
+              const name = Array.isArray(plugin) ? plugin[0] : plugin
+              return name === '@babel/plugin-proposal-class-properties'
+            })
+            expect(plugin).toBeDefined()
+          })
+
+      })
+
       describe('babel-plugin-styled-components', () => {
 
         let plugin
