@@ -23,7 +23,6 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-
 export const EventDescription = ({
   id,
 }) => {
@@ -45,44 +44,56 @@ export const EventDescription = ({
   if (loading) return <Loading />
 
   return (
-    <Paper className={classes.paper}>
+    <Form className={classes.paper}>
+      <FormField
+        xs={12} md={6}
+        label="Title"
+        defaultValue={title}
+        validations={models.event.attributes.title}
+        fullWidth
+      />
+      <FormField
+        xs={12} md={6}
+        label="Sub Title"
+        defaultValue={subtitle}
+        validations={models.event.attributes.subtitle}
+        fullWidth
+      />
+      <FormField
+        xs={12}
+        label="Description"
+        defaultValue={description}
+        validations={models.event.attributes.description}
+        fullWidth
+        multiline
+      />
+      <FormField
+        xs={12}
+        label="Long Description"
+        defaultValue={longDescription}
+        validations={models.event.attributes.longDescription}
+        fullWidth
+        multiline
+      />
+    </Form>
+  )
+}
+
+export const Form = ({ children, ...props }) => {
+  return (
+    <Paper {...props}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <ValidatedTextField
-            label="Title"
-            defaultValue={title}
-            validations={models.event.attributes.title}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <ValidatedTextField
-            label="Sub Title"
-            defaultValue={subtitle}
-            validations={models.event.attributes.subtitle}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <ValidatedTextField
-            label="Description"
-            defaultValue={description}
-            validations={models.event.attributes.description}
-            fullWidth
-            multiline
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <ValidatedTextField
-            label="Long Description"
-            defaultValue={longDescription}
-            validations={models.event.attributes.longDescription}
-            fullWidth
-            multiline
-          />
-        </Grid>
+        {children}
       </Grid>
     </Paper>
+  )
+}
+
+export const FormField = ({ xs, sm, md, lg, xl, ...props}) => {
+  return (
+    <Grid item {...{ xs, sm, md, lg, xl }}>
+      <ValidatedTextField {...props} />
+    </Grid>
   )
 }
 
