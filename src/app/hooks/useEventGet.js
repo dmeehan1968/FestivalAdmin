@@ -4,6 +4,7 @@ import { useQuery } from 'react-apollo-hooks'
 export const eventsQuery = gql`
   query eventGet($id: Int!) {
   	events: eventGet(id: $id, limit: 1) {
+      id
       title
       subtitle
       description
@@ -17,7 +18,7 @@ export const useEventGet = id => {
   const {
     data: {
       events: [
-        event = {}
+        event = { title: '', subtitle: '', description: '', longDescription: '' }
       ] = []
     } = {},
     ...rest

@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
 
 // Core
+import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
@@ -14,6 +15,7 @@ import Loading from 'app/components/Loading'
 
 import useModelValidations from 'app/hooks/useModelValidations'
 import useEventGet from 'app/hooks/useEventGet'
+import useEventEdit from 'app/hooks/useEventEdit'
 
 import * as modelBuilders from 'server/database/models'
 
@@ -31,38 +33,47 @@ export const EventDescription = ({
   const {
     loading,
     error,
-    event: {
-      title,
-      subtitle,
-      description,
-      longDescription
-    }
+    event: originalEvent,
   } = useEventGet(id)
 
   const { models } = useModelValidations(modelBuilders)
+  const eventEdit = useEventEdit()
+  const [ event, setEvent ] = useState(originalEvent)
+
+  useEffect(() => {
+    setEvent(originalEvent)
+  }, [ loading ])
 
   if (loading) return <Loading />
 
+  const handleSubmit = ev => {
+    ev.preventDefault()
+    eventEdit(event)
+    .then(data => console.log('data', data))
+    .catch(error => console.log('error', error.graphQLErrors))
+  }
+
   return (
-    <Form className={classes.paper}>
+    <Form className={classes.paper} onSubmit={handleSubmit}>
       <FormField
         xs={12} md={6}
         label="Title"
-        defaultValue={title}
+        value={event.title}
         validations={models.event.attributes.title}
+        onChange={ev=>setEvent({...event, title: ev.target.value })}
         fullWidth
       />
       <FormField
         xs={12} md={6}
         label="Sub Title"
-        defaultValue={subtitle}
+        value={event.subtitle}
         validations={models.event.attributes.subtitle}
         fullWidth
       />
       <FormField
         xs={12}
         label="Description"
-        defaultValue={description}
+        value={event.description}
         validations={models.event.attributes.description}
         fullWidth
         multiline
@@ -70,7 +81,7 @@ export const EventDescription = ({
       <FormField
         xs={12}
         label="Long Description"
-        defaultValue={longDescription}
+        value={event.longDescription}
         validations={models.event.attributes.longDescription}
         fullWidth
         multiline
@@ -79,13 +90,34 @@ export const EventDescription = ({
   )
 }
 
-export const Form = ({ children, ...props }) => {
+const useFormStyles = makeStyles(theme => ({
+  button: {
+    margin: theme.spacing(1),
+  }
+}))
+
+export const Form = ({ children, onSubmit, ...props }) => {
+  const classes = useFormStyles()
   return (
-    <Paper {...props}>
-      <Grid container spacing={3}>
-        {children}
-      </Grid>
-    </Paper>
+    <form onSubmit={onSubmit}>
+      <Paper {...props}>
+        <Grid container spacing={3}>
+          {children}
+          <Grid item xs={12}>
+            <Grid container justify="flex-end">
+              <Grid item>
+                <Button className={classes.button} variant="text" color="default" disabled>
+                  Reset
+                </Button>
+                <Button className={classes.button} type="submit" variant="contained" color="primary">
+                  Submit
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Paper>
+    </form>
   )
 }
 
