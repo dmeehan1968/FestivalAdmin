@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react'
 
 import { Query } from 'react-apollo'
 import { useQuery } from 'react-apollo-hooks'
-import { branch, compose, mapProps, renderComponent, withProps } from 'recompose'
 
 import { gql } from 'apollo-boost'
 
@@ -17,17 +16,6 @@ import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 
 import ModelValidationParser from 'app/utils/ModelValidationParser'
-
-const isset = fn => {
-    var value;
-    try {
-        value = fn();
-    } catch (e) {
-        value = undefined;
-    } finally {
-        return value !== undefined;
-    }
-}
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -45,6 +33,8 @@ const eventsQuery = gql`
     }
   }
 `
+
+const Loading = () => (<div>Loading...</div>)
 
 const useEventGet = id => {
 
@@ -174,48 +164,4 @@ export const EventDescription = ({
   )
 }
 
-///////////////////////////////////////////////
-///////////////////////////////////////////////
-
-const withQuery = QueryProps => WrappedComponent => ({ variables, ...props }) => {
-  return (
-    <Query {...QueryProps} variables={variables}>
-      {({ loading, error, data, ...queryResult}) => (
-        <WrappedComponent {...props} {...{loading, error, data}} {...queryResult} />
-      )}
-    </Query>
-  )
-}
-
-const Loading = () => <div>Loading...</div>
-
-const NetworkError = ({
-  title,
-  error,
-  classes = {}
-}) => {
-  return (
-    <Paper className={classes.paper}>
-      <Grid item xs={12}>
-        <Typography variant="h6">
-          {title || 'Error'}
-        </Typography>
-        <Typography variant="body1">
-          {error.message}
-        </Typography>
-      </Grid>
-    </Paper>
-  )
-}
-
-export default compose(
-  // withStyles(styles),
-  // withProps(({ id }) => ({ variables: { id }})),
-  // withQuery({ query: eventsQuery }),
-  // branch(props => props.loading, renderComponent(Loading)),
-  // branch(props => isset(() => props.error.networkError), renderComponent(withProps({ title: "Load Failure" })(NetworkError))),
-  // mapProps(({ data: { events: [ event = {} ] = [] } = {}, ...props }) => ({
-  //   ...props,
-  //   ...event,
-  // })),
-)(EventDescription)
+export default EventDescription
