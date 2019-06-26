@@ -16,7 +16,7 @@ import Typography from '@material-ui/core/Typography'
 
 import ValidatedTextField from 'app/components/ValidatedTextField'
 
-import ModelValidationParser from 'app/utils/ModelValidationParser'
+import useModelValidations from 'app/hooks/useModelValidations'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -53,22 +53,6 @@ const useEventGet = id => {
 }
 
 import * as modelBuilders from 'server/database/models'
-
-const useModelValidations = builders => {
-
-  return useMemo(() => {
-
-    const parser = new ModelValidationParser()
-
-    Object.keys(builders).forEach(builderKey => {
-      const builder = builders[builderKey]
-      const model = builder(parser, ModelValidationParser.DataTypes)
-    })
-
-    return parser
-  })
-
-}
 
 export const EventDescription = ({
   id,
