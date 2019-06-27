@@ -179,9 +179,6 @@ export const EventDescription = ({
         } else {
           setFormError()
         }
-
-        console.log('attributeErrors', attributeErrors);
-        console.log('networkError', error.networkError);
       })
   }
 
@@ -415,7 +412,6 @@ export const Field = ({
 
   const handleChange = ev => {
     actions.clearFieldErrors(key)
-    // actions.setFieldTouched(key, true)
     actions.setFieldValue(key, ev.target.value, true)
   }
 
