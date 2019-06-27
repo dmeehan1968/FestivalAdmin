@@ -147,7 +147,11 @@ export const EventDescription = ({
               multiline
             />
 
-            <FormResetSave classes={classes} canReset={dirty} canSubmit={!isSubmitting && isValid} />
+            <FormResetSave
+              classes={classes}
+              canReset={dirty}
+              canSubmit={!isSubmitting && isValid}
+            />
 
           </>
         )
