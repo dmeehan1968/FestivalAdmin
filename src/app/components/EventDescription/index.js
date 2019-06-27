@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useContext } from 'react'
 
 // Styles
 import clsx from 'clsx'
@@ -20,17 +20,77 @@ import useEventEdit from 'app/hooks/useEventEdit'
 
 import * as modelBuilders from 'server/database/models'
 
-const useStyles = makeStyles(theme => ({
+const useFormStyles = makeStyles(theme => ({
   paper: {
     padding: theme.spacing(2),
   },
+  button: {
+    margin: theme.spacing(1),
+  }
 }))
+
+const FormWrapper = ({
+  onSubmit,
+  status,
+  actions,
+  children,
+}) => {
+  const classes = useFormStyles()
+  return (
+    <form onSubmit={onSubmit}>
+      <Paper className={classes.paper}>
+        <Grid container spacing={3}>
+          {children}
+          <Grid item xs={12}>
+            <Grid container justify="flex-end">
+              <Grid item>
+                <Button
+                  className={classes.button}
+                  variant="text"
+                  color="default"
+                  disabled={!status.canReset}
+                  onClick={actions.resetForm}
+                >
+                  Reset
+                </Button>
+                <Button
+                  className={classes.button}
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={!status.canSubmit}
+                >
+                  Submit
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Paper>
+    </form>
+  )
+}
+
+export const FieldWrapper = ({
+  xs, sm, md, lg, xl,
+  error,
+  ...props
+}) => {
+  return (
+    <Grid item {...{ xs, sm, md, lg, xl }}>
+      <TextField
+        {...props}
+        error={!!error}
+        helperText={error}
+      />
+    </Grid>
+  )
+}
 
 export const EventDescription = ({
   id,
 }) => {
 
-  const classes = useStyles()
   const {
     loading,
     error,
@@ -46,10 +106,14 @@ export const EventDescription = ({
 
   if (loading) return <Loading />
 
-  const handleSubmit = (event, { values, actions }) => {
-    event.preventDefault()
+  const handleSubmit = (domEvent, { values, actions }) => {
+    domEvent.preventDefault()
     return eventEdit({ id, ...values })
-      .then(data => console.log('data', data))
+      .then(event => {
+        Object.keys(event).forEach(key => {
+          actions.setFieldValue(key, event[key])
+        })
+      })
       .catch(error => {
         const attributeErrors = error.graphQLErrors
           .reduce((acc, err) => {
@@ -97,39 +161,43 @@ export const EventDescription = ({
 
   return (
     <Form
-      className={classes.paper}
+      component={FormWrapper}
       initialValues={event}
       onSubmit={handleSubmit}
       onValidate={handleValidate}
     >
-      {(props) => {
+      {({ status, actions }) => {
         return (
           <>
             <Field
+              component={FieldWrapper}
               xs={12} md={6}
+              name="title"
               label="Title"
               fullWidth
-              {...props.title}
             />
             <Field
+              component={FieldWrapper}
               xs={12} md={6}
+              name="subtitle"
               label="Sub Title"
               fullWidth
-              {...props.subtitle}
             />
             <Field
+              component={FieldWrapper}
               xs={12}
+              name="description"
               label="Description"
               fullWidth
               multiline
-              {...props.description}
             />
             <Field
+              component={FieldWrapper}
               xs={12}
+              name="longDescription"
               label="Long Description"
               fullWidth
               multiline
-              {...props.longDescription}
             />
           </>
         )
@@ -138,21 +206,31 @@ export const EventDescription = ({
   )
 }
 
-const useFormStyles = makeStyles(theme => ({
-  button: {
-    margin: theme.spacing(1),
-  }
-}))
+const FormDefault = ({
+  children,
+  status,
+  actions,
+  ...props,
+}) => {
+  return (
+    <form {...props}>
+      {children}
+      <button disabled={!status.canReset} onClick={actions.resetForm}>Reset</button>
+      <button type="submit" disabled={!status.canSubmit}>Submit</button>
+    </form>
+  )
+}
+
+const FormContext = React.createContext()
 
 export const Form = ({
+  component: FormComponent = FormDefault,
   children,
-  onReset,
   onSubmit = () => {},
   onValidate = () => ({}),
   initialValues = {},
   ...props
 }) => {
-  const classes = useFormStyles()
   const [ values, setValues ] = useState(initialValues)
   const [ touched, setTouched ] = useState({})
   const [ errors, setErrors ] = useState({})
@@ -163,12 +241,6 @@ export const Form = ({
   }
   function isError() {
     return Object.keys(errors).length > 0
-  }
-  function isResetDisabled() {
-    return !isTouched()
-  }
-  function isSubmitDisabled() {
-    return !isTouched() || isError()
   }
   function setFieldValue(field, value, touched = true) {
     setValues(values => ({ ...values, [field]: value }))
@@ -192,13 +264,6 @@ export const Form = ({
      })
   }
 
-  const actions = {
-    setFieldValue,
-    setFieldTouched,
-    addFieldError,
-    clearFieldErrors,
-  }
-
   useEffect(() => {
     Promise.resolve(
       onValidate({
@@ -211,79 +276,85 @@ export const Form = ({
 
   }, [ values, touched, isResetting ])
 
-  const childProps = useMemo(() => {
-    return Object.keys(values).reduce((acc, key) => {
-      return {
-        ...acc,
-        [key]: {
-          value: values[key],
-          error: !!errors[key],
-          helperText: errors[key],
-          onChange: event => {
-            clearFieldErrors(key)
-            setTouched({ ...touched, [key]: true })
-            setValues({ ...values, [key]: event.target.value })
-          },
-        }
-      }
-    }, {})
-  }, [ values, errors ])
-
   const resetForm = () => {
     setValues(() => initialValues)
     setTouched(() => ({}))
     setIsResetting(() => true)
   }
 
+  const status = {
+    canReset: isTouched(),
+    canSubmit: isTouched() && !isError(),
+  }
+
+  const actions = {
+    setFieldValue,
+    setFieldTouched,
+    addFieldError,
+    clearFieldErrors,
+    resetForm,
+  }
+
   return (
-    <form onSubmit={ev=>onSubmit(ev, { values, actions })}>
-      <Paper {...props}>
-        <Grid container spacing={3}>
-          {children(childProps)}
-          <Grid item xs={12}>
-            <Grid container justify="flex-end">
-              <Grid item>
-                <Button
-                  className={classes.button}
-                  variant="text"
-                  color="default"
-                  disabled={isResetDisabled()}
-                  onClick={onReset || resetForm}
-                >
-                  Reset
-                </Button>
-                <Button
-                  className={classes.button}
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={isSubmitDisabled()}
-                >
-                  Submit
-                </Button>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Paper>
-    </form>
+    <FormContext.Provider value={{
+      values,
+      touched,
+      errors,
+      status,
+      actions,
+    }}>
+      <FormComponent
+        {...props}
+        onSubmit={ev=>onSubmit(ev, { values, actions })}
+        status={status}
+        actions={actions}
+      >
+        {children({ status, actions })}
+      </FormComponent>
+    </FormContext.Provider>
+  )
+}
+
+const FieldDefault = ({
+  label,
+  ...props
+}) => {
+  return (
+    <>
+      {label && <label for={props.name}>{label || 'Field Label'}</label>}
+      <input {...props} />
+    </>
   )
 }
 
 export const Field = ({
-  xs, sm, md, lg, xl,
-  value,
-  onChange,
+  component: FieldComponent = FieldDefault,
   ...props
 }) => {
+  const {
+    values,
+    touched,
+    errors,
+    status,
+    actions
+  } = useContext(FormContext)
+
+  const key = props.name || props.id
+
+  const handleChange = ev => {
+    actions.clearFieldErrors(key)
+    actions.setFieldTouched(key, true)
+    actions.setFieldValue(key, ev.target.value)
+  }
+
   return (
-    <Grid item {...{ xs, sm, md, lg, xl }}>
-      <TextField
-        {...props}
-        value={value}
-        onChange={onChange}
-      />
-    </Grid>
+    <FieldComponent
+      value={values[key]}
+      error={errors[key]}
+      touched={touched[key]}
+      onChange={handleChange}
+      {...props}
+    />
   )
 }
 
