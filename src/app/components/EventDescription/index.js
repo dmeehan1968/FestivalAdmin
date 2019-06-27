@@ -15,7 +15,7 @@ import FormResetSave from 'app/components/FormResetSave'
 import Loading from 'app/components/Loading'
 
 import useModelValidations from 'app/hooks/useModelValidations'
-import useEventGet from 'app/hooks/useEventGet'
+import useEventGet, { eventsQuery } from 'app/hooks/useEventGet'
 import useEventEdit from 'app/hooks/useEventEdit'
 
 import * as modelBuilders from 'server/database/models'
@@ -50,14 +50,19 @@ export const EventDescription = ({
     error,
     event,
   } = useEventGet(id)
+
   const eventEdit = useEventEdit()
 
   const handleSubmit = (values, actions) => {
-    return eventEdit({ id, ...values })
+
+    return eventEdit(values)
+
       .then(event => {
         actions.setValues(event)
       })
+
       .then(() => setSuccess(true))
+
       .catch(error => {
         const attributeErrors = error.graphQLErrors
           .reduce((acc, err) => {
@@ -82,6 +87,7 @@ export const EventDescription = ({
         }
 
       })
+
       .finally(() => actions.setSubmitting(false))
   }
 
@@ -110,6 +116,7 @@ export const EventDescription = ({
     <Form
       classes={classes}
       initialValues={event}
+      enableReinitialize={true}
       onSubmit={handleSubmit}
       validate={handleValidate}
       saved={{

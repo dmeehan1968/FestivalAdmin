@@ -4,6 +4,7 @@ import { useMutation } from 'react-apollo-hooks'
 export const eventMutation = gql`
   mutation EventEdit($event:EventInput) {
     event: eventEdit(Event:$event) {
+      id
       title
       subtitle
       description
@@ -11,9 +12,9 @@ export const eventMutation = gql`
     }
   }
 `
-export const useEventEdit = () => {
+export const useEventEdit = options => {
 
-  const mutation = useMutation(eventMutation)
+  const mutation = useMutation(eventMutation, options)
 
   return event => {
     delete event.__typename
@@ -21,10 +22,7 @@ export const useEventEdit = () => {
     return mutation(options)
     .then(({
       data: {
-        event: {
-          __typename: _,  // discard
-          ...event
-        } = {},
+        event = {},
       }
     }) => event)
   }
