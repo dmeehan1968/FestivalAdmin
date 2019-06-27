@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 
 // Formik
-import { Formik, Form as FormikForm, Field as FormikField } from 'formik'
+import { Formik, Form as FormikForm } from 'formik'
 
 export const Form = ({
   children,

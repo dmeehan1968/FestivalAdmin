@@ -12,11 +12,9 @@ import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 
-// Formik
-import { Formik, Form as FormikForm, Field as FormikField } from 'formik'
-
 import Form from 'app/components/Form'
 import Field from 'app/components/Field'
+import FormResetSave from 'app/components/FormResetSave'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -27,39 +25,6 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(1),
   },
 }))
-
-const ResetSave = ({
-  classes,
-  canReset,
-  canSubmit,
-}) => {
-  return (
-    <Grid item xs={12}>
-      <Grid container spacing={1} justify="flex-end">
-        <Grid item>
-          <Button
-            type="reset"
-            className={classes.button}
-            disabled={!canReset}
-          >
-            Reset
-          </Button>
-        </Grid>
-        <Grid item>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            className={classes.button}
-            disabled={!canSubmit}
-          >
-            Save
-          </Button>
-        </Grid>
-      </Grid>
-    </Grid>
-  )
-}
 
 export const UserProfile = ({
   initialUser = {
@@ -113,7 +78,7 @@ export const UserProfile = ({
               name="telephone"
               label="Telephone"
             />
-            <ResetSave classes={classes} canReset={dirty} canSubmit={!isSubmitting && isValid} />
+            <FormResetSave classes={classes} canReset={dirty} canSubmit={!isSubmitting && isValid} />
           </>
         )
       }}
