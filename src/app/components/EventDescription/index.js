@@ -8,6 +8,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
+import SnackBar from '@material-ui/core/SnackBar'
+import SnackBarContent from '@material-ui/core/SnackBarContent'
 import TextField from '@material-ui/core/TextField'
 
 import Loading from 'app/components/Loading'
@@ -24,6 +26,13 @@ const useFormStyles = makeStyles(theme => ({
   },
   button: {
     margin: theme.spacing(1),
+  },
+  error: {
+    backgroundColor: theme.palette.error.dark,
+  },
+  message: {
+    display: 'flex',
+    alignItems: 'center',
   }
 }))
 
@@ -32,12 +41,38 @@ const FormWrapper = ({
   status,
   actions,
   children,
+  error,
 }) => {
   const classes = useFormStyles()
+  const [ showError, setShowError ] = useState(false)
+
+  useEffect(()=>{
+    setShowError(!!error)
+  }, [ error ])
+
   return (
     <form onSubmit={onSubmit}>
       <Paper className={classes.paper}>
         <Grid container spacing={3}>
+          <SnackBar
+            open={showError}
+            autoHideDuration={5000}
+            onClose={()=>setShowError(false)}
+          >
+            <SnackBarContent
+              className={classes.error}
+              action={[
+                <Button key="button" onClick={()=>setShowError(false)}>DISMISS</Button>
+              ]}
+              message={
+                <span className={classes.message}>
+                  {error && error.message}
+                </span>
+              }
+            >
+            </SnackBarContent>
+          </SnackBar>
+
           {children}
           <Grid item xs={12}>
             <Grid container justify="flex-end">
@@ -72,6 +107,7 @@ const FormWrapper = ({
 export const FieldWrapper = ({
   xs, sm, md, lg, xl,
   error,
+  touched,
   ...props
 }) => {
   return (
@@ -101,17 +137,20 @@ export const EventDescription = ({
 
   const { models } = useModelValidations(modelBuilders)
   const eventEdit = useEventEdit()
+  const [ formError, setFormError ] = useState()
+  const [ submitted, setSubmitted ] = useState(false)
 
   if (loading) return <Loading />
 
-  const handleSubmit = (domEvent, { values, actions }) => {
-    domEvent.preventDefault()
+  const handleSubmit = ({ values, actions }) => {
+
     return eventEdit({ id, ...values })
       .then(event => {
         Object.keys(event).forEach(key => {
-          actions.setFieldValue(key, event[key])
+          actions.setFieldValue(key, event[key], false)
         })
       })
+      .then(() => setSubmitted(true))
       .catch(error => {
         const attributeErrors = error.graphQLErrors
           .reduce((acc, err) => {
@@ -134,6 +173,13 @@ export const EventDescription = ({
           actions.clearFieldErrors(key)
           attributeErrors[key].forEach(error => actions.addFieldError(key, error.message))
         })
+
+        if (error.networkError) {
+          setFormError(error.networkError)
+        } else {
+          setFormError()
+        }
+
         console.log('attributeErrors', attributeErrors);
         console.log('networkError', error.networkError);
       })
@@ -160,6 +206,7 @@ export const EventDescription = ({
   return (
     <Form
       component={FormWrapper}
+      componentProps={{ error: formError }}
       initialValues={event}
       onSubmit={handleSubmit}
       onValidate={handleValidate}
@@ -167,6 +214,12 @@ export const EventDescription = ({
       {({ status, actions }) => {
         return (
           <>
+            <SnackBar
+              open={submitted}
+              onClose={()=>setSubmitted(false)}
+              autoHideDuration={2000}
+              message={<span>Saved</span>}
+            />
             <Field
               component={FieldWrapper}
               xs={12} md={6}
@@ -223,6 +276,7 @@ const FormContext = React.createContext()
 
 export const Form = ({
   component: FormComponent = FormDefault,
+  componentProps,
   children,
   onSubmit = () => {},
   onValidate = () => ({}),
@@ -233,6 +287,7 @@ export const Form = ({
   const [ touched, setTouched ] = useState({})
   const [ errors, setErrors ] = useState({})
   const [ isResetting, setIsResetting ] = useState(false)
+  const [ isSubmitting, setIsSubmitting ] = useState(false)
 
   function isTouched() {
     return Object.keys(touched).length > 0
@@ -242,9 +297,18 @@ export const Form = ({
   }
   function setFieldValue(field, value, touched = true) {
     setValues(values => ({ ...values, [field]: value }))
+    setFieldTouched(field, touched)
   }
-  function setFieldTouched(field, touched = true) {
-    setTouched(touched => ({ ...touched, [field]: touched }))
+  function setFieldTouched(field, isTouched = true) {
+    setTouched(touched => {
+      if (!isTouched && touched[field]) {
+        const { [field]: discard, ...newTouched } = touched
+        return newTouched
+      } else if (isTouched && !touched[field]) {
+        return { ...touched, [field]: isTouched }
+      }
+      return touched
+    })
   }
   function addFieldError(field, error) {
     setErrors(errors => ({
@@ -282,7 +346,8 @@ export const Form = ({
 
   const status = {
     canReset: isTouched(),
-    canSubmit: isTouched() && !isError(),
+    canSubmit: isTouched() && !isError() && !isSubmitting,
+    isSubmitting,
   }
 
   const actions = {
@@ -291,6 +356,13 @@ export const Form = ({
     addFieldError,
     clearFieldErrors,
     resetForm,
+  }
+
+  const handleSubmit = ev => {
+    ev.preventDefault()
+    return Promise.resolve(setIsSubmitting(true))
+      .then(onSubmit({ values, status, actions }))
+      .finally(setIsSubmitting(false))
   }
 
   return (
@@ -302,8 +374,9 @@ export const Form = ({
       actions,
     }}>
       <FormComponent
+        {...componentProps}
         {...props}
-        onSubmit={ev=>onSubmit(ev, { values, actions })}
+        onSubmit={handleSubmit}
         status={status}
         actions={actions}
       >
@@ -315,6 +388,7 @@ export const Form = ({
 
 const FieldDefault = ({
   label,
+  touched,
   ...props
 }) => {
   return (
@@ -341,8 +415,8 @@ export const Field = ({
 
   const handleChange = ev => {
     actions.clearFieldErrors(key)
-    actions.setFieldTouched(key, true)
-    actions.setFieldValue(key, ev.target.value)
+    // actions.setFieldTouched(key, true)
+    actions.setFieldValue(key, ev.target.value, true)
   }
 
   return (
