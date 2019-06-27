@@ -15,6 +15,9 @@ import Typography from '@material-ui/core/Typography'
 // Formik
 import { Formik, Form as FormikForm, Field as FormikField } from 'formik'
 
+import Form from 'app/components/Form'
+import Field from 'app/components/Field'
+
 const useStyles = makeStyles(theme => ({
   paper: {
     padding: theme.spacing(2),
@@ -24,66 +27,6 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(1),
   },
 }))
-
-const Form = ({
-  children,
-  classes,
-  ...props,
-}) => {
-  return (
-    <Grid container spacing={3} direction="column" alignItems="center">
-      <Grid item xs={12} md={6}>
-        <Formik {...props}>
-          {args => {
-            return (
-              <FormikForm>
-                <Paper className={classes.paper}>
-                  <Grid container spacing={3}>
-                    {children(args)}
-                  </Grid>
-                </Paper>
-              </FormikForm>
-            )
-          }}
-        </Formik>
-      </Grid>
-    </Grid>
-  )
-}
-
-
-const Field = ({
-  xs, sm, md, lg, xl,
-  ...props
-}) => {
-  return (
-    <FormikField name={props.name}>
-      {({ field, form }) => {
-        const key = field.name
-        const error = form.touched[key] && form.errors[key]
-
-        const handleChange = e => {
-          e.persist()
-          form.handleChange(e)
-          form.setFieldTouched(key, true, false)
-        }
-
-        return (
-          <Grid item {...{ xs, sm, md, lg, xl }}>
-            <TextField
-              {...field}
-              {...props}
-              onChange={handleChange}
-              error={!!error}
-              helperText={error}
-              fullWidth
-            />
-          </Grid>
-        )
-      }}
-    </FormikField>
-  )
-}
 
 const ResetSave = ({
   classes,
