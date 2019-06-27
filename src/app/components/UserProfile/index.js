@@ -25,32 +25,36 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const MyFormField = ({
+const FormField = ({
   xs, sm, md, lg, xl,
-  field,
-  form,
   ...props
 }) => {
-  const key = field.name
-  const error = form.touched[key] && form.errors[key]
-
-  const handleChange = e => {
-    e.persist()
-    form.handleChange(e)
-    form.setFieldTouched(key, true, false)
-  }
-
   return (
-    <Grid item {...{ xs, sm, md, lg, xl }}>
-      <TextField
-        {...field}
-        {...props}
-        onChange={handleChange}
-        error={!!error}
-        helperText={error}
-        fullWidth
-      />
-    </Grid>
+    <Field name={props.name}>
+      {({ field, form }) => {
+        const key = field.name
+        const error = form.touched[key] && form.errors[key]
+
+        const handleChange = e => {
+          e.persist()
+          form.handleChange(e)
+          form.setFieldTouched(key, true, false)
+        }
+
+        return (
+          <Grid item {...{ xs, sm, md, lg, xl }}>
+            <TextField
+              {...field}
+              {...props}
+              onChange={handleChange}
+              error={!!error}
+              helperText={error}
+              fullWidth
+            />
+          </Grid>
+        )
+      }}
+    </Field>
   )
 }
 
@@ -89,38 +93,44 @@ export const UserProfile = ({
           onSubmit={handleSubmit}
           validate={handleValidate}
         >
-          {({ isSubmitting }) => {
+          {({ dirty, isSubmitting, isValid, resetForm }) => {
             return (
               <Form>
                 <Paper className={classes.paper}>
                   <Grid container spacing={3}>
-                    <Field
+                    <FormField
                       xs={12} sm={6}
-                      component={MyFormField}
                       name="firstName"
                       label="First Name"
                     />
-                    <Field
+                    <FormField
                       xs={12} sm={6}
-                      component={MyFormField}
                       name="lastName"
                       label="Last Name"
                     />
-                    <Field
+                    <FormField
                       xs={12}
-                      component={MyFormField}
                       name="telephone"
                       label="Telephone"
                     />
                     <Grid item xs={12}>
-                      <Grid container justify="flex-end">
+                      <Grid container spacing={1} justify="flex-end">
+                        <Grid item>
+                          <Button
+                            type="reset"
+                            className={classes.button}
+                            disabled={!dirty}
+                          >
+                            Reset
+                          </Button>
+                        </Grid>
                         <Grid item>
                           <Button
                             type="submit"
                             variant="contained"
                             color="primary"
                             className={classes.button}
-                            disabled={isSubmitting}
+                            disabled={isSubmitting || !isValid}
                           >
                             Save
                           </Button>
