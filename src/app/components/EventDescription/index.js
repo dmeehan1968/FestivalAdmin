@@ -24,16 +24,6 @@ const useFormStyles = makeStyles(theme => ({
   paper: {
     padding: theme.spacing(2),
   },
-  button: {
-    margin: theme.spacing(1),
-  },
-  error: {
-    backgroundColor: theme.palette.error.dark,
-  },
-  message: {
-    display: 'flex',
-    alignItems: 'center',
-  }
 }))
 
 export const EventDescription = ({

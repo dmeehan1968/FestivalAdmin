@@ -1,5 +1,9 @@
 import React from 'react'
 
+// Styles
+import clsx from 'clsx'
+import { makeStyles } from '@material-ui/core/styles'
+
 // Core
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
@@ -10,13 +14,27 @@ import SnackBarContent from '@material-ui/core/SnackBarContent'
 // Formik
 import { Formik, Form as FormikForm } from 'formik'
 
+const useStyles = makeStyles(theme => ({
+  paper: {
+    padding: theme.spacing(2),
+  },
+  error: {
+    backgroundColor: theme.palette.error.dark,
+  },
+  message: {
+    display: 'flex',
+    alignItems: 'center',
+  }
+}))
+
 export const Form = ({
   children,
-  classes,
   saved = {},
   error = {},
   ...props,
 }) => {
+  const classes = useStyles()
+
   return (
     <Grid container spacing={3} direction="column" alignItems="center">
       <Grid item xs={12} md={6}>
@@ -46,7 +64,7 @@ export const Form = ({
         onClose={error.clear}
       >
         <SnackBarContent
-          className={classes.error}
+          className={clsx(classes.error, classes.message)}
           message={error.message}
           action={[
             <Button key="button" onClick={error.clear}>Dismiss</Button>
