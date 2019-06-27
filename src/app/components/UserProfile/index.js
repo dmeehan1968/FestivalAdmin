@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import faker from 'faker'
 faker.locale = 'en_GB'
 
@@ -12,147 +12,127 @@ import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 
+// Formik
+import { Formik, Form, Field } from 'formik'
+
 const useStyles = makeStyles(theme => ({
   paper: {
     padding: theme.spacing(2),
   },
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  buttons: {
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'flex-end',
-  },
   button: {
-    marginTop: theme.spacing(3),
-    marginLeft: theme.spacing(1),
-  }
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
 }))
 
-export const UserProfile = ({
-
+const MyFormField = ({
+  xs, sm, md, lg, xl,
+  field,
+  form,
+  ...props
 }) => {
-  const classes = useStyles()
-  const [ user, setUser ] = useState({
+  const key = field.name
+  const error = form.touched[key] && form.errors[key]
+
+  const handleChange = e => {
+    e.persist()
+    form.handleChange(e)
+    form.setFieldTouched(key, true, false)
+  }
+
+  return (
+    <Grid item {...{ xs, sm, md, lg, xl }}>
+      <TextField
+        {...field}
+        {...props}
+        onChange={handleChange}
+        error={!!error}
+        helperText={error}
+        fullWidth
+      />
+    </Grid>
+  )
+}
+
+export const UserProfile = ({
+  initialUser = {
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
-    organisation: faker.company.companyName(),
     telephone: faker.phone.phoneNumber(),
-    mobile: faker.phone.phoneNumber(),
-    email: faker.internet.email(),
-    website: faker.internet.url(),
-  })
-  const setFirstname = ev => setUser({ ...user, firstName: ev.target.value })
+  }
+}) => {
+  const classes = useStyles()
+  const [ user, setUser ] = useState(initialUser)
+
+  const handleSubmit = ( values, actions ) => {
+    setUser(values)
+    actions.setSubmitting(false)
+  }
+
+  const handleValidate = values => {
+    const errors = {}
+    if (values.firstName.length > 0) {
+      errors.firstName = 'Too long'
+    }
+    return errors
+  }
+
+  useEffect(() => {
+    console.log('user', user);
+  }, [ user ])
 
   return (
     <Grid container spacing={3} direction="column" alignItems="center">
       <Grid item xs={12} md={6}>
-        <Typography color="textSecondary" paragraph={true}>Personal Info</Typography>
-        <Paper className={classes.paper}>
-          <form className={classes.container}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  id="firstName"
-                  label="First Name"
-                  className={classes.textField}
-                  fullWidth
-                  margin="normal"
-                  autoComplete="fname"
-                  value={user.firstName}
-                  onChange={setFirstname}
-                  placeholder="Your first (or given) name"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  id="lastName"
-                  label="Last Name"
-                  className={classes.textField}
-                  fullWidth
-                  margin="normal"
-                  autoComplete="lname"
-                  value={user.lastName}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  id="organisation"
-                  label="Organisation/Company Name"
-                  className={classes.textField}
-                  margin="normal"
-                  fullWidth
-                  autoComplete="organization"
-                  value={user.organisation}
-                />
-              </Grid>
-            </Grid>
-          </form>
-        </Paper>
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Typography color="textSecondary" paragraph={true}>Contact Details</Typography>
-        <Paper className={classes.paper}>
-          <form className={classes.container}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  id="telephone"
-                  label="Telephone"
-                  className={classes.textField}
-                  margin="normal"
-                  fullWidth
-                  autoComplete="tel"
-                  value={user.telephone}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  id="mobile"
-                  label="Mobile"
-                  className={classes.textField}
-                  margin="normal"
-                  fullWidth
-                  autoComplete="tel"
-                  value={user.mobile}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  required
-                  id="email"
-                  label="Email"
-                  className={classes.textField}
-                  margin="normal"
-                  fullWidth
-                  autoComplete="email"
-                  value={user.email}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  id="website"
-                  label="Website"
-                  className={classes.textField}
-                  margin="normal"
-                  fullWidth
-                  autoComplete="url"
-                  value={user.website}
-                />
-              </Grid>
-            </Grid>
-            <div className={classes.buttons}>
-              <Button variant="contained" className={classes.button}>
-                Cancel
-              </Button>
-              <Button variant="contained" className={classes.button} color="primary">
-                Save
-              </Button>
-            </div>
-          </form>
-        </Paper>
+        <Formik
+          initialValues={user}
+          onSubmit={handleSubmit}
+          validate={handleValidate}
+        >
+          {({ isSubmitting }) => {
+            return (
+              <Form>
+                <Paper className={classes.paper}>
+                  <Grid container spacing={3}>
+                    <Field
+                      xs={12} sm={6}
+                      component={MyFormField}
+                      name="firstName"
+                      label="First Name"
+                    />
+                    <Field
+                      xs={12} sm={6}
+                      component={MyFormField}
+                      name="lastName"
+                      label="Last Name"
+                    />
+                    <Field
+                      xs={12}
+                      component={MyFormField}
+                      name="telephone"
+                      label="Telephone"
+                    />
+                    <Grid item xs={12}>
+                      <Grid container justify="flex-end">
+                        <Grid item>
+                          <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            className={classes.button}
+                            disabled={isSubmitting}
+                          >
+                            Save
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </Form>
+            )
+          }}
+        </Formik>
       </Grid>
     </Grid>
   )
