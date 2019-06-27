@@ -5,13 +5,6 @@ faker.locale = 'en_GB'
 // Styles
 import { makeStyles } from '@material-ui/core/styles'
 
-// Core
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
-import Paper from '@material-ui/core/Paper'
-import TextField from '@material-ui/core/TextField'
-import Typography from '@material-ui/core/Typography'
-
 import Form from 'app/components/Form'
 import Field from 'app/components/Field'
 import FormResetSave from 'app/components/FormResetSave'
