@@ -82,20 +82,31 @@ export const EventDescription = ({
   }
 
   const handleValidate = values => {
-    return Object.keys(values).reduce((errors, key) => {
-      try {
-        const validator = models.event.attributes[key]
-        if (validator) {
-          validator(values[key])
+
+    return new Promise((resolve, reject) => {
+
+      const errors = Object.keys(values).reduce((errors, key) => {
+        try {
+          const validator = models.event.attributes[key]
+          if (validator) {
+            validator(values[key])
+          }
+          return errors
+        } catch (error) {
+          return {
+            ...errors,
+            [key]: error.message
+          }
         }
-        return errors
-      } catch (error) {
-        return {
-          ...errors,
-          [key]: error.message
-        }
+      }, {})
+
+      if (Object.keys(errors).length) {
+        return reject(errors)
       }
-    }, {})
+
+      resolve()
+
+    })
   }
 
   if (loading) {
