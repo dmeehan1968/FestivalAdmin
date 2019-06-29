@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
@@ -47,13 +47,36 @@ const useToggleButtonGroupStyles = makeStyles(theme => ({
 export const ToggleButtonGroup = ({
   children,
   variant,
-  exclusive = true,
+  exclusive = false,
   value,
   onChange = () => {},
   size = 'medium',
   ...props
 }) => {
   const classes = useToggleButtonGroupStyles()
+  const [ selected, setSelected ] = useState(Array.isArray(value) ? value : [ value ])
+
+  useEffect(() => {
+    setSelected(Array.isArray(value) ? value : [ value ])
+  }, [ value ])
+
+  const handleClick = (ev, value) => {
+    let newSelected
+    if (exclusive) {
+      newSelected = [ value ]
+    } else {
+      const index = selected.indexOf(value)
+      if (index >= 0) {
+        newSelected = selected.slice()
+        newSelected.splice(index, 1)
+      } else {
+        newSelected = [ ...selected, value ]
+      }
+    }
+    setSelected(newSelected)
+    onChange(ev, newSelected.length === 0 ? null : newSelected.length === 1 ? newSelected[0] : newSelected)
+  }
+
   return (
     <div {...props} className={clsx(classes.container, props.className)}>
       {
@@ -64,9 +87,9 @@ export const ToggleButtonGroup = ({
               classes.button,
               classes[size],
               child.props.className,
-              child.props.value === value ? classes.selected : null
+              selected.includes(child.props.value) ? classes.selected : null
             ),
-            onClick: ev=>onChange(ev, child.props.value),
+            onClick: ev=>handleClick(ev, child.props.value),
           })
         })
       }
@@ -74,10 +97,4 @@ export const ToggleButtonGroup = ({
   )
 }
 
-export const ToggleButton = ({
-  ...props
-}) => {
-  return (
-    <Button {...props} />
-  )
-}
+export const ToggleButton = Button
