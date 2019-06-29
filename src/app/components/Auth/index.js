@@ -4,22 +4,23 @@ import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
 
 import Button from '@material-ui/core/Button'
-import ButtonGroup from '@material-ui/core/ButtonGroup'
 import Grid from '@material-ui/core/Grid'
 import IconButton from '@material-ui/core/IconButton'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import Typography from '@material-ui/core/Typography'
 
 import PersonIcon from '@material-ui/icons/Person'
-import Visibility from '@material-ui/icons/Visibility'
-import VisibilityOff from '@material-ui/icons/VisibilityOff'
 
 import Form from 'app/components/Form'
 import Field from 'app/components/Field'
+import { ToggleButtonGroup, ToggleButton } from './ToggleButton'
+import PasswordField from './PasswordField'
 
-import * as yup from 'yup'
+import useLoginSchema from './useLoginSchema'
+import useSignupSchema from './useSignupSchema'
+import useAuthMode from './useAuthMode'
 
-const useStyles = makeStyles(theme => ({
+const useAuthStyles = makeStyles(theme => ({
   form: {
     '& .MuiPaper-root': {
       padding: theme.spacing(0, 6, 4, 6),
@@ -44,172 +45,26 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const useToggleButtonGroupStyles = makeStyles(theme => ({
-  container: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexFlow: 'row nowrap',
-    alignItems: 'flex-start',
-    boxShadow: theme.shadows[2],
-    borderRadius: theme.shape.borderRadius,
-  },
-  button: {
-    width: '100%',
-    borderRadius: 0,
-    boxShadow: 'none',
-    '&:first-child': {
-      borderRadius: `${theme.shape.borderRadius}px 0 0 ${theme.shape.borderRadius}px`,
-    },
-    '&:last-child': {
-      borderRadius: `0 ${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0`,
-    },
-  },
-  small: {
-    fontSize: '0.75rem',
-  },
-  medium: {
-    // fontSize: '1rem',
-  },
-  large: {
-    fontSize: '1.25rem',
-  },
-  selected: {
-    backgroundColor: theme.palette.secondary.main,
-    color: theme.palette.primary.contrastText,
-    '&:hover': {
-      backgroundColor: theme.palette.secondary.dark,
-    }
-  },
-}))
-
-const ToggleButtonGroup = ({
-  children,
-  variant,
-  exclusive = true,
-  value,
-  onChange = () => {},
-  size = 'medium',
-  ...props
-}) => {
-  const classes = useToggleButtonGroupStyles()
-  return (
-    <div {...props} className={clsx(classes.container, props.className)}>
-      {
-        React.Children.map(children, child => {
-          return React.cloneElement(child, {
-            variant,
-            className: clsx(
-              classes.button,
-              classes[size],
-              child.props.className,
-              child.props.value === value ? classes.selected : null
-            ),
-            onClick: ev=>onChange(ev, child.props.value),
-          })
-        })
-      }
-    </div>
-  )
-}
-
-const ToggleButton = ({
-  ...props
-}) => {
-  return (
-    <Button {...props} />
-  )
-}
-
-const PasswordField = props => {
-
-  const [ showPassword, setShowPassword ] = useState(false)
-
-  return (
-    <Field
-      type={showPassword ? 'text' : 'password'}
-      InputProps={{
-        endAdornment: (
-          <InputAdornment position="end">
-            <IconButton
-              edge="end"
-              onClick={ev=>setShowPassword(!showPassword)}
-            >
-              {showPassword && <VisibilityOff /> || <Visibility />}
-            </IconButton>
-          </InputAdornment>
-        )
-      }}
-      {...props}
-    />
-  )
-}
-
-export const useLoginSchema = () => {
-  return useMemo(() => {
-    return yup.object().shape({
-      email: yup
-        .string()
-        .email('Must be a valid email address')
-        .required('Email is required'),
-      password: yup
-        .string()
-        .required('Password is required')
-        .min(8, 'Password should contain at least 8 characters')
-        .matches(/[a-z]+/, 'Password must contain at least one lowercase letter')
-        .matches(/[A-Z]+/, 'Password must contain at least one uppercase letter')
-        .matches(/[0-9]+/, 'Password must contain at least one number')
-        .matches(/\W+/, 'Password must contain at least one non-word character')
-    })
-  })
-}
-
-const useSignupSchema = () => {
-  const loginSchema = useLoginSchema()
-
-  return loginSchema.shape({
-    confirmPassword: yup
-      .reach(loginSchema, 'password')
-      .oneOf([yup.ref('password')], 'Passwords must match')
-  })
-}
-
-export const useAuthMode = () => {
-  const [ authMode, setAuthMode ] = useState('login')
-  return {
-    setAuthMode,
-    isLogin() {
-      return authMode === 'login'
-    },
-    isSignup() {
-      return authMode === 'signup'
-    }
-  }
-}
-
 export const Auth = ({
   credentials = {
     email: '',
     password: '',
     confirmPassword: ''
   },
-  onSubmit=credentials => console.log('submit', credentials),
+  onSubmit=(mode, credentials) => console.log('submit', mode, credentials),
 }) => {
 
-  const classes = useStyles()
+  const classes = useAuthStyles()
   const { setAuthMode, isLogin, isSignup } = useAuthMode()
   const loginSchema = useLoginSchema()
   const signupSchema = useSignupSchema()
-
-  const handleModeChange = (ev, mode) => {
-    setAuthMode(mode)
-  }
 
   return (
     <Form
       className={classes.form}
       initialValues={credentials}
       validationSchema={isLogin() ? loginSchema : signupSchema}
-      onSubmit={onSubmit}
+      onSubmit={(values) => onSubmit(isLogin() ? 'login' : 'signup', values)}
     >
       {({ isValid }) => (
         <>
@@ -223,7 +78,7 @@ export const Auth = ({
             variant="contained"
             value={isLogin() ? 'login' : 'signup'}
             exclusive
-            onChange={handleModeChange}
+            onChange={(ev, mode) => setAuthMode(mode)}
           >
             <ToggleButton
               value="login"
