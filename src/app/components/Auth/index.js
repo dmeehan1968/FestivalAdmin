@@ -23,8 +23,10 @@ import useAuthMode from './useAuthMode'
 const useAuthStyles = makeStyles(theme => ({
   form: {
     '& .MuiPaper-root': {
-      padding: theme.spacing(0, 6, 4, 6),
-    }
+      [theme.breakpoints.up('md')]: {
+        padding: theme.spacing(0, 6, 4, 6),
+      },
+    },
   },
   button: {
     margin: theme.spacing(2, 0, 0, 0),
