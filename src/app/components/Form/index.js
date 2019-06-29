@@ -52,7 +52,7 @@ export const Form = ({
             return (
               <FormikForm>
                 <Paper className={classes.paper}>
-                  <Grid container spacing={0}>
+                  <Grid container spacing={3}>
                   {children(args)}
                 </Grid>
               </Paper>

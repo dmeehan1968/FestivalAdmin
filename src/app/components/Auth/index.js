@@ -111,13 +111,11 @@ export const Auth = ({
             name="email"
             type="email"
             label="Email Address"
-            margin="normal"
           />
           <PasswordField
             xs={12}
             name="password"
             label="Password"
-            margin="normal"
           />
           {isSignup() &&
             <PasswordField
