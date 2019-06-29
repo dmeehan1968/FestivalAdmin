@@ -6,9 +6,13 @@ import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
 import Grid from '@material-ui/core/Grid'
+import IconButton from '@material-ui/core/IconButton'
+import InputAdornment from '@material-ui/core/InputAdornment'
 import Typography from '@material-ui/core/Typography'
 
 import PersonIcon from '@material-ui/icons/Person'
+import Visibility from '@material-ui/icons/Visibility'
+import VisibilityOff from '@material-ui/icons/VisibilityOff'
 
 import Form from 'app/components/Form'
 import Field from 'app/components/Field'
@@ -116,14 +120,32 @@ const ToggleButton = ({
   )
 }
 
-export const Auth = ({
+const PasswordField = props => {
 
-}) => {
+  const [ showPassword, setShowPassword ] = useState(false)
 
-  const classes = useStyles()
-  const [ mode, setMode ] = useState('login')
-  const [ credentials, setCredentials ] = useState({ email: '', password: '', confirmPassword: '' })
-  const loginSchema = useMemo(() => {
+  return (
+    <Field
+      type={showPassword ? 'text' : 'password'}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <IconButton
+              edge="end"
+              onClick={ev=>setShowPassword(!showPassword)}
+            >
+              {showPassword && <VisibilityOff /> || <Visibility />}
+            </IconButton>
+          </InputAdornment>
+        )
+      }}
+      {...props}
+    />
+  )
+}
+
+export const useLoginSchema = () => {
+  return useMemo(() => {
     return yup.object().shape({
       email: yup
         .string()
@@ -139,28 +161,55 @@ export const Auth = ({
         .matches(/\W+/, 'Password must contain at least one non-word character')
     })
   })
-  const signupSchema = loginSchema.shape({
+}
+
+const useSignupSchema = () => {
+  const loginSchema = useLoginSchema()
+
+  return loginSchema.shape({
     confirmPassword: yup
       .reach(loginSchema, 'password')
       .oneOf([yup.ref('password')], 'Passwords must match')
   })
+}
+
+export const useAuthMode = () => {
+  const [ authMode, setAuthMode ] = useState('login')
+  return {
+    setAuthMode,
+    isLogin() {
+      return authMode === 'login'
+    },
+    isSignup() {
+      return authMode === 'signup'
+    }
+  }
+}
+
+export const Auth = ({
+  credentials = {
+    email: '',
+    password: '',
+    confirmPassword: ''
+  },
+  onSubmit=credentials => console.log('submit', credentials),
+}) => {
+
+  const classes = useStyles()
+  const { setAuthMode, isLogin, isSignup } = useAuthMode()
+  const loginSchema = useLoginSchema()
+  const signupSchema = useSignupSchema()
 
   const handleModeChange = (ev, mode) => {
-    console.log(mode);
-    setMode(mode)
-  }
-
-  const handleSubmit = values => {
-    console.log('submit', values)
-    setCredentials(values)
+    setAuthMode(mode)
   }
 
   return (
     <Form
       className={classes.form}
       initialValues={credentials}
-      validationSchema={mode === 'login' ? loginSchema : signupSchema}
-      onSubmit={handleSubmit}
+      validationSchema={isLogin() ? loginSchema : signupSchema}
+      onSubmit={onSubmit}
     >
       {({ isValid }) => (
         <>
@@ -172,7 +221,7 @@ export const Auth = ({
           <ToggleButtonGroup
             className={classes.toggleButtonGroup}
             variant="contained"
-            value={mode}
+            value={isLogin() ? 'login' : 'signup'}
             exclusive
             onChange={handleModeChange}
           >
@@ -189,13 +238,13 @@ export const Auth = ({
           </ToggleButtonGroup>
           <Grid container className={classes.message} direction="column" justify="flex-start" alignItems="stretch">
             <Typography variant="h6" align="center">
-              {mode === 'login' && 'Welcome Back!' || 'Hola!'}
+              {isLogin() && 'Welcome Back!' || 'Hola!'}
             </Typography>
             <Typography variant="body1" align="center">
-              {mode === 'login' &&
+              {isLogin() &&
                   "Pop your credentials in those little boxes and lets get down to business."
               }
-              {mode === 'signup' &&
+              {isSignup() &&
                   "It's a pleasure to make your aquaintance.  How would you like us to remember you?"
               }
             </Typography>
@@ -207,18 +256,16 @@ export const Auth = ({
             label="Email Address"
             margin="normal"
           />
-          <Field
+          <PasswordField
             xs={12}
             name="password"
-            type="password"
             label="Password"
             margin="normal"
           />
-          {mode === 'signup' &&
-            <Field
+          {isSignup() &&
+            <PasswordField
               xs={12}
               name="confirmPassword"
-              type="password"
               label="Confirm Password"
               margin="normal"
             />
@@ -231,7 +278,7 @@ export const Auth = ({
             fullWidth
             disabled={!isValid}
           >
-            {mode === 'login' && 'Login' || 'Signup'}
+            {isLogin() && 'Login' || 'Signup'}
           </Button>
         </>
       )}
