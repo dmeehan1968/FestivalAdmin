@@ -56,6 +56,11 @@ const useStyles = makeStyles(theme => ({
 
 const userLinks = [
   {
+    text: "Authentication",
+    to: "/auth",
+    icon: PersonIcon,
+  },
+  {
     text: "Personal Info",
     to: "/user",
     icon: PersonIcon,

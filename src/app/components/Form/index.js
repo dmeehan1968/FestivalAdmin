@@ -15,6 +15,9 @@ import SnackBarContent from '@material-ui/core/SnackBarContent'
 import { Formik, Form as FormikForm } from 'formik'
 
 const useStyles = makeStyles(theme => ({
+  container: {
+
+  },
   paper: {
     padding: theme.spacing(2),
   },
@@ -36,17 +39,23 @@ export const Form = ({
   const classes = useStyles()
 
   return (
-    <Grid container spacing={3} direction="column" alignItems="center">
+    <Grid
+      container
+      spacing={3}
+      direction="column"
+      alignItems="center"
+      className={clsx(classes.container, props.className)}
+    >
       <Grid item xs={12} md={6}>
         <Formik {...props}>
           {args => {
             return (
               <FormikForm>
                 <Paper className={classes.paper}>
-                  <Grid container spacing={3}>
-                    {children(args)}
-                  </Grid>
-                </Paper>
+                  <Grid container spacing={0}>
+                  {children(args)}
+                </Grid>
+              </Paper>
               </FormikForm>
             )
           }}

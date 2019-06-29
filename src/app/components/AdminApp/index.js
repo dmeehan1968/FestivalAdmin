@@ -21,6 +21,7 @@ import AdminAppBar from 'app/components/AdminAppBar'
 import AdminAppDrawer from 'app/components/AdminAppDrawer'
 import PageBar from 'app/components/PageBar'
 import EventsGrid from 'app/components/EventsGrid'
+import Auth from 'app/components/Auth'
 import UserProfile from 'app/components/UserProfile'
 import EventDescription from 'app/components/EventDescription'
 
@@ -79,6 +80,11 @@ export const AdminApp = ({
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Switch>
+          <Route exact path="/auth">
+            <Page title="Authentication">
+              <Auth />
+            </Page>
+          </Route>
           <Route exact path="/user">
             <Page title="About You">
               <UserProfile />

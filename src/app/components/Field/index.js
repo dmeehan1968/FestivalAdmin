@@ -12,7 +12,7 @@ export const Field = ({
   ...props
 }) => {
   return (
-    <FormikField name={props.name}>
+    <FormikField name={props.name} id={props.id}>
       {({ field, form }) => {
         const key = field.name
         const error = form.touched[key] && form.errors[key]

@@ -107,7 +107,8 @@
     "react-router-dom": "^5.0.1",
     "sequelize": "^5.8.12",
     "sequelize-graphql-schema": "^0.1.67",
-    "styled-components": "^4.3.2"
+    "styled-components": "^4.3.2",
+    "yup": "^0.27.0"
   },
   "nodemonConfig": {
     "ignore": [
