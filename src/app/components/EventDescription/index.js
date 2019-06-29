@@ -136,18 +136,21 @@ export const EventDescription = ({
               xs={12} sm={6}
               name="title"
               label="Title"
+              margin="normal"
             />
 
             <Field
               xs={12} sm={6}
               name="subtitle"
               label="Subtitle"
+              margin="normal"
             />
 
             <Field
               xs={12}
               name="description"
               label="Description"
+              margin="normal"
               multiline
             />
 
@@ -155,6 +158,7 @@ export const EventDescription = ({
               xs={12}
               name="longDescription"
               label="Long Description"
+              margin="normal"
               multiline
             />
 
