@@ -14,8 +14,9 @@ export const HomePage = () => {
 }
 
 export const ProfilePage = () => {
+  const { user } = useAuthentication()
   return (
-    <div>This is the user profile page.</div>
+    <div>This is the user profile page for {user.firstName} {user.lastName}.</div>
   )
 }
 

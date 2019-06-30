@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles'
 
 // Core
 import AppBar from '@material-ui/core/AppBar'
+import Avatar from '@material-ui/core/Avatar'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -13,6 +14,8 @@ import Typography from '@material-ui/core/Typography'
 
 // Icons
 import MenuIcon from '@material-ui/icons/Menu'
+
+import { useAuthentication } from 'app/components/AuthenticationProvider'
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -37,6 +40,8 @@ export const AdminAppBar = ({
   setIsDrawerOpen = () => {}
 }) => {
   const classes = useStyles()
+  const { user, isAuthenticated, login, logout } = useAuthentication()
+
   return (
     <AppBar
       position="absolute"
@@ -56,9 +61,13 @@ export const AdminAppBar = ({
         <Typography component="h1" variant="h6" noWrap className={classes.title}>
           10 Parishes Festival
         </Typography>
-        <Button color="inherit">
-          Login
-        </Button>
+        {user &&
+          <Avatar src={user.avatar}>{user.initials}</Avatar>
+        }
+        {isAuthenticated
+          && <Button color="inherit" onClick={logout}>Logout</Button>
+          || <Button color="inherit" onClick={login}>Login</Button>
+        }
       </Toolbar>
     </AppBar>
   )
