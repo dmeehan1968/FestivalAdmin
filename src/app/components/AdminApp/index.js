@@ -25,6 +25,8 @@ import Auth from 'app/components/Auth'
 import UserProfile from 'app/components/UserProfile'
 import EventDescription from 'app/components/EventDescription'
 
+import routes from 'app/routes'
+
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
@@ -80,54 +82,80 @@ export const AdminApp = ({
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Switch>
-          <Route exact path="/auth">
+          {
+            routes.map(({ path, title, component: Component }, key) => {
+              return (
+                <Route key={key} exact path={path}>
+                  <Page title={title}>
+                    <Component />
+                  </Page>
+                </Route>
+              )
+            })
+          }
+          {/* <Route exact path="/">
+            <Page title="Home Page">
+              <div>This is the home page</div>
+            </Page>
+            </Route>
+            <Route exact path="/profile">
+            <Page title="Profile">
+              <div>This is the user profile page.  This is where we will land after login.</div>
+            </Page>
+          </Route> */}
+          {/* <Route exact path="/auth">
             <Page title="Authentication">
               <Auth />
             </Page>
-          </Route>
-          <Route exact path="/user">
+            </Route>
+            <Route exact path="/user">
             <Page title="About You">
               <UserProfile />
             </Page>
-          </Route>
-          <Route exact path="/user/address">
+            </Route>
+            <Route exact path="/user/address">
             <Page title="Address">
               <div>Pending</div>
             </Page>
-          </Route>
-          <Route exact path="/user/location">
+            </Route>
+            <Route exact path="/user/location">
             <Page title="Location">
               <div>Not Yet Implemented</div>
             </Page>
-          </Route>
-          <Route exact path="/user/permissions">
+            </Route>
+            <Route exact path="/user/permissions">
             <Page title="Permissions">
               <div>Not Yet Implemented</div>
             </Page>
-          </Route>
-          <Route exact path="/user/tags">
+            </Route>
+            <Route exact path="/user/tags">
             <Page title="Tags">
               <div>Not Yet Implemented</div>
             </Page>
-          </Route>
-          <Route exact path="/user/notes">
+            </Route>
+            <Route exact path="/user/notes">
             <Page title="Notes">
               <div>Not Yet Implemented</div>
             </Page>
-          </Route>
-          <Route exact path="/events">
+            </Route>
+            <Route exact path="/events">
             <Page title="Events">
               <EventsGrid events={events}/>
             </Page>
-          </Route>
-          <Route exact path="/event/description">
+            </Route>
+            <Route exact path="/event/description">
             <Page title="Event Description">
               <EventDescription id={1} />
             </Page>
-          </Route>
-          <Route>
+            </Route>
+            <Route>
             <Page title="Under Construction">
               <div>Not Yet Implemented</div>
+            </Page>
+          </Route> */}
+          <Route>
+            <Page title="Not Found">
+              <div>The specified route was not found</div>
             </Page>
           </Route>
         </Switch>

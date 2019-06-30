@@ -25,8 +25,11 @@ import DirectionsIcon from '@material-ui/icons/Directions'
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline'
 import ImageIcon from '@material-ui/icons/Image'
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
+import HomeIcon from '@material-ui/icons/Home'
 import NoteIcon from '@material-ui/icons/Note'
 import AnnouncementIcon from '@material-ui/icons/Announcement'
+
+import routes from 'app/routes'
 
 const drawerWidth = 240
 
@@ -56,40 +59,50 @@ const useStyles = makeStyles(theme => ({
 
 const userLinks = [
   {
-    text: "Authentication",
-    to: "/auth",
-    icon: PersonIcon,
+    text: 'Home',
+    to: '/',
+    icon: HomeIcon,
   },
   {
-    text: "Personal Info",
-    to: "/user",
+    text: 'Profile',
+    to: '/profile',
     icon: PersonIcon,
   },
-  {
-    text: "Address",
-    to: "/user/address",
-    icon: PersonIcon,
-  },
-  {
-    text: "Location",
-    to: "/user/location",
-    icon: PersonIcon,
-  },
-  {
-    text: "Security",
-    to: "/user/security",
-    icon: PersonIcon,
-  },
-  {
-    text: "Notes",
-    to: "/user/notes",
-    icon: PersonIcon,
-  },
-  {
-    text: "Events",
-    to: "/events",
-    icon: EventIcon,
-  },
+  // {
+  //   text: "Authentication",
+  //   to: "/auth",
+  //   icon: PersonIcon,
+  // },
+  // {
+  //   text: "Personal Info",
+  //   to: "/user",
+  //   icon: PersonIcon,
+  // },
+  // {
+  //   text: "Address",
+  //   to: "/user/address",
+  //   icon: PersonIcon,
+  // },
+  // {
+  //   text: "Location",
+  //   to: "/user/location",
+  //   icon: PersonIcon,
+  // },
+  // {
+  //   text: "Security",
+  //   to: "/user/security",
+  //   icon: PersonIcon,
+  // },
+  // {
+  //   text: "Notes",
+  //   to: "/user/notes",
+  //   icon: PersonIcon,
+  // },
+  // {
+  //   text: "Events",
+  //   to: "/events",
+  //   icon: EventIcon,
+  // },
 ]
 
 const eventLinks = [
@@ -141,13 +154,13 @@ const eventLinks = [
 ]
 
 const renderLinks = links => {
-  return links.map(({ text, to, icon: IconComponent }, key) => {
+  return links.map(({ title, path, icon: IconComponent }, key) => {
     return (
-      <ListItem key={key} button component={RouterLink} to={to}>
+      <ListItem key={key} button component={RouterLink} to={path}>
         <ListItemIcon>
           <IconComponent />
         </ListItemIcon>
-        <ListItemText primary={text} />
+        <ListItemText primary={title} />
       </ListItem>
     )
   })
@@ -175,22 +188,8 @@ export const AdminAppDrawer = ({
         </ListItem>
       </List>
       <Divider />
-      <List
-        dense
-        subheader={
-          <ListSubheader>About You</ListSubheader>
-        }
-      >
-        {renderLinks(userLinks)}
-      </List>
-      <Divider />
-      <List
-        dense
-        subheader={
-          <ListSubheader>About the Event</ListSubheader>
-        }
-      >
-        {renderLinks(eventLinks)}
+      <List dense>
+        {renderLinks(routes)}
       </List>
       <Divider />
     </Drawer>
