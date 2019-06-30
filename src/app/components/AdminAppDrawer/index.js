@@ -17,17 +17,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListSubheader from '@material-ui/core/ListSubheader'
 
 // Icons
-import PersonIcon from '@material-ui/icons/Person'
 import EventIcon from '@material-ui/icons/Event'
-import FormatQuoteIcon from '@material-ui/icons/FormatQuote'
-import LabelIcon from '@material-ui/icons/Label'
-import DirectionsIcon from '@material-ui/icons/Directions'
-import PersonOutlineIcon from '@material-ui/icons/PersonOutline'
-import ImageIcon from '@material-ui/icons/Image'
-import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
-import HomeIcon from '@material-ui/icons/Home'
-import NoteIcon from '@material-ui/icons/Note'
-import AnnouncementIcon from '@material-ui/icons/Announcement'
 
 import routes from 'app/routes'
 
@@ -57,106 +47,16 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const userLinks = [
-  {
-    text: 'Home',
-    to: '/',
-    icon: HomeIcon,
-  },
-  {
-    text: 'Profile',
-    to: '/profile',
-    icon: PersonIcon,
-  },
-  // {
-  //   text: "Authentication",
-  //   to: "/auth",
-  //   icon: PersonIcon,
-  // },
-  // {
-  //   text: "Personal Info",
-  //   to: "/user",
-  //   icon: PersonIcon,
-  // },
-  // {
-  //   text: "Address",
-  //   to: "/user/address",
-  //   icon: PersonIcon,
-  // },
-  // {
-  //   text: "Location",
-  //   to: "/user/location",
-  //   icon: PersonIcon,
-  // },
-  // {
-  //   text: "Security",
-  //   to: "/user/security",
-  //   icon: PersonIcon,
-  // },
-  // {
-  //   text: "Notes",
-  //   to: "/user/notes",
-  //   icon: PersonIcon,
-  // },
-  // {
-  //   text: "Events",
-  //   to: "/events",
-  //   icon: EventIcon,
-  // },
-]
-
-const eventLinks = [
-  {
-    text: "Description",
-    to: "/event/description",
-    icon: FormatQuoteIcon,
-  },
-  {
-    text: "Tags",
-    to: "/event/tags",
-    icon: LabelIcon,
-  },
-  {
-    text: "Opening Times",
-    to: "/event/times",
-    icon: EventIcon,
-  },
-  {
-    text: "Venue",
-    to: "/event/venue",
-    icon: DirectionsIcon,
-  },
-  {
-    text: "Contact",
-    to: "/event/contact",
-    icon: PersonOutlineIcon,
-  },
-  {
-    text: "Images",
-    to: "/event/images",
-    icon: ImageIcon,
-  },
-  {
-    text: "Booking Info",
-    to: "/event/booking",
-    icon: ContactPhoneIcon,
-  },
-  {
-    text: "Further Info",
-    to: "/event/info",
-    icon: AnnouncementIcon,
-  },
-  {
-    text: "Notes",
-    to: "/event/notes",
-    icon: NoteIcon,
-  },
-]
-
 const renderLinks = links => {
-  return links.map(({ title, path, icon: IconComponent }, key) => {
+  return links
+  .map(({ title, path, icon: IconComponent, link: LinkComponent = RouterLink }, key) => {
     return (
-      <ListItem key={key} button component={RouterLink} to={path}>
+      <ListItem
+        key={key}
+        button
+        component={LinkComponent}
+        to={path}
+      >
         <ListItemIcon>
           <IconComponent />
         </ListItemIcon>

@@ -1,8 +1,11 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 // Icons
 import HomeIcon from '@material-ui/icons/Home'
 import PersonIcon from '@material-ui/icons/Person'
+
+import { useAuthentication } from 'app/components/AuthenticationProvider'
 
 export const HomePage = () => {
   return (
@@ -16,6 +19,20 @@ export const ProfilePage = () => {
   )
 }
 
+const withForwardRef = WrappedComponent => React.forwardRef((props, ref) =>
+  <WrappedComponent forwardRef={ref} {...props} />
+)
+
+const NotAuthenticated = props => <div>Not authenticated</div>
+
+const withAuthentication = (PlaceholderComponent = (() => null)) => WrappedComponent => ({ forwardRef, ...props }) => {
+  const { isAuthenticated } = useAuthentication()
+  return isAuthenticated ?
+    <WrappedComponent {...props} ref={forwardRef} />
+    :
+    <PlaceholderComponent {...props} />
+}
+
 export const routes = [
   {
     title: 'Home',
@@ -27,7 +44,8 @@ export const routes = [
     title: 'Profile',
     path: '/profile',
     icon: PersonIcon,
-    component: ProfilePage,
+    component: withAuthentication(NotAuthenticated)(ProfilePage),
+    link: withForwardRef(withAuthentication()(Link)),
   },
 ]
 

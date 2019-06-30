@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 
 import AdminAppProvider from 'app/components/AdminApp'
+import AuthenticationProvider from 'app/components/AuthenticationProvider'
 
 export const client = ({
   document = global.document,
@@ -12,9 +13,11 @@ export const client = ({
 } = {}) => {
 
   render((
-    <BrowserRouter>
-      <AdminAppProvider />
-    </BrowserRouter>
+    <AuthenticationProvider>
+      <BrowserRouter>
+        <AdminAppProvider />
+      </BrowserRouter>
+    </AuthenticationProvider>
   ),
   document.getElementById('root'))
 
