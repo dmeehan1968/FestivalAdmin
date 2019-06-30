@@ -166,6 +166,20 @@ describe('client base', () => {
 
   })
 
+  describe('dotenv', () => {
+
+    let plugin
+
+    beforeEach(() => {
+      plugin = base.plugin('dotenv')
+    })
+
+    it('creates a build manifest', () => {
+      expect(plugin.values()[1].name).toBe('Dotenv')
+    })
+
+  })
+
   describe('clean build products', () => {
 
     let plugin

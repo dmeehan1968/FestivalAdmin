@@ -3,6 +3,7 @@ import Config from 'webpack-chain'
 import ManifestPlugin from 'webpack-manifest-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import resolvers from './resolvers'
+import Dotenv from 'dotenv-webpack'
 
 export default options => {
 
@@ -59,6 +60,10 @@ export default options => {
   config
     .plugin('manifest')
       .use(ManifestPlugin)
+
+  config
+    .plugin('dotenv')
+      .use(Dotenv)
 
   config
     .plugin('clean')
