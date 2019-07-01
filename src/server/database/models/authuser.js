@@ -1,3 +1,4 @@
+const assert = require('assert')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
@@ -43,10 +44,14 @@ module.exports = function(sequelize, DataTypes) {
   }
 
   AuthUser.prototype.authToken = function() {
+    const secret = process.env.AUTH_SECRET
+
+    assert(secret, 'AUTH_SECRET not in env')
+
     return jwt.sign({
       id: this.id,
     },
-    process.env.AUTH_SECRET)
+    secret)
   }
 
   // AuthUser.associate = models => {
