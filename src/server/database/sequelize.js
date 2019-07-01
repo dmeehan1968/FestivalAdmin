@@ -41,6 +41,7 @@ export default (options = {}, log = debug('sequelize')) => {
   .then(() => {
     db.import(path.resolve(process.cwd(), 'src/server/database/models/contact'))
     db.import(path.resolve(process.cwd(), 'src/server/database/models/event'))
+    db.import(path.resolve(process.cwd(), 'src/server/database/models/authuser'))
   })
   .then(() => {
     Object.keys(db.models).forEach(key => {
@@ -56,8 +57,13 @@ export default (options = {}, log = debug('sequelize')) => {
   })
   .then(() => {
     // seed
-    const { Contact, Event } = db.models
+    const { Contact, Event, AuthUser } = db.models
     return db.transaction(t => {
+      const authusers = [
+        AuthUser.create({ email: 'dave@dave.com', password: 'passwordhash' }, {
+          transaction: t,
+        }),
+      ]
       const contacts = Array(5).fill(undefined).map(() => {
         return Contact.create({
           firstName: casual.first_name,
@@ -79,7 +85,7 @@ export default (options = {}, log = debug('sequelize')) => {
           include: [ Event ],
         })
       })
-      return Promise.all(contacts)
+      return Promise.all([ ...authusers, ...contacts ])
     })
   })
   .then(() => {
