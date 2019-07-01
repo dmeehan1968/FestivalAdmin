@@ -60,7 +60,7 @@ export default (options = {}, log = debug('sequelize')) => {
     const { Contact, Event, AuthUser } = db.models
     return db.transaction(t => {
       const authusers = [
-        AuthUser.create({ email: 'dave@dave.com', password: 'passwordhash' }, {
+        AuthUser.create({ email: 'dave@dave.com', password: 'password' }, {
           transaction: t,
         }),
       ]
