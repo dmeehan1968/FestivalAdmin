@@ -25,10 +25,25 @@ export const AuthenticationProvider = ({
   const lastName = faker.name.lastName()
 
   const authenticateFromToken = token => {
-    const user = jwt.verify(token, rsaPublicKey, { algorithm: 'RS256' })
-    console.log('user', user);
-    setIsAuthenticated(true)
-    setUser(user)
+    return new Promise((resolve, reject) => {
+      jwt.verify(
+        token,
+        rsaPublicKey,
+        { algorithm: 'RS256' },
+        (err, decoded) => {
+          if (err) return reject(err)
+          resolve(decoded)
+        }
+      )
+    })
+    .then(user => {
+      console.log('user', user);
+      setIsAuthenticated(true)
+      setUser(user)
+    })
+    .catch(error => {
+      throw new Error('Decryption Failure')
+    })
   }
 
   const handleLogin = (email, password) => {
