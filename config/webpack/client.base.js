@@ -26,6 +26,17 @@ export default options => {
 
   config
     .module
+      .rule('rsa key')
+        .test(/\.rsa\.pub$/)
+        .exclude
+          .add(/node_modules/)
+          .end()
+        .use('raw-loader')
+          .loader('raw-loader')
+          .options({})
+
+  config
+    .module
       .rule('compile')
         .test(/\.jsx?$/)
         .exclude

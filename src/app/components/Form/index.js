@@ -39,28 +39,16 @@ export const Form = ({
   const classes = useStyles()
 
   return (
-    <Grid
-      container
-      spacing={3}
-      direction="column"
-      alignItems="center"
-      className={clsx(classes.container, props.className)}
-    >
-      <Grid item xs={12} md={6}>
-        <Formik {...props}>
-          {args => {
-            return (
-              <FormikForm>
-                <Paper className={classes.paper}>
-                  <Grid container spacing={3}>
-                  {children(args)}
-                </Grid>
-              </Paper>
-              </FormikForm>
-            )
-          }}
-        </Formik>
-      </Grid>
+    <>
+      <Formik {...props}>
+        {args => {
+          return (
+            <FormikForm>
+              {children(args)}
+            </FormikForm>
+          )
+        }}
+      </Formik>
       <SnackBar
         open={!!saved.message}
         autoHideDuration={1000}
@@ -80,7 +68,7 @@ export const Form = ({
           ]}
         />
       </SnackBar>
-    </Grid>
+    </>
   )
 }
 

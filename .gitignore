@@ -1,3 +1,5 @@
 /node_modules
 /.env
+/.rsa
+/.rsa.pub
 /build

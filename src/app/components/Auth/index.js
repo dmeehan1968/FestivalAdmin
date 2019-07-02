@@ -11,7 +11,9 @@ import Typography from '@material-ui/core/Typography'
 
 import PersonIcon from '@material-ui/icons/Person'
 
-import Form from 'app/components/Form'
+import { Formik, Form } from 'formik'
+
+// import Form from 'app/components/Form'
 import Field from 'app/components/Field'
 import { ToggleButtonGroup, ToggleButton } from './ToggleButton'
 import PasswordField from './PasswordField'
@@ -62,14 +64,14 @@ export const Auth = ({
   const signupSchema = useSignupSchema()
 
   return (
-    <Form
+    <Formik
       className={classes.form}
       initialValues={credentials}
       validationSchema={isLogin() ? loginSchema : signupSchema}
       onSubmit={(values) => onSubmit(isLogin() ? 'login' : 'signup', values)}
     >
       {({ isValid }) => (
-        <>
+        <Form>
           <Grid container className={classes.message} direction="column" justify="flex-start" alignItems="stretch">
             <Typography variant="h6" align="center">
               <PersonIcon className={classes.icon} />
@@ -99,10 +101,10 @@ export const Auth = ({
             </Typography>
             <Typography variant="body1" align="center">
               {isLogin() &&
-                  "Pop your credentials in those little boxes and lets get down to business."
+                "Pop your credentials in those little boxes and lets get down to business."
               }
               {isSignup() &&
-                  "It's a pleasure to make your aquaintance.  How would you like us to remember you?"
+                "It's a pleasure to make your aquaintance.  How would you like us to remember you?"
               }
             </Typography>
           </Grid>
@@ -111,6 +113,7 @@ export const Auth = ({
             name="email"
             type="email"
             label="Email Address"
+            autoFocus
           />
           <PasswordField
             xs={12}
@@ -135,9 +138,9 @@ export const Auth = ({
           >
             {isLogin() && 'Login' || 'Signup'}
           </Button>
-        </>
+        </Form>
       )}
-    </Form>
+    </Formik>
   )
 }
 

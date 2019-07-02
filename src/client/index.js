@@ -2,8 +2,11 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 
-import AdminAppProvider from 'app/components/AdminApp'
+import AdminApp from 'app/components/AdminApp'
 import AuthenticationProvider from 'app/components/AuthenticationProvider'
+
+import ApolloClient from 'apollo-boost'
+import { ApolloProvider } from 'react-apollo-hooks'
 
 export const client = ({
   document = global.document,
@@ -12,12 +15,16 @@ export const client = ({
   module: mod = module,
 } = {}) => {
 
+  const client = new ApolloClient()
+
   render((
-    <AuthenticationProvider>
-      <BrowserRouter>
-        <AdminAppProvider />
-      </BrowserRouter>
-    </AuthenticationProvider>
+    <ApolloProvider client={client}>
+      <AuthenticationProvider>
+        <BrowserRouter>
+          <AdminApp />
+        </BrowserRouter>
+      </AuthenticationProvider>
+    </ApolloProvider>
   ),
   document.getElementById('root'))
 

@@ -32,6 +32,7 @@ export const Field = ({
               error={!!error}
               helperText={error}
               fullWidth
+              margin="normal"
             />
           </Grid>
         )

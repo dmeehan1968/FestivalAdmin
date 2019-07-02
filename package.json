@@ -38,6 +38,7 @@
     "enzyme-adapter-react-16": "^1.14.0",
     "jest": "^24.8.0",
     "nodemon": "^1.19.1",
+    "raw-loader": "^3.0.0",
     "react-devtools": "^3.6.1",
     "webpack": "^4.35.0",
     "webpack-chain": "^6.0.0",

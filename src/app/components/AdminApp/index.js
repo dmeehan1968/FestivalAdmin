@@ -1,10 +1,6 @@
 import React, { useState } from 'react'
 import { Switch, Route } from 'react-router-dom'
 
-import ApolloClient from 'apollo-boost'
-import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks'
-import { ApolloProvider } from 'react-apollo'
-
 // Styles
 import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
@@ -23,7 +19,7 @@ import PageBar from 'app/components/PageBar'
 import EventsGrid from 'app/components/EventsGrid'
 import Auth from 'app/components/Auth'
 import UserProfile from 'app/components/UserProfile'
-import EventDescription from 'app/components/EventDescription'
+// import EventDescription from 'app/components/EventDescription'
 
 import routes from 'app/routes'
 
@@ -164,15 +160,4 @@ export const AdminApp = ({
   )
 }
 
-const AdminAppProvider = props => {
-  const client = new ApolloClient()
-  return (
-    <ApolloProvider client={client}>
-      <ApolloHooksProvider client={client}>
-        <AdminApp {...props} />
-      </ApolloHooksProvider>
-    </ApolloProvider>
-  )
-}
-
-export default AdminAppProvider
+export default AdminApp

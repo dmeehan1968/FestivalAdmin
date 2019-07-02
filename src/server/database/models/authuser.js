@@ -1,6 +1,7 @@
 const assert = require('assert')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const crypto = require('crypto')
 
 module.exports = function(sequelize, DataTypes) {
   const AuthUser = sequelize.define('AuthUser', {
@@ -31,27 +32,47 @@ module.exports = function(sequelize, DataTypes) {
     tableName: 'authusers',
     modelName: 'AuthUser',
     hooks: {
+      beforeValidate: (user, options) => {
+        if (user.changed('email')) {
+          user.email = user.email.trim()
+        }
+
+        if (user.changed('password')) {
+          user.password = user.password.trim()
+        }
+      },
       beforeSave: (user, options) => {
         if (user.changed('password')) {
           return bcrypt.hash(user.password, 10).then(hash => user.password = hash)
         }
       },
     },
+    getterMethods: {
+      avatar() {
+        const hash = crypto.createHash('md5').update(this.email.toLowerCase()).digest('hex')
+        return `https://www.gravatar.com/avatar/${hash}`
+      },
+    },
   })
 
-  AuthUser.prototype.comparePassword = function(password) {
+  AuthUser.prototype.verifyPassword = function(password) {
     return bcrypt.compare(password, this.password)
   }
 
   AuthUser.prototype.authToken = function() {
-    const secret = process.env.AUTH_SECRET
 
-    assert(secret, 'AUTH_SECRET not in env')
+    const path = require('path')
+    const fs = require('fs')
+    const rsaPrivateKey = fs.readFileSync(path.resolve('.rsa'))
 
     return jwt.sign({
       id: this.id,
+      avatar: this.avatar,
     },
-    secret)
+    rsaPrivateKey,
+    {
+      algorithm: 'RS256'
+    })
   }
 
   // AuthUser.associate = models => {
@@ -77,7 +98,7 @@ module.exports = function(sequelize, DataTypes) {
     .then(user => {
       return Promise.all([
         user,
-        user && user.comparePassword(password)
+        user && user.verifyPassword(password)
       ])
     })
     .then(([ user, valid ]) => {
@@ -112,23 +133,24 @@ module.exports = function(sequelize, DataTypes) {
     excludeMutations: [ 'create', 'update', 'destroy' ],
     excludeQueries: [ 'query' ],
     types: {
-      CredentialsInput: { email: 'string!', password: 'string!', confirmPassword: 'string' },
+      LoginInput: { email: 'string!', password: 'string!' },
+      SignupInput: { email: 'string!', password: 'string!', confirmPassword: 'string!' },
       Success: { token: 'string!' },
     },
     mutations: {
       login: {
-        input: 'CredentialsInput!',
+        input: 'LoginInput!',
         output: 'Success',
         resolver: (source, args, context, info, where) => {
-          const { CredentialsInput: { email, password } } = args
+          const { LoginInput: { email, password } } = args
           return handleLogin(email, password)
         },
       },
       signup: {
-        input: 'CredentialsInput!',
+        input: 'SignupInput!',
         output: 'Success',
         resolver: (source, args, context, info, where) => {
-          const { CredentialsInput: { email, password, confirmPassword } } = args
+          const { SignupInput: { email, password, confirmPassword } } = args
           return handleSignup(email, password, confirmPassword)
         },
       }

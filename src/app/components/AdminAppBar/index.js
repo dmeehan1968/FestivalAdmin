@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 // Styles
 import clsx from 'clsx'
@@ -16,6 +16,8 @@ import Typography from '@material-ui/core/Typography'
 import MenuIcon from '@material-ui/icons/Menu'
 
 import { useAuthentication } from 'app/components/AuthenticationProvider'
+
+import AuthDialog from 'app/components/AuthDialog'
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -40,7 +42,8 @@ export const AdminAppBar = ({
   setIsDrawerOpen = () => {}
 }) => {
   const classes = useStyles()
-  const { user, isAuthenticated, login, logout } = useAuthentication()
+  const { user, isAuthenticated, login, logout, signup } = useAuthentication()
+  const [ loginDialogOpen, setLoginDialogOpen ] = useState(false)
 
   return (
     <AppBar
@@ -66,8 +69,10 @@ export const AdminAppBar = ({
         }
         {isAuthenticated
           && <Button color="inherit" onClick={logout}>Logout</Button>
-          || <Button color="inherit" onClick={login}>Login</Button>
+          || <Button color="inherit" onClick={()=>setLoginDialogOpen(true)}>Login</Button>
         }
+        <AuthDialog open={loginDialogOpen} login={login} signup={signup} onClose={()=>setLoginDialogOpen(false)} />
+
       </Toolbar>
     </AppBar>
   )
