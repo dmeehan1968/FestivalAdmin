@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 
 import faker from 'faker'
 import jwt from 'jsonwebtoken'
@@ -32,6 +32,7 @@ export const AuthenticationProvider = ({
         { algorithm: 'RS256' },
         (err, decoded) => {
           if (err) return reject(err)
+          window.localStorage.setItem('auth_token', token)
           resolve(decoded)
         }
       )
@@ -46,6 +47,16 @@ export const AuthenticationProvider = ({
     })
   }
 
+  useEffect(() => {
+    const token = window.localStorage.getItem('auth_token')
+    if (token) {
+      authenticateFromToken(token)
+      .catch(() => {
+        window.localStorage.removeItem('auth_token')
+      })
+    }
+  }, [])
+
   const handleLogin = (email, password) => {
     return login(email, password).then(authenticateFromToken)
   }
@@ -53,6 +64,7 @@ export const AuthenticationProvider = ({
   const handleLogout = () => {
     setIsAuthenticated(false)
     setUser(null)
+    window.localStorage.removeItem('auth_token')
   }
 
   const handleSignup = (email, password, confirmPassword) => {
