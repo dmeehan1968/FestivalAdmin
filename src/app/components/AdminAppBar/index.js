@@ -71,7 +71,12 @@ export const AdminAppBar = ({
           && <Button color="inherit" onClick={logout}>Logout</Button>
           || <Button color="inherit" onClick={()=>setLoginDialogOpen(true)}>Login</Button>
         }
-        <AuthDialog open={loginDialogOpen} login={login} signup={signup} onClose={()=>setLoginDialogOpen(false)} />
+        <AuthDialog
+          open={loginDialogOpen}
+          login={login}
+          signup={signup}
+          onClose={()=>setLoginDialogOpen(false)}
+        />
 
       </Toolbar>
     </AppBar>
