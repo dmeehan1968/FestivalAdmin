@@ -71,7 +71,8 @@ module.exports = function(sequelize, DataTypes) {
     },
     rsaPrivateKey,
     {
-      algorithm: 'RS256'
+      algorithm: 'RS256',
+      expiresIn: process.env.AUTH_EXPIRY || '1d',
     })
   }
 
