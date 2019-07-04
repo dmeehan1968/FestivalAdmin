@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 
 import clsx from 'clsx'
 import { makeStyles } from '@material-ui/core/styles'
@@ -56,6 +56,7 @@ export const Auth = ({
     confirmPassword: ''
   },
   onSubmit=(mode, credentials) => console.log('submit', mode, credentials),
+  canSubmit,
 }) => {
 
   const classes = useAuthStyles()
@@ -63,12 +64,16 @@ export const Auth = ({
   const loginSchema = useLoginSchema()
   const signupSchema = useSignupSchema()
 
+  const handleSubmit = values => {
+    onSubmit(isLogin() ? 'login' : 'signup', values)
+  }
+
   return (
     <Formik
       className={classes.form}
       initialValues={credentials}
       validationSchema={isLogin() ? loginSchema : signupSchema}
-      onSubmit={(values) => onSubmit(isLogin() ? 'login' : 'signup', values)}
+      onSubmit={handleSubmit}
     >
       {({ isValid }) => (
         <Form>
@@ -86,11 +91,13 @@ export const Auth = ({
           >
             <ToggleButton
               value="login"
+              disabled={!canSubmit}
             >
               Login
             </ToggleButton>
             <ToggleButton
               value="signup"
+              disabled={!canSubmit}
             >
               Signup
             </ToggleButton>
@@ -134,7 +141,7 @@ export const Auth = ({
             variant="contained"
             color="primary"
             fullWidth
-            disabled={!isValid}
+            disabled={!isValid || !canSubmit}
           >
             {isLogin() && 'Login' || 'Signup'}
           </Button>

@@ -31,15 +31,14 @@ export const AuthenticationProvider = ({
         token,
         rsaPublicKey,
         { algorithm: 'RS256' },
-        (err, decoded) => {
+        (err, user) => {
           if (err) return reject(err)
           window.localStorage.setItem('auth_token', token)
-          resolve(decoded)
+          resolve(user)
         }
       )
     })
     .then(user => {
-      console.log('user', user);
       setUser(user)
     })
     .then(() => {
@@ -59,7 +58,6 @@ export const AuthenticationProvider = ({
       authenticateFromToken(token)
       .catch(() => {
         window.localStorage.removeItem('auth_token')
-        console.log('token expired, redirect to', redirect_url);
       })
     }
   }, [])

@@ -34,6 +34,7 @@ export const AuthDialog = ({
 
   const classes = useStyles()
   const [ snackbarProps, setSnackbarProps ] = useState({})
+  const [ isSubmitting, setIsSubmitting ] = useState(false)
 
   const handleSubmit = (mode, { email, password, confirmPassword }) => {
     const authenticate = mode === 'login'
@@ -42,47 +43,56 @@ export const AuthDialog = ({
       :
         () => signup(email, password, confirmPassword)
 
-    authenticate()
+    return Promise.resolve()
+    .then(() => setIsSubmitting(true))
+    .then(() => authenticate())
     .then(() => {
-      setSnackbarProps({
-        snackBar: {
-          open: true,
-          autoHideDuration: 1500,
-          onClose: () => {
-            setSnackbarProps({})
-            props.onClose()
+      return new Promise(resolve => {
+        setSnackbarProps({
+          snackBar: {
+            open: true,
+            autoHideDuration: 1500,
+            onClose: () => {
+              setSnackbarProps({})
+              props.onClose()
+              resolve()
+            },
           },
-        },
-        snackBarContent: {
-          message: 'Login Successful',
-          className: classes.success,
-          action: [],
-        },
+          snackBarContent: {
+            message: 'Login Successful',
+            className: classes.success,
+            action: [],
+          },
+        })
       })
     })
     .catch(error => {
-      setSnackbarProps({
-        snackBar: {
-          open: true,
-          autoHideDuration: 5000,
-          onClose: () => {
-            setSnackbarProps({})
+      return new Promise(resolve => {
+        setSnackbarProps({
+          snackBar: {
+            open: true,
+            autoHideDuration: 5000,
+            onClose: () => {
+              setSnackbarProps({})
+              resolve()
+            },
           },
-        },
-        snackBarContent: {
-          message: `Login Failed: ${error.message}`,
-          className: classes.error,
-          action: [
-            <Button key="button" color="inherit" onClick={()=>setSnackbarProps({})}>Dismiss</Button>
-          ],
-        },
+          snackBarContent: {
+            message: `Login Failed: ${error.message}`,
+            className: classes.error,
+            action: [
+              <Button key="button" color="inherit" onClick={()=>setSnackbarProps({})}>Dismiss</Button>
+            ],
+          },
+        })
       })
     })
+    .finally(() => setIsSubmitting(false))
   }
 
   return (
     <Dialog {...props} maxWidth="xs" PaperProps={{ className: classes.container}}>
-      <Auth onSubmit={handleSubmit} />
+      <Auth onSubmit={handleSubmit} canSubmit={!isSubmitting} />
       <SnackBar {...snackbarProps.snackBar}>
         <SnackBarContent {...snackbarProps.snackBarContent} />
       </SnackBar>
