@@ -73,7 +73,7 @@ export const AdminAppBar = ({
         }
         <AuthDialog
           open={loginDialogOpen}
-          login={login}
+          login={(...args) => login(...args, { from: window.location.pathname })}
           signup={signup}
           onClose={()=>setLoginDialogOpen(false)}
         />

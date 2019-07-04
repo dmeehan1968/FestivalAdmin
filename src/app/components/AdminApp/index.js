@@ -151,7 +151,7 @@ export const AdminApp = ({
           </Route> */}
           <Route>
             <Page title="Not Found">
-              <div>The specified route was not found</div>
+              <div>The specified route was not found ({window.location.pathname})</div>
             </Page>
           </Route>
         </Switch>

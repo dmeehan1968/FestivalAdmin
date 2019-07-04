@@ -1,9 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, withRouter } from 'react-router-dom'
 
 import AdminApp from 'app/components/AdminApp'
-import AuthenticationProvider from 'app/components/AuthenticationProvider'
+import { default as _AuthenticationProvider } from 'app/components/AuthenticationProvider'
+const AuthenticationProvider = withRouter(_AuthenticationProvider)
 
 import ApolloClient from 'apollo-boost'
 import { ApolloProvider } from 'react-apollo-hooks'
@@ -19,11 +20,11 @@ export const client = ({
 
   render((
     <ApolloProvider client={client}>
-      <AuthenticationProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <AuthenticationProvider>
           <AdminApp />
-        </BrowserRouter>
-      </AuthenticationProvider>
+        </AuthenticationProvider>
+      </BrowserRouter>
     </ApolloProvider>
   ),
   document.getElementById('root'))

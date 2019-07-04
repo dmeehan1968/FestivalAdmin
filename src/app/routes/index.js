@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, Redirect } from 'react-router-dom'
 
 // Icons
 import HomeIcon from '@material-ui/icons/Home'
@@ -16,7 +16,7 @@ export const HomePage = () => {
 export const ProfilePage = () => {
   const { user } = useAuthentication()
   return (
-    <div>This is the user profile page for {user.firstName} {user.lastName}.</div>
+    user && <div>This is the user profile page for {user.firstName} {user.lastName}.</div>
   )
 }
 
@@ -24,7 +24,21 @@ const withForwardRef = WrappedComponent => React.forwardRef((props, ref) =>
   <WrappedComponent forwardRef={ref} {...props} />
 )
 
-const NotAuthenticated = props => <div>Not authenticated</div>
+const NotAuthenticated = props => {
+  const [ redirect, setRedirect ] = useState(false)
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setRedirect(true), 2000)
+    return () => clearTimeout(timeout)
+  })
+
+  return (
+    <div>
+      Not authenticated, redirecting...
+      {redirect && <Redirect to="/" />}
+    </div>
+  )
+}
 
 const withAuthentication = (PlaceholderComponent = (() => null)) => WrappedComponent => ({ forwardRef, ...props }) => {
   const { isAuthenticated } = useAuthentication()

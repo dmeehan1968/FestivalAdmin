@@ -14,9 +14,10 @@ export const useAuthentication = () => useContext(Authentication)
 
 export const AuthenticationProvider = ({
   children,
+  redirect_url = '/',
+  history = window.history,
 }) => {
 
-  const [ isAuthenticated, setIsAuthenticated ] = useState(false)
   const [ user, setUser ] = useState(null)
   const login = useAuthLogin()
   const signup = useAuthSignup()
@@ -24,7 +25,7 @@ export const AuthenticationProvider = ({
   const firstName = faker.name.firstName()
   const lastName = faker.name.lastName()
 
-  const authenticateFromToken = token => {
+  const authenticateFromToken = (token, appState) => {
     return new Promise((resolve, reject) => {
       jwt.verify(
         token,
@@ -39,8 +40,12 @@ export const AuthenticationProvider = ({
     })
     .then(user => {
       console.log('user', user);
-      setIsAuthenticated(true)
       setUser(user)
+    })
+    .then(() => {
+      if (appState && appState.from) {
+        history.push(appState.from, appState)
+      }
     })
     .catch(error => {
       throw new Error('Decryption Failure')
@@ -48,31 +53,39 @@ export const AuthenticationProvider = ({
   }
 
   useEffect(() => {
+    // validate token on first render
     const token = window.localStorage.getItem('auth_token')
     if (token) {
       authenticateFromToken(token)
       .catch(() => {
         window.localStorage.removeItem('auth_token')
+        console.log('token expired, redirect to', redirect_url);
       })
     }
   }, [])
 
-  const handleLogin = (email, password) => {
-    return login(email, password).then(authenticateFromToken)
+  useEffect(() => {
+    // validate users expiry date on each render
+    if (user && user.exp*1000 < Date.now()) {
+      setUser(null)
+    }
+  })
+
+  const handleLogin = (email, password, appState) => {
+    return login(email, password).then(token => authenticateFromToken(token, appState))
   }
 
   const handleLogout = () => {
-    setIsAuthenticated(false)
     setUser(null)
     window.localStorage.removeItem('auth_token')
   }
 
-  const handleSignup = (email, password, confirmPassword) => {
-    return signup(email,password,confirmPassword).then(authenticateFromToken)
+  const handleSignup = (email, password, confirmPassword, appState) => {
+    return signup(email,password,confirmPassword).then(token => authenticateFromToken(token, appState))
   }
 
   const context = {
-    isAuthenticated,
+    isAuthenticated: !!user,
     user,
     login: handleLogin,
     logout: handleLogout,
