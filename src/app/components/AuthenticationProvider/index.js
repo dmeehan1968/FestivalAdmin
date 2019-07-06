@@ -44,6 +44,8 @@ export const AuthenticationProvider = ({
     .then(() => {
       if (appState && appState.from) {
         history.push(appState.from, appState)
+      } else {
+        history.push(redirect_url)
       }
     })
     .catch(error => {
