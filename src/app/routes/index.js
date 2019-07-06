@@ -7,6 +7,8 @@ import PersonIcon from '@material-ui/icons/Person'
 
 import { useAuthentication } from 'app/components/AuthenticationProvider'
 
+import EventsGrid from 'app/components/EventsGrid'
+
 export const HomePage = () => {
   return (
     <div>This is the home page.</div>
@@ -60,6 +62,13 @@ export const routes = [
     path: '/profile',
     icon: PersonIcon,
     component: withAuthentication(NotAuthenticated)(ProfilePage),
+    link: withForwardRef(withAuthentication()(Link)),
+  },
+  {
+    title: 'Events',
+    path: '/events',
+    icon: PersonIcon,
+    component: withAuthentication(NotAuthenticated)(EventsGrid),
     link: withForwardRef(withAuthentication()(Link)),
   },
 ]

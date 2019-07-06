@@ -21,7 +21,7 @@ export const client = ({
   render((
     <ApolloProvider client={client}>
       <BrowserRouter>
-        <AuthenticationProvider>
+        <AuthenticationProvider redirect_url={'/events'}>
           <AdminApp />
         </AuthenticationProvider>
       </BrowserRouter>
