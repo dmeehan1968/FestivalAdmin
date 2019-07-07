@@ -30,7 +30,7 @@ export const AuthenticationProvider = ({
       jwt.verify(
         token,
         rsaPublicKey,
-        { algorithm: 'RS256' },
+        { algorithms: [ 'RS256' ] },
         (err, user) => {
           if (err) return reject(err)
           window.localStorage.setItem('auth_token', token)

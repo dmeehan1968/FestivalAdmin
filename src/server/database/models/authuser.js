@@ -23,14 +23,6 @@ module.exports = function(sequelize, DataTypes) {
     },
   }, {
     // options
-    initialAutoIncrement: 1,
-    sequelize: sequelize,
-    name: {
-      singular: 'authuser',
-      plural: 'authusers',
-    },
-    tableName: 'authusers',
-    modelName: 'AuthUser',
     hooks: {
       beforeValidate: (user, options) => {
         if (user.changed('email')) {
@@ -136,12 +128,12 @@ module.exports = function(sequelize, DataTypes) {
     types: {
       LoginInput: { email: 'string!', password: 'string!' },
       SignupInput: { email: 'string!', password: 'string!', confirmPassword: 'string!' },
-      Success: { token: 'string!' },
+      AuthSuccess: { token: 'string!' },
     },
     mutations: {
       login: {
         input: 'LoginInput!',
-        output: 'Success',
+        output: 'AuthSuccess',
         resolver: (source, args, context, info, where) => {
           const { LoginInput: { email, password } } = args
           return handleLogin(email, password)
@@ -149,7 +141,7 @@ module.exports = function(sequelize, DataTypes) {
       },
       signup: {
         input: 'SignupInput!',
-        output: 'Success',
+        output: 'AuthSuccess',
         resolver: (source, args, context, info, where) => {
           const { SignupInput: { email, password, confirmPassword } } = args
           return handleSignup(email, password, confirmPassword)

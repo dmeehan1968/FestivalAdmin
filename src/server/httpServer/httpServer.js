@@ -22,10 +22,7 @@ export default ({ port, ...settings } = {}, log = debug('httpServer')) => {
       app.set(setting, settings[setting])
     })
 
-    flattenMiddleware(middlewares, app).forEach(middleware => {
-      logMiddleware(middleware)
-      app.use(...middleware)
-    })
+    flattenMiddleware(middlewares, app, logMiddleware)
 
     routes.forEach(([ method, ...params ]) => {
       logRoutes(method, params)
@@ -39,9 +36,11 @@ export default ({ port, ...settings } = {}, log = debug('httpServer')) => {
   })
 }
 
-export const flattenMiddleware = (middlewares, app) => {
-  return middlewares.reduce((acc, middleware) => {
+export const flattenMiddleware = (middlewares, app, log) => {
+  return middlewares.forEach(middleware => {
     middleware = middleware(app)
-    return [ ...acc, ...Array.isArray(middleware[0]) ? middleware : [middleware]]
-  }, [])
+    log(middleware)
+    middleware = Array.isArray(middleware[0]) ? middleware : [ middleware ]
+    middleware.forEach(args => app.use(...args))
+  })
 }

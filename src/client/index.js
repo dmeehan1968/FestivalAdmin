@@ -16,7 +16,14 @@ export const client = ({
   module: mod = module,
 } = {}) => {
 
-  const client = new ApolloClient()
+  const client = new ApolloClient({
+    request: operation => {
+      const token = window.localStorage.getItem('auth_token')
+      operation.setContext({
+        authorization: token ? `Bearer: ${token}` : '',
+      })
+    },
+  })
 
   render((
     <ApolloProvider client={client}>
