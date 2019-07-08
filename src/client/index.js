@@ -20,7 +20,9 @@ export const client = ({
     request: operation => {
       const token = window.localStorage.getItem('auth_token')
       operation.setContext({
-        authorization: token ? `Bearer: ${token}` : '',
+        headers: {
+          authorization: token ? `Bearer: ${token}` : '',
+        }
       })
     },
   })
