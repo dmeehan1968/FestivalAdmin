@@ -51,6 +51,6 @@ module.exports = function(sequelize, DataTypes) {
   //     fetch: 'events',
   //   },
   // }
-  //
+
   return Event
 }
