@@ -14,7 +14,7 @@ export const eventMutation = gql`
 `
 export const useEventEdit = options => {
 
-  const mutation = useMutation(eventMutation, options)
+  const [mutation] = useMutation(eventMutation, options)
 
   return event => {
     delete event.__typename
@@ -23,7 +23,7 @@ export const useEventEdit = options => {
     .then(({
       data: {
         event = {},
-      }
+      } = {}
     }) => event)
   }
 

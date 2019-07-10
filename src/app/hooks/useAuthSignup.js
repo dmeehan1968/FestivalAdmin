@@ -10,7 +10,7 @@ export const AuthSignipMutation = gql`
 `
 export const useAuthSignup = options => {
 
-  const mutation = useMutation(AuthSignipMutation, options)
+  const [mutation] = useMutation(AuthSignipMutation, options)
 
   return (email, password, confirmPassword) => {
     const options = { variables: { credentials: { email, password, confirmPassword } } }
@@ -20,7 +20,7 @@ export const useAuthSignup = options => {
         signup: {
           token
         } = {},
-      }
+      } = {}
     }) => token)
   }
 

@@ -26,7 +26,7 @@ const useEvents = () => {
   const {
     data: {
       eventsForCurrentUser: events = [],
-    },
+    } = {},
     ...rest
   } = useQuery(eventsQuery)
 
