@@ -23,6 +23,18 @@ module.exports = function(sequelize, DataTypes) {
     },
   }, {
     // options
+    defaultScope: {
+      attributes: {
+        exclude: [ 'password' ],
+      },
+    },
+    scopes: {
+      withPassword: {
+        attributes: {
+          include: [ 'password' ],
+        },
+      },
+    },
     hooks: {
       beforeValidate: (user, options) => {
         if (user.changed('email')) {
@@ -87,6 +99,7 @@ module.exports = function(sequelize, DataTypes) {
 
   AuthUser.login = (email, password) => {
     return AuthUser
+    .scope('withPassword')
     .findOne({ where: { email }})
     .then(user => {
       return Promise.all([
