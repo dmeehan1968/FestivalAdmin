@@ -14,6 +14,7 @@ export default app => {
     const schema = generateSchema(models)
     const server = new ApolloServer({
       schema: new GraphQLSchema(schema),
+      context: ({ req }) => ({ user: req.user })
     })
     server.applyMiddleware({ app })
     return [ (req, res, next) => next() ]
