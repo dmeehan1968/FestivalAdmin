@@ -58,34 +58,36 @@ export default (options = {}, log = debug('sequelize')) => {
   .then(() => {
     // seed
     const { Contact, Event, AuthUser } = db.models
+
+    const users = [
+      { email: 'dave_meehan@replicated.co.uk', password: 'Password1!' },
+      { email: 'dave@example.com', password: 'Password1!' },
+      { email: 'ben@example.com', password: 'Password1!' },
+    ]
+
+    const getRandomBetween = (min, max) => {
+      return Math.random() * (max - min) + min
+    }
+
     return db.transaction(t => {
-      const authusers = [
-        AuthUser.create({ email: 'dave_meehan@replicated.co.uk', password: 'Password1!' }, {
-          transaction: t,
-        }),
-      ]
-      const contacts = Array(5).fill(undefined).map(() => {
-        return Contact.create({
-          firstName: casual.first_name,
-          lastName: casual.last_name,
-          address1: [ casual.building_number, casual.street ].join(' '),
-          city: casual.city,
-          state: casual.state,
-          postcode: casual.zip(),
-          events: [
-            {
-              title: casual.title.slice(0,255),
-              subtitle: casual.title.slice(0,255),
-              description: casual.short_description.slice(0,255),
-              longDescription: casual.description.slice(0,255),
-            },
-          ]
+
+      const all = users.map(user => {
+        return AuthUser.create({
+          ...user,
+          events: Array(Math.round(getRandomBetween(1,5))).fill(undefined).map(() => ({
+            AuthUserId: user.id,
+            title: casual.title.slice(0,255),
+            subtitle: casual.title.slice(0,255),
+            description: casual.short_description.slice(0,255),
+            longDescription: casual.description.slice(0,255),
+          })),
         }, {
           transaction: t,
-          include: [ Event ],
+          include: [ Event ]
         })
       })
-      return Promise.all([ ...authusers, ...contacts ])
+
+      return Promise.all(all)
     })
   })
   .then(() => {

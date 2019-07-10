@@ -10,8 +10,8 @@ import { gql } from 'apollo-boost'
 import { useQuery } from 'react-apollo-hooks'
 
 export const eventsQuery = gql`
-  query eventGet {
-  	events: eventGet {
+  query eventsForCurrentUser {
+  	eventsForCurrentUser {
       id
       title
       subtitle
@@ -25,7 +25,7 @@ const useEvents = () => {
 
   const {
     data: {
-      events = [],
+      eventsForCurrentUser: events = [],
     },
     ...rest
   } = useQuery(eventsQuery)

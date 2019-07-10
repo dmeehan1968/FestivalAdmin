@@ -44,13 +44,19 @@ module.exports = function(sequelize, DataTypes) {
 
   Event.associate = models => {
     Event.belongsToMany(models['Contact'], { through: 'contactEvents' })
+    Event.belongsTo(models['AuthUser'])
   }
 
-  // Event.graphql = {
-  //   alias: {
-  //     fetch: 'events',
-  //   },
-  // }
+  Event.graphql = {
+    excludeMutations: [ 'create', 'update', 'destroy' ],
+    excludeQueries: [ 'query' ],
+    queries: {
+      eventsForCurrentUser: {
+        output: '[Event]!',
+        resolver: (instance, args, { user }, info) => user.getEvents(),
+      }
+    }
+  }
 
   return Event
 }

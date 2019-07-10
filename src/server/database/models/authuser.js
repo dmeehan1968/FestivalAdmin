@@ -68,9 +68,9 @@ module.exports = function(sequelize, DataTypes) {
     })
   }
 
-  // AuthUser.associate = models => {
-  //   AuthUser.belongsToMany(models['Event'], { through: 'contactEvents'})
-  // }
+  AuthUser.associate = models => {
+    AuthUser.hasMany(models['Event'])
+  }
 
   class AuthenticationError extends Error {
     constructor(message, errors) {
@@ -85,7 +85,7 @@ module.exports = function(sequelize, DataTypes) {
     }
   }
 
-  const handleLogin = (email, password) => {
+  AuthUser.login = (email, password) => {
     return AuthUser
     .findOne({ where: { email }})
     .then(user => {
@@ -102,7 +102,7 @@ module.exports = function(sequelize, DataTypes) {
     })
   }
 
-  const handleSignup = (email, password, confirmPassword) => {
+  AuthUser.signup = (email, password, confirmPassword) => {
 
     return Promise.resolve()
     .then(() => {
@@ -118,7 +118,7 @@ module.exports = function(sequelize, DataTypes) {
       if (error.parent && error.parent.code === 'ER_DUP_ENTRY') {
         throw new AuthenticationError('Email already registered')
       }
-      throw error // new AuthenticationError(error.message, error.errors)
+      throw error
     })
   }
 
@@ -134,18 +134,12 @@ module.exports = function(sequelize, DataTypes) {
       login: {
         input: 'LoginInput!',
         output: 'AuthSuccess',
-        resolver: (source, args, context, info, where) => {
-          const { LoginInput: { email, password } } = args
-          return handleLogin(email, password)
-        },
+        resolver: (source, { LoginInput: { email, password }}, context, info, where) => AuthUser.login(email, password),
       },
       signup: {
         input: 'SignupInput!',
         output: 'AuthSuccess',
-        resolver: (source, args, context, info, where) => {
-          const { SignupInput: { email, password, confirmPassword } } = args
-          return handleSignup(email, password, confirmPassword)
-        },
+        resolver: (source, { SignupInput: { email, password, confirmPassword }}, context, info, where) => AuthUser.signup(email, password, confirmPassword),
       }
     }
   }
