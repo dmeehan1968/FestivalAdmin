@@ -14,9 +14,11 @@ export default app => [
           { algorithms: [ 'RS256' ] },
           (err, user) => {
             if (err) throw err
-            console.log('auth_user', user);
-            req.user = user
-            next()
+            const { AuthUser } = app.get('models')
+            AuthUser
+            .findByPk(user.id)
+            .then(user => req.user = user)
+            .finally(next)
           }
         )
         return
