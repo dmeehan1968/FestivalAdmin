@@ -15,12 +15,7 @@ import EventsGrid from 'app/components/EventsGrid'
 import NotAuthorized from 'app/components/NotAuthorized'
 import NotAuthenticated from 'app/components/NotAuthenticated'
 import HomePage from 'app/components/HomePage'
-
-export const Permissions = () => {
-  return (
-    <div>This is the permissions page</div>
-  )
-}
+import PermissionsPage from 'app/components/PermissionsPage'
 
 export const routes = [
   {
@@ -40,7 +35,7 @@ export const routes = [
     title: 'Permissions',
     path: '/permissions',
     icon: PersonIcon,
-    component: withAuthorization([], ['AuthPermissionRead'], NotAuthorized)(Permissions),
+    component: withAuthorization([], ['AuthPermissionRead'], NotAuthorized)(PermissionsPage),
     link: withForwardRef(withAuthorization([],['AuthPermissionRead'])(Link)),
   },
 ]
