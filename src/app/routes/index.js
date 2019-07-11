@@ -13,13 +13,8 @@ import withAuthorization from 'app/hocs/withAuthorization'
 
 import EventsGrid from 'app/components/EventsGrid'
 import NotAuthorized from 'app/components/NotAuthorized'
-
-export const HomePage = () => {
-  return (
-    <div>This is the home page.</div>
-  )
-}
 import NotAuthenticated from 'app/components/NotAuthenticated'
+import HomePage from 'app/components/HomePage'
 
 export const Permissions = () => {
   return (
