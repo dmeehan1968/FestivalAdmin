@@ -3,6 +3,7 @@ import assert from 'assert'
 import debug from 'debug'
 import casual from 'casual'
 import path from 'path'
+import * as models from './models'
 
 export default (options = {}, log = debug('sequelize')) => {
 
@@ -39,9 +40,9 @@ export default (options = {}, log = debug('sequelize')) => {
     log('connected')
   })
   .then(() => {
-    db.import(path.resolve(process.cwd(), 'src/server/database/models/contact'))
-    db.import(path.resolve(process.cwd(), 'src/server/database/models/event'))
-    db.import(path.resolve(process.cwd(), 'src/server/database/models/authuser'))
+    Object.keys(models).forEach(modelName => {
+      models[modelName](db, Sequelize.DataTypes)
+    })
   })
   .then(() => {
     Object.keys(db.models).forEach(key => {
@@ -57,13 +58,8 @@ export default (options = {}, log = debug('sequelize')) => {
   })
   .then(() => {
     // seed
-    const { Contact, Event, AuthUser } = db.models
+    const { Contact, Event, AuthUser, AuthRole } = db.models
 
-    const users = [
-      { email: 'dave_meehan@replicated.co.uk', password: 'Password1!' },
-      { email: 'dave@example.com', password: 'Password1!' },
-      { email: 'ben@example.com', password: 'Password1!' },
-    ]
 
     const getRandomBetween = (min, max) => {
       return Math.random() * (max - min) + min
