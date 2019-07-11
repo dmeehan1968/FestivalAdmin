@@ -43,7 +43,6 @@ module.exports = function(sequelize, DataTypes) {
   })
 
   Event.associate = models => {
-    Event.belongsToMany(models['Contact'], { through: 'contactEvents' })
     Event.belongsTo(models['AuthUser'])
   }
 
