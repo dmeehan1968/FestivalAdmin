@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import { Link, Redirect } from 'react-router-dom'
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 // Icons
 import HomeIcon from '@material-ui/icons/Home'
-import PersonIcon from '@material-ui/icons/Person'
+import EventNoteIcon from '@material-ui/icons/EventNote'
+import LockOpenIcon from '@material-ui/icons/LockOpen'
 
-import { useAuthentication } from 'app/components/AuthenticationProvider'
-import useRedirect from 'app/hooks/useRedirect'
 import withForwardRef from 'app/hocs/withForwardRef'
 import withAuthentication from 'app/hocs/withAuthentication'
 import withAuthorization from 'app/hocs/withAuthorization'
@@ -27,14 +26,14 @@ export const routes = [
   {
     title: 'Events',
     path: '/events',
-    icon: PersonIcon,
+    icon: EventNoteIcon,
     component: withAuthentication(NotAuthenticated)(EventsGrid),
     link: withForwardRef(withAuthentication()(Link)),
   },
   {
     title: 'Permissions',
     path: '/permissions',
-    icon: PersonIcon,
+    icon: LockOpenIcon,
     component: withAuthorization([], ['AuthPermissionRead'], NotAuthorized)(PermissionsPage),
     link: withForwardRef(withAuthorization([],['AuthPermissionRead'])(Link)),
   },
