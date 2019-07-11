@@ -82,6 +82,7 @@ module.exports = function(sequelize, DataTypes) {
 
   AuthUser.associate = models => {
     AuthUser.hasMany(models['Event'])
+    AuthUser.belongsToMany(models['AuthRole'], { through: 'AuthUserAuthRole', as: { plural: 'roles' } })
   }
 
   class AuthenticationError extends Error {

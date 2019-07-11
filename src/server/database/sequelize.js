@@ -60,30 +60,60 @@ export default (options = {}, log = debug('sequelize')) => {
     // seed
     const { Contact, Event, AuthUser, AuthRole } = db.models
 
-
-    const getRandomBetween = (min, max) => {
-      return Math.random() * (max - min) + min
-    }
-
     return db.transaction(t => {
 
-      const all = users.map(user => {
-        return AuthUser.create({
-          ...user,
-          events: Array(Math.round(getRandomBetween(1,5))).fill(undefined).map(() => ({
-            AuthUserId: user.id,
-            title: casual.title.slice(0,255),
-            subtitle: casual.title.slice(0,255),
-            description: casual.short_description.slice(0,255),
-            longDescription: casual.description.slice(0,255),
-          })),
-        }, {
-          transaction: t,
-          include: [ Event ]
-        })
+      const roles = [
+        { name: 'Admin' },
+        { name: 'Organiser' },
+      ].map(role => {
+        return AuthRole.create(role, { transaction: t })
       })
 
-      return Promise.all(all)
+      return Promise.all(roles)
+      .then(roles => {
+
+        const users = [
+          {
+            email: 'dave_meehan@replicated.co.uk',
+            password: 'Password1!',
+          },
+          {
+            email: 'dave@example.com',
+            password: 'Password1!',
+          },
+          {
+            email: 'ben@example.com',
+            password: 'Password1!',
+          },
+        ]
+
+        const getRandomBetween = (min, max) => {
+          return Math.random() * (max - min) + min
+        }
+
+        const all = users.map(user => {
+          return AuthUser.create({
+            ...user,
+            events: Array(Math.round(getRandomBetween(1,5))).fill(undefined).map(() => ({
+              AuthUserId: user.id,
+              title: casual.title.slice(0,255),
+              subtitle: casual.title.slice(0,255),
+              description: casual.short_description.slice(0,255),
+              longDescription: casual.description.slice(0,255),
+            })),
+          }, {
+            transaction: t,
+            include: [ Event ]
+          })
+        })
+
+        return Promise.all(all)
+        .then(users => {
+          users.find(user => user.email === 'dave_meehan@replicated.co.uk').addRoles(roles[0])
+          users.find(user => user.email === 'dave@example.com').addRoles(roles[1])
+          users.find(user => user.email === 'ben@example.com').addRoles(roles[1])
+        })
+      })
     })
   })
   .then(() => {
