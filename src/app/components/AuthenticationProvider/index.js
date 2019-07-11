@@ -85,11 +85,11 @@ export const AuthenticationProvider = ({
   }
 
   const hasPermission = (name) => {
-    return !!user && user.permissions[name]
+    return !!user && !!user.permissions[name]
   }
 
   const hasRole = (name) => {
-    return !!user && user.roles[name]
+    return !!user && !!user.roles[name]
   }
 
   const context = {
