@@ -16,7 +16,7 @@ import NotAuthenticated from 'app/components/NotAuthenticated'
 import HomePage from 'app/components/HomePage'
 import PermissionsPage from 'app/components/PermissionsPage'
 
-export const routes = [
+export const eventRoutes = [
   {
     title: 'Home',
     path: '/',
@@ -30,6 +30,9 @@ export const routes = [
     component: withAuthentication(NotAuthenticated)(EventsGrid),
     link: withForwardRef(withAuthentication()(Link)),
   },
+]
+
+export const adminRoutes = [
   {
     title: 'Permissions',
     path: '/permissions',
@@ -38,5 +41,3 @@ export const routes = [
     link: withForwardRef(withAuthorization([],['AuthPermissionRead'])(Link)),
   },
 ]
-
-export default routes

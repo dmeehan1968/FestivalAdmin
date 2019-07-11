@@ -21,7 +21,7 @@ import Auth from 'app/components/Auth'
 import UserProfile from 'app/components/UserProfile'
 // import EventDescription from 'app/components/EventDescription'
 
-import routes from 'app/routes'
+import { eventRoutes, adminRoutes } from 'app/routes'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -79,7 +79,7 @@ export const AdminApp = ({
         <div className={classes.appBarSpacer} />
         <Switch>
           {
-            routes.map(({ path, title, component: Component }, key) => {
+            [...eventRoutes, ...adminRoutes].map(({ path, title, component: Component }, key) => {
               return (
                 <Route key={key} exact path={path}>
                   <Page title={title}>

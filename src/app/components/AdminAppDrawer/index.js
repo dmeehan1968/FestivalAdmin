@@ -19,7 +19,7 @@ import ListSubheader from '@material-ui/core/ListSubheader'
 // Icons
 import EventIcon from '@material-ui/icons/Event'
 
-import routes from 'app/routes'
+import { eventRoutes, adminRoutes } from 'app/routes'
 
 const drawerWidth = 240
 
@@ -89,7 +89,11 @@ export const AdminAppDrawer = ({
       </List>
       <Divider />
       <List dense>
-        {renderLinks(routes)}
+        {renderLinks(eventRoutes)}
+      </List>
+      <Divider />
+      <List dense>
+        {renderLinks(adminRoutes)}
       </List>
       <Divider />
     </Drawer>
