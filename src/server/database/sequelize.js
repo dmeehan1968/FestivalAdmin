@@ -67,6 +67,7 @@ export default (options = {}, log = debug('sequelize')) => {
           name: 'Admin',
           authPerms: [
             { name: 'ReadAllEvents' },
+            { name: 'AuthPermissionRead' },
           ]
         },
         {

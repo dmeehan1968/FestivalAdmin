@@ -6,6 +6,8 @@ import HomeIcon from '@material-ui/icons/Home'
 import PersonIcon from '@material-ui/icons/Person'
 
 import { useAuthentication } from 'app/components/AuthenticationProvider'
+import useRedirect from 'app/hooks/useRedirect'
+import withForwardRef from 'app/hocs/withForwardRef'
 
 import EventsGrid from 'app/components/EventsGrid'
 
@@ -15,29 +17,30 @@ export const HomePage = () => {
   )
 }
 
-export const ProfilePage = () => {
-  const { user } = useAuthentication()
+export const Permissions = () => {
   return (
-    user && <div>This is the user profile page for {user.firstName} {user.lastName}.</div>
+    <div>This is the permissions page</div>
   )
 }
 
-const withForwardRef = WrappedComponent => React.forwardRef((props, ref) =>
-  <WrappedComponent forwardRef={ref} {...props} />
-)
-
 const NotAuthenticated = props => {
-  const [ redirect, setRedirect ] = useState(false)
-
-  useEffect(() => {
-    const timeout = setTimeout(() => setRedirect(true), 2000)
-    return () => clearTimeout(timeout)
-  })
+  const redirect = useRedirect('/')
 
   return (
     <div>
       Not authenticated, redirecting...
-      {redirect && <Redirect to="/" />}
+      {redirect}
+    </div>
+  )
+}
+
+const NotAuthorized = props => {
+  const redirect = useRedirect('/')
+
+  return (
+    <div>
+      Not Authorized, redirecting...
+      {redirect}
     </div>
   )
 }
@@ -45,6 +48,22 @@ const NotAuthenticated = props => {
 const withAuthentication = (PlaceholderComponent = (() => null)) => WrappedComponent => ({ forwardRef, ...props }) => {
   const { isAuthenticated } = useAuthentication()
   return isAuthenticated ?
+    <WrappedComponent {...props} ref={forwardRef} />
+    :
+    <PlaceholderComponent {...props} />
+}
+
+const withAuthorization = (roles = [], permissions = [], PlaceholderComponent = (() => null)) => WrappedComponent => ({ forwardRef, ...props }) => {
+  const { hasRole, hasPermission } = useAuthentication()
+  let isAuthorized = roles.reduce((acc, role) => {
+    return acc && hasRole(role)
+  }, true)
+
+  isAuthorized = permissions.reduce((acc, perm) => {
+    return acc && hasPermission(perm)
+  }, isAuthorized)
+
+  return isAuthorized ?
     <WrappedComponent {...props} ref={forwardRef} />
     :
     <PlaceholderComponent {...props} />
@@ -58,18 +77,18 @@ export const routes = [
     component: HomePage,
   },
   {
-    title: 'Profile',
-    path: '/profile',
-    icon: PersonIcon,
-    component: withAuthentication(NotAuthenticated)(ProfilePage),
-    link: withForwardRef(withAuthentication()(Link)),
-  },
-  {
     title: 'Events',
     path: '/events',
     icon: PersonIcon,
     component: withAuthentication(NotAuthenticated)(EventsGrid),
     link: withForwardRef(withAuthentication()(Link)),
+  },
+  {
+    title: 'Permissions',
+    path: '/permissions',
+    icon: PersonIcon,
+    component: withAuthorization([], ['AuthPermissionRead'], NotAuthorized)(Permissions),
+    link: withForwardRef(withAuthorization([],['AuthPermissionRead'])(Link)),
   },
 ]
 
