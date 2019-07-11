@@ -9,6 +9,7 @@ import { useAuthentication } from 'app/components/AuthenticationProvider'
 import useRedirect from 'app/hooks/useRedirect'
 import withForwardRef from 'app/hocs/withForwardRef'
 import withAuthentication from 'app/hocs/withAuthentication'
+import withAuthorization from 'app/hocs/withAuthorization'
 
 import EventsGrid from 'app/components/EventsGrid'
 
@@ -44,22 +45,6 @@ const NotAuthorized = props => {
       {redirect}
     </div>
   )
-}
-
-const withAuthorization = (roles = [], permissions = [], PlaceholderComponent = (() => null)) => WrappedComponent => ({ forwardRef, ...props }) => {
-  const { hasRole, hasPermission } = useAuthentication()
-  let isAuthorized = roles.reduce((acc, role) => {
-    return acc && hasRole(role)
-  }, true)
-
-  isAuthorized = permissions.reduce((acc, perm) => {
-    return acc && hasPermission(perm)
-  }, isAuthorized)
-
-  return isAuthorized ?
-    <WrappedComponent {...props} ref={forwardRef} />
-    :
-    <PlaceholderComponent {...props} />
 }
 
 export const routes = [
