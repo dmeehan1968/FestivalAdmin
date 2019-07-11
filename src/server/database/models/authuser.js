@@ -27,6 +27,14 @@ module.exports = function(sequelize, DataTypes) {
       attributes: {
         exclude: [ 'password' ],
       },
+      include: [
+        {
+          association: 'roles',
+          through: {
+            attributes: [],
+          },
+        },
+      ],
     },
     scopes: {
       withPassword: {
@@ -61,6 +69,10 @@ module.exports = function(sequelize, DataTypes) {
 
   AuthUser.prototype.verifyPassword = function(password) {
     return bcrypt.compare(password, this.password)
+  }
+
+  AuthUser.prototype.hasRole = function(name) {
+    return !!this.roles.find(role=>role.name===name)
   }
 
   AuthUser.prototype.authToken = function() {

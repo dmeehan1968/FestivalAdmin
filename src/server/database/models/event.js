@@ -1,3 +1,5 @@
+const assert = require('assert')
+
 module.exports = function(sequelize, DataTypes) {
   const Event = sequelize.define('Event', {
     // attributes
@@ -52,7 +54,13 @@ module.exports = function(sequelize, DataTypes) {
     queries: {
       eventsForCurrentUser: {
         output: '[Event]!',
-        resolver: (instance, args, { user }, info) => user.getEvents(),
+        resolver: (instance, args, { user }, info) => {
+          assert(user)
+          if (user.hasRole('Admin')) {
+            return Event.findAll()
+          }
+          return user.getEvents()
+        },
       }
     }
   }

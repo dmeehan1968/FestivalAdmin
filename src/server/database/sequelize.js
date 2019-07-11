@@ -72,16 +72,22 @@ export default (options = {}, log = debug('sequelize')) => {
       return Promise.all(roles)
       .then(roles => {
 
+        const admin = roles.find(role=>role.name==='Admin')
+        const organiser = roles.find(role=>role.name==='Organiser')
+
         const users = [
           {
+            id: 1,
             email: 'dave_meehan@replicated.co.uk',
             password: 'Password1!',
           },
           {
+            id: 2,
             email: 'dave@example.com',
             password: 'Password1!',
           },
           {
+            id: 3,
             email: 'ben@example.com',
             password: 'Password1!',
           },
@@ -109,9 +115,9 @@ export default (options = {}, log = debug('sequelize')) => {
 
         return Promise.all(all)
         .then(users => {
-          users.find(user => user.email === 'dave_meehan@replicated.co.uk').addRoles(roles[0])
-          users.find(user => user.email === 'dave@example.com').addRoles(roles[1])
-          users.find(user => user.email === 'ben@example.com').addRoles(roles[1])
+          users.find(user => user.email === 'dave_meehan@replicated.co.uk').addRoles(admin)
+          users.find(user => user.email === 'dave@example.com').addRoles(organiser)
+          users.find(user => user.email === 'ben@example.com').addRoles(organiser)
         })
       })
     })
