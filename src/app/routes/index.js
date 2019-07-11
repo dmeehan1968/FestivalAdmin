@@ -12,6 +12,7 @@ import withAuthentication from 'app/hocs/withAuthentication'
 import withAuthorization from 'app/hocs/withAuthorization'
 
 import EventsGrid from 'app/components/EventsGrid'
+import NotAuthorized from 'app/components/NotAuthorized'
 
 export const HomePage = () => {
   return (
@@ -31,17 +32,6 @@ const NotAuthenticated = props => {
   return (
     <div>
       Not authenticated, redirecting...
-      {redirect}
-    </div>
-  )
-}
-
-const NotAuthorized = props => {
-  const redirect = useRedirect('/')
-
-  return (
-    <div>
-      Not Authorized, redirecting...
       {redirect}
     </div>
   )
