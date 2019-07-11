@@ -8,6 +8,7 @@ import PersonIcon from '@material-ui/icons/Person'
 import { useAuthentication } from 'app/components/AuthenticationProvider'
 import useRedirect from 'app/hooks/useRedirect'
 import withForwardRef from 'app/hocs/withForwardRef'
+import withAuthentication from 'app/hocs/withAuthentication'
 
 import EventsGrid from 'app/components/EventsGrid'
 
@@ -43,14 +44,6 @@ const NotAuthorized = props => {
       {redirect}
     </div>
   )
-}
-
-const withAuthentication = (PlaceholderComponent = (() => null)) => WrappedComponent => ({ forwardRef, ...props }) => {
-  const { isAuthenticated } = useAuthentication()
-  return isAuthenticated ?
-    <WrappedComponent {...props} ref={forwardRef} />
-    :
-    <PlaceholderComponent {...props} />
 }
 
 const withAuthorization = (roles = [], permissions = [], PlaceholderComponent = (() => null)) => WrappedComponent => ({ forwardRef, ...props }) => {
