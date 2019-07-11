@@ -8,7 +8,7 @@ module.exports = function(sequelize, DataTypes) {
     // attributes
     id: {
       type: DataTypes.INTEGER(10).UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       primaryKey: true,
       autoIncrement: true,
     },
