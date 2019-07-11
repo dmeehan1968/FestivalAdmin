@@ -58,15 +58,22 @@ export default (options = {}, log = debug('sequelize')) => {
   })
   .then(() => {
     // seed
-    const { Contact, Event, AuthUser, AuthRole } = db.models
+    const { Contact, Event, AuthUser, AuthRole, AuthPerm } = db.models
 
     return db.transaction(t => {
 
       const roles = [
-        { name: 'Admin' },
-        { name: 'Organiser' },
+        {
+          name: 'Admin',
+          authPerms: [
+            { name: 'ReadAllEvents' },
+          ]
+        },
+        {
+          name: 'Organiser',
+        },
       ].map(role => {
-        return AuthRole.create(role, { transaction: t })
+        return AuthRole.create(role, { transaction: t, include: [ { association: 'authPerms' } ] })
       })
 
       return Promise.all(roles)

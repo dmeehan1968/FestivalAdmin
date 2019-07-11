@@ -33,6 +33,14 @@ module.exports = function(sequelize, DataTypes) {
           through: {
             attributes: [],
           },
+          include: [
+            {
+              association: 'authPerms',
+              through: {
+                attributes: [],
+              }
+            }
+          ]
         },
       ],
     },
@@ -58,6 +66,19 @@ module.exports = function(sequelize, DataTypes) {
           return bcrypt.hash(user.password, 10).then(hash => user.password = hash)
         }
       },
+      afterFind: (user) => {
+        user.permissions = user.roles.reduce((acc, role) => {
+          return {
+            ...acc,
+            ...role.authPerms.reduce((acc, perm) => {
+              return {
+                ...acc,
+                [perm.name]: true,
+              }
+            }, {})
+          }
+        }, {})
+      }
     },
     getterMethods: {
       avatar() {
@@ -73,6 +94,10 @@ module.exports = function(sequelize, DataTypes) {
 
   AuthUser.prototype.hasRole = function(name) {
     return !!this.roles.find(role=>role.name===name)
+  }
+
+  AuthUser.prototype.hasPermission = function(name) {
+    return !!this.permissions[name]
   }
 
   AuthUser.prototype.authToken = function() {
