@@ -84,12 +84,22 @@ export const AuthenticationProvider = ({
     return signup(email,password,confirmPassword).then(token => authenticateFromToken(token, appState))
   }
 
+  const hasPermission = (name) => {
+    return !!user && user.permissions[name]
+  }
+
+  const hasRole = (name) => {
+    return !!user && user.roles[name]
+  }
+
   const context = {
     isAuthenticated: !!user,
     user,
     login: handleLogin,
     logout: handleLogout,
-    signup: handleSignup
+    signup: handleSignup,
+    hasPermission,
+    hasRole,
   }
 
   return (

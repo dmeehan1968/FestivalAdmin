@@ -109,6 +109,8 @@ module.exports = function(sequelize, DataTypes) {
     return jwt.sign({
       id: this.id,
       avatar: this.avatar,
+      roles: this.roles.reduce((acc, role)=>({ ...acc, [role.name]: true }),{}),
+      permissions: this.permissions,
     },
     rsaPrivateKey,
     {
@@ -137,7 +139,7 @@ module.exports = function(sequelize, DataTypes) {
 
   AuthUser.login = (email, password) => {
     return AuthUser
-    .scope('withPassword')
+    .scope('defaultScope', 'withPassword')
     .findOne({ where: { email }})
     .then(user => {
       return Promise.all([
