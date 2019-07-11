@@ -19,21 +19,11 @@ export const HomePage = () => {
     <div>This is the home page.</div>
   )
 }
+import NotAuthenticated from 'app/components/NotAuthenticated'
 
 export const Permissions = () => {
   return (
     <div>This is the permissions page</div>
-  )
-}
-
-const NotAuthenticated = props => {
-  const redirect = useRedirect('/')
-
-  return (
-    <div>
-      Not authenticated, redirecting...
-      {redirect}
-    </div>
   )
 }
 
