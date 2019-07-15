@@ -35,7 +35,7 @@ module.exports = function(sequelize, DataTypes) {
           },
           include: [
             {
-              association: 'authPerms',
+              association: 'perms',
               through: {
                 attributes: [],
               }
@@ -70,7 +70,7 @@ module.exports = function(sequelize, DataTypes) {
         user.permissions = user.roles.reduce((acc, role) => {
           return {
             ...acc,
-            ...role.authPerms.reduce((acc, perm) => {
+            ...role.perms.reduce((acc, perm) => {
               return {
                 ...acc,
                 [perm.name]: true,

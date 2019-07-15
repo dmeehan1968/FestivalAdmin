@@ -18,7 +18,7 @@ module.exports = function(sequelize, DataTypes) {
 
   AuthRole.associate = models => {
     AuthRole.belongsToMany(models['AuthUser'], { through: 'AuthUserAuthRole', as: { plural: 'authUsers' } })
-    AuthRole.belongsToMany(models['AuthPerm'], { through: 'AuthRoleAuthPerm', as: { plural: 'authPerms' } })
+    AuthRole.belongsToMany(models['AuthPerm'], { through: 'AuthRoleAuthPerm', as: { plural: 'perms' } })
   }
 
   AuthRole.graphql = {

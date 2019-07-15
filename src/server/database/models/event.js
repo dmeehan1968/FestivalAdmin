@@ -56,7 +56,7 @@ module.exports = function(sequelize, DataTypes) {
         output: '[Event]!',
         resolver: (instance, args, { user }, info) => {
           assert(user)
-          if (user.hasPermission('ReadAllEvents')) {
+          if (user.hasPermission('ReadEvents')) {
             return Event.findAll()
           }
           return user.getEvents()

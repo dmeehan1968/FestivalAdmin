@@ -60,44 +60,74 @@ export default (options = {}, log = debug('sequelize')) => {
     // seed
     const { Contact, Event, AuthUser, AuthRole, AuthPerm } = db.models
 
-    return db.transaction(t => {
+    return db.transaction(transaction => {
 
-      const roles = [
-        {
-          name: 'Admin',
-          authPerms: [
-            { name: 'ReadAllEvents' },
-            { name: 'AuthPermissionRead' },
-          ]
-        },
-        {
-          name: 'Organiser',
-        },
-      ].map(role => {
-        return AuthRole.create(role, { transaction: t, include: [ { association: 'authPerms' } ] })
+      const perms = [
+        { name: 'CreateEvents' },
+        { name: 'ReadEvents' },
+        { name: 'UpdateEvents' },
+        { name: 'DeleteEvents' },
+        { name: 'CreateOwnEvents' },
+        { name: 'ReadOwnEvents' },
+        { name: 'UpdateOwnEvents' },
+        { name: 'DeleteOwnEvents' },
+        { name: 'AuthPermissionRead' },
+      ]
+
+      return AuthPerm.bulkCreate(perms, { transaction })
+      .then(perms => ({
+        transaction,
+        perms: perms.reduce((acc, perm) => ({ ...acc, [perm.name]: perm }), {})
+      }))
+      .then(({transaction, perms}) => {
+
+        return Promise.all([
+          {
+            name: 'Admin',
+            afterHook: role => role.addPerms(Object.values(perms), { transaction })
+          },
+          {
+            name: 'Organiser',
+            afterHook: role => role.addPerms([
+              perms.CreateOwnEvents,
+              perms.ReadOwnEvents,
+              perms.UpdateOwnEvents,
+              perms.DeleteOwnEvents,
+            ], { transaction })
+          },
+        ].map(({ afterHook = (() => {}), ...role}) => {
+          return AuthRole.create(role, { transaction })
+          .then(role => afterHook(role).then(() => role))
+        }))
+        .then(roles => ({ transaction, roles }))
+
       })
-
-      return Promise.all(roles)
-      .then(roles => {
-
-        const admin = roles.find(role=>role.name==='Admin')
-        const organiser = roles.find(role=>role.name==='Organiser')
+      .then(({transaction, roles}) => {
+        return {
+          transaction,
+          roles: roles.reduce((acc, role) => ({ ...acc, [role.name]: role }), {})
+        }
+      })
+      .then(({transaction, roles}) => {
 
         const users = [
           {
             id: 1,
             email: 'dave_meehan@replicated.co.uk',
             password: 'Password1!',
+            afterHook: user => user.setRoles([roles.Admin], { transaction }),
           },
           {
             id: 2,
             email: 'dave@example.com',
             password: 'Password1!',
+            afterHook: user => user.setRoles([roles.Organiser], { transaction }),
           },
           {
             id: 3,
             email: 'ben@example.com',
             password: 'Password1!',
+            afterHook: user => user.setRoles([roles.Organiser], { transaction }),
           },
         ]
 
@@ -105,7 +135,7 @@ export default (options = {}, log = debug('sequelize')) => {
           return Math.random() * (max - min) + min
         }
 
-        const all = users.map(user => {
+        const all = users.map(({ afterHook = (() => {}), ...user }) => {
           return AuthUser.create({
             ...user,
             events: Array(Math.round(getRandomBetween(1,5))).fill(undefined).map(() => ({
@@ -116,17 +146,13 @@ export default (options = {}, log = debug('sequelize')) => {
               longDescription: casual.description.slice(0,255),
             })),
           }, {
-            transaction: t,
+            transaction: transaction,
             include: [ Event ]
           })
+          .then(afterHook)
         })
 
         return Promise.all(all)
-        .then(users => {
-          users.find(user => user.email === 'dave_meehan@replicated.co.uk').addRoles(admin)
-          users.find(user => user.email === 'dave@example.com').addRoles(organiser)
-          users.find(user => user.email === 'ben@example.com').addRoles(organiser)
-        })
       })
     })
   })
