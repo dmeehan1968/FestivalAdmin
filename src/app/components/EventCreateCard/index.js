@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 
@@ -13,6 +14,8 @@ import Typography from '@material-ui/core/Typography'
 
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 
+import { useAuthentication } from 'app/components/AuthenticationProvider'
+
 const useStyles = makeStyles(theme => ({
   media: {
     height: 0,
@@ -23,21 +26,32 @@ const useStyles = makeStyles(theme => ({
 export const EventCreateCard = ({
 }) => {
   const classes = useStyles()
+  const { hasPermission } = useAuthentication()
 
-  return (
-    <Card>
+  if (hasPermission('CreateEvents') || hasPermission('CreateOwnEvents')) {
 
-      <CardHeader
-        title="Create Event"
-        titleTypographyProps={{ variant: 'subtitle1' }}
-      />
+    return (
+      <Card>
 
-      <CardActions>
-        <Button>Create</Button>
-      </CardActions>
+        <CardHeader
+          title="Create Event"
+          titleTypographyProps={{ variant: 'subtitle1' }}
+        />
 
-    </Card>
-  )
+        <CardActions>
+          <Button
+            component={props=><Link to="/event/create" {...props} />}
+          >
+            Create
+          </Button>
+        </CardActions>
+
+      </Card>
+    )
+
+  }
+
+  return null
 }
 
 export default EventCreateCard
