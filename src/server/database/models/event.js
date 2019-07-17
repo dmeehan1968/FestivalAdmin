@@ -59,7 +59,10 @@ module.exports = function(sequelize, DataTypes) {
           if (user.hasPermission('ReadEvents')) {
             return Event.findAll()
           }
-          return user.getEvents()
+          if (user.hasPermission('ReadOwnEvents')) {
+            return user.getEvents()
+          }
+          throw new Error('Not Authorized')
         },
       }
     }
