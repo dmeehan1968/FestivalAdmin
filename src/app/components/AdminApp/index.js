@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Switch, Route } from 'react-router-dom'
+import { withRouter } from 'react-router'
 
 // Styles
 import clsx from 'clsx'
@@ -58,7 +59,7 @@ export const Page = ({
   )
 }
 export const AdminApp = ({
-
+  location,
 }) => {
   const classes = useStyles()
   const [ isDrawerOpen, setIsDrawerOpen ] = useState(true)
@@ -91,7 +92,7 @@ export const AdminApp = ({
           }
           <Route>
             <Page title="Not Found">
-              <div>The specified route was not found ({window.location.pathname})</div>
+              <div>The specified route was not found ({location.pathname})</div>
             </Page>
           </Route>
         </Switch>
@@ -100,4 +101,4 @@ export const AdminApp = ({
   )
 }
 
-export default AdminApp
+export default withRouter(AdminApp)
