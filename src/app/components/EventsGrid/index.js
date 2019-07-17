@@ -9,7 +9,7 @@ import EventCreateCard from 'app/components/EventCreateCard'
 import { gql } from 'apollo-boost'
 import { useQuery } from 'react-apollo-hooks'
 
-export const eventsQuery = gql`
+export const eventsForCurrentUserQuery = gql`
   query eventsForCurrentUser {
   	eventsForCurrentUser {
       id
@@ -21,14 +21,14 @@ export const eventsQuery = gql`
   }
 `
 
-const useEvents = () => {
+const useEventsForCurrentUser = () => {
 
   const {
     data: {
       eventsForCurrentUser: events = [],
     } = {},
     ...rest
-  } = useQuery(eventsQuery)
+  } = useQuery(eventsForCurrentUserQuery)
 
   return { events, ...rest }
 
@@ -37,7 +37,7 @@ const useEvents = () => {
 export const EventsGrid = ({
 
 }) => {
-  const { events } = useEvents()
+  const { events } = useEventsForCurrentUser()
 
   return (
     <Grid container spacing={3}>
