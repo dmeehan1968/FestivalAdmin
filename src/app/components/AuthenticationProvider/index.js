@@ -12,6 +12,20 @@ const Authentication = React.createContext()
 
 export const useAuthentication = () => useContext(Authentication)
 
+export const useAuthStorage = (store, key = 'auth_token') => {
+  return {
+    setItem(value) {
+      return store.setItem(key, value)
+    },
+    getItem() {
+      return store.getItem(key)
+    },
+    removeItem() {
+      return store.removeItem(key)
+    }
+  }
+}
+
 export const AuthenticationProvider = ({
   children,
   redirect_url = '/',
@@ -21,6 +35,7 @@ export const AuthenticationProvider = ({
   const [ user, setUser ] = useState(null)
   const login = useAuthLogin()
   const signup = useAuthSignup()
+  const store = useAuthStorage(window.sessionStorage)
 
   const firstName = faker.name.firstName()
   const lastName = faker.name.lastName()
@@ -33,7 +48,7 @@ export const AuthenticationProvider = ({
         { algorithms: [ 'RS256' ] },
         (err, user) => {
           if (err) return reject(err)
-          window.localStorage.setItem('auth_token', token)
+          store.setItem(token)
           resolve(user)
         }
       )
@@ -55,11 +70,11 @@ export const AuthenticationProvider = ({
 
   useEffect(() => {
     // validate token on first render
-    const token = window.localStorage.getItem('auth_token')
+    const token = store.getItem()
     if (token) {
       authenticateFromToken(token)
       .catch(() => {
-        window.localStorage.removeItem('auth_token')
+        store.removeItem()
       })
     }
   }, [])
@@ -77,7 +92,7 @@ export const AuthenticationProvider = ({
 
   const handleLogout = () => {
     setUser(null)
-    window.localStorage.removeItem('auth_token')
+    store.removeItem()
   }
 
   const handleSignup = (email, password, confirmPassword, appState) => {

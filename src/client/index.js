@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import { BrowserRouter, withRouter } from 'react-router-dom'
 
 import AdminApp from 'app/components/AdminApp'
-import { default as _AuthenticationProvider } from 'app/components/AuthenticationProvider'
+import { default as _AuthenticationProvider, useAuthStorage } from 'app/components/AuthenticationProvider'
 const AuthenticationProvider = withRouter(_AuthenticationProvider)
 
 import ApolloClient from 'apollo-boost'
@@ -16,9 +16,11 @@ export const client = ({
   module: mod = module,
 } = {}) => {
 
+  const store = useAuthStorage(window.sessionStorage)
+
   const client = new ApolloClient({
     request: operation => {
-      const token = window.localStorage.getItem('auth_token')
+      const token = store.getItem()
       operation.setContext({
         headers: {
           authorization: token ? `Bearer: ${token}` : '',

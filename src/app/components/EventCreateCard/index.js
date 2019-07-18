@@ -23,6 +23,8 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const CreateEventLink = React.forwardRef((props, ref)=><Link innerRef={ref} to="/event/create" {...props} />)
+
 export const EventCreateCard = ({
 }) => {
   const classes = useStyles()
@@ -40,7 +42,7 @@ export const EventCreateCard = ({
 
         <CardActions>
           <Button
-            component={props=><Link to="/event/create" {...props} />}
+            component={CreateEventLink}
           >
             Create
           </Button>
