@@ -15,6 +15,7 @@ import NotAuthorized from 'app/components/NotAuthorized'
 import NotAuthenticated from 'app/components/NotAuthenticated'
 import HomePage from 'app/components/HomePage'
 import PermissionsPage from 'app/components/PermissionsPage'
+import EventCreate from 'app/components/EventCreate'
 
 export const eventRoutes = [
   {
@@ -25,10 +26,16 @@ export const eventRoutes = [
   },
   {
     title: 'Events',
-    path: '/events',
+    path: '/event',
     icon: EventNoteIcon,
     component: withAuthentication(NotAuthenticated)(EventsGrid),
     link: withForwardRef(withAuthentication()(Link)),
+  },
+  {
+    title: 'Create Event',
+    path: '/event/create',
+    component: withAuthorization([], ['EventCreate'], NotAuthenticated)(EventCreate),
+    hidden: true,
   },
 ]
 

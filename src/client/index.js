@@ -32,7 +32,7 @@ export const client = ({
   render((
     <ApolloProvider client={client}>
       <BrowserRouter>
-        <AuthenticationProvider redirect_url={'/events'}>
+        <AuthenticationProvider redirect_url={'/event'}>
           <AdminApp />
         </AuthenticationProvider>
       </BrowserRouter>

@@ -72,7 +72,7 @@ export const AuthenticationProvider = ({
     // validate token on first render
     const token = store.getItem()
     if (token) {
-      authenticateFromToken(token)
+      authenticateFromToken(token, { from: window.location.pathname })
       .catch(() => {
         store.removeItem()
       })

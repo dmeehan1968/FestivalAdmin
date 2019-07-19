@@ -49,20 +49,25 @@ const useStyles = makeStyles(theme => ({
 
 const renderLinks = links => {
   return links
-  .map(({ title, path, icon: IconComponent, link: LinkComponent = RouterLink }, key) => {
-    return (
-      <ListItem
-        key={key}
-        button
-        component={LinkComponent}
-        to={path}
-      >
-        <ListItemIcon>
-          <IconComponent />
-        </ListItemIcon>
-        <ListItemText primary={title} />
-      </ListItem>
-    )
+  .map(({ title, path, icon: IconComponent, link: LinkComponent = RouterLink, hidden = false }, key) => {
+    if (!hidden) {
+      return (
+        <ListItem
+          key={key}
+          button
+          component={LinkComponent}
+          to={path}
+        >
+          {IconComponent &&
+            <ListItemIcon>
+              <IconComponent />
+            </ListItemIcon>
+          }
+          <ListItemText primary={title} />
+        </ListItem>
+      )
+    }
+    return null
   })
 }
 
@@ -70,6 +75,8 @@ export const AdminAppDrawer = ({
   isDrawerOpen = false,
 }) => {
   const classes = useStyles()
+  const groups = [ renderLinks(eventRoutes), renderLinks(adminRoutes) ]
+
   return (
     <Drawer
       variant="permanent"
@@ -88,14 +95,16 @@ export const AdminAppDrawer = ({
         </ListItem>
       </List>
       <Divider />
-      <List dense>
-        {renderLinks(eventRoutes)}
-      </List>
-      <Divider />
-      <List dense>
-        {renderLinks(adminRoutes)}
-      </List>
-      <Divider />
+      {groups.map((group, key) => {
+        return (
+          <React.Fragment key={key}>
+            <List dense>
+              {group}
+            </List>
+            <Divider />
+          </React.Fragment>
+        )
+      })}
     </Drawer>
   )
 }
