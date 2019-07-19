@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react'
 
-import faker from 'faker'
 import jwt from 'jsonwebtoken'
 
 import useAuthLogin from 'app/hooks/useAuthLogin'
@@ -36,9 +35,6 @@ export const AuthenticationProvider = ({
   const login = useAuthLogin()
   const signup = useAuthSignup()
   const store = useAuthStorage(window.sessionStorage)
-
-  const firstName = faker.name.firstName()
-  const lastName = faker.name.lastName()
 
   const authenticateFromToken = (token, appState) => {
     return new Promise((resolve, reject) => {
