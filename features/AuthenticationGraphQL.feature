@@ -1,4 +1,4 @@
-Feature: GraphQL Authentication
+Feature: Authentication via GraphQL
   As a developer
   I want to expose authentication capabilities over GraphQL
   So that client apps can authenticate over the network
@@ -6,28 +6,28 @@ Feature: GraphQL Authentication
 Background:
   Given the Sequelize model AuthUser
 
-Scenario: AuthUser includes a LoginInput type
+Scenario: AuthUser supports login credentials
   Then the GraphQL LoginInput type has fields:
   | field    | type              |
   | email    | string!           |
   | password | string!           |
 
-Scenario: AuthUser includes a SignupInput type
+Scenario: AuthUser supports signup credentials
   Then the GraphQL SignupInput type has fields:
   | field           | type              |
   | email           | string!           |
   | password        | string!           |
   | confirmPassword | string!           |
 
-Scenario: AuthUser includes an AuthSuccess type
+Scenario: AuthUser supports authentication success
   Then the GraphQL AuthSuccess type has fields:
   | field    | type              |
   | token    | string!           |
 
-Scenario: AuthUser defines a login mutation
+Scenario: AuthUser supports a login mutation
   Then the GraphQL login mutation accepts LoginInput! and returns AuthSuccess
 
-Scenario: AuthUser defines a signup mutation
+Scenario: AuthUser supports a signup mutation
   Then the GraphQL signup mutation accepts SignupInput! and returns AuthSuccess
 
 Scenario: AuthUser excludes default mutations
