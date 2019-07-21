@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watch --no-cache",
+    "jest": "jest --watch --no-cache",
+    "cucumber": "nodemon --exec babel-node --watch src --watch features --ext js,feature -- --require config/jest/setupTests.js node_modules/cucumber/bin/cucumber-js",
     "start": "nodemon --exec babel-node --watch src/bootstrap/start.js --watch .env --watch package.json --watch config/webpack -- src/bootstrap/start",
     "start:dev": "nodemon --exec babel-node --watch src/bootstrap/start.js --watch .env --watch package.json --watch config/webpack -- src/bootstrap/start",
     "build:all": "nodemon --exec babel-node --watch src/bootstrap/build.js --watch .env --watch package.json --watch config/webpack -- src/bootstrap/build"
@@ -34,6 +35,7 @@
     "casual": "^1.6.2",
     "clean-webpack-plugin": "^3.0.0",
     "core-js": "^3.1.4",
+    "cucumber": "^5.1.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "jest": "^24.8.0",
