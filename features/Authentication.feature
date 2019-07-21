@@ -62,3 +62,28 @@ Scenario: GraphQL login resolver calls AuthUser login
     ]
   }
   """
+
+Scenario: GraphQL signup resolver calls AuthUser signup
+  Then the GraphQL signup mutation resolver calls model signup
+  """
+  {
+    "resolver_args": [
+      null,
+      {
+        "SignupInput": {
+          "email": "email@example.com",
+          "password": "password",
+          "confirmPassword": "password"
+        }
+      },
+      null,
+      null,
+      null
+    ],
+    "method_args": [
+      "email@example.com",
+      "password",
+      "password"
+    ]
+  }
+  """
