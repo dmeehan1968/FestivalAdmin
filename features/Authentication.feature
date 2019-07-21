@@ -1,6 +1,7 @@
 Feature: GraphQL Authentication
   As a developer
-  I want to use GraphQL to access my AuthUser model
+  I want to expose authentication capabilities over GraphQL
+  So that client apps can authenticate over the network
 
 Background:
   Given the Sequelize model AuthUser
@@ -38,3 +39,26 @@ Scenario: AuthUser excludes default mutations
 Scenario: AuthUser excludes default queries
   Then the GraphQL excludes queries:
   | query  |
+
+Scenario: GraphQL login resolver calls AuthUser login
+  Then the GraphQL login mutation resolver calls model login
+  """
+  {
+    "resolver_args": [
+      null,
+      {
+        "LoginInput": {
+          "email": "email@example.com",
+          "password": "password"
+        }
+      },
+      null,
+      null,
+      null
+    ],
+    "method_args": [
+      "email@example.com",
+      "password"
+    ]
+  }
+  """
