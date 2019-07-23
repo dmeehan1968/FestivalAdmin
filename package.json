@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "jest": "jest --watch --no-cache",
-    "cucumber": "nodemon --exec babel-node --watch src --watch features --ext js,feature -- --require config/jest/setupTests.js node_modules/cucumber/bin/cucumber-js",
+    "cucumber": "NODE_ENV=test nodemon --exec babel-node --watch src --watch features --ext js,feature -- --fail-fast --require config/jest/setupTests.js node_modules/cucumber/bin/cucumber-js",
     "start": "nodemon --exec babel-node --watch src/bootstrap/start.js --watch .env --watch package.json --watch config/webpack -- src/bootstrap/start",
     "start:dev": "nodemon --exec babel-node --watch src/bootstrap/start.js --watch .env --watch package.json --watch config/webpack -- src/bootstrap/start",
     "build:all": "nodemon --exec babel-node --watch src/bootstrap/build.js --watch .env --watch package.json --watch config/webpack -- src/bootstrap/build"
@@ -31,6 +31,7 @@
     "babel-jest": "^24.8.0",
     "babel-loader": "^8.0.6",
     "babel-plugin-inline-dotenv": "^1.3.3",
+    "babel-plugin-module-resolver": "^3.2.0",
     "babel-plugin-styled-components": "^1.10.6",
     "casual": "^1.6.2",
     "clean-webpack-plugin": "^3.0.0",
@@ -39,6 +40,7 @@
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "jest": "^24.8.0",
+    "jsdom": "^15.1.1",
     "nodemon": "^1.19.1",
     "raw-loader": "^3.0.0",
     "react-devtools": "^3.6.1",
@@ -66,7 +68,18 @@
       "test": {
         "plugins": [
           "@babel/plugin-transform-runtime",
-          "@babel/plugin-proposal-class-properties"
+          "@babel/plugin-proposal-class-properties",
+          [
+            "module-resolver",
+            {
+              "root": [
+                "./src"
+              ],
+              "alias": {
+                "app": "./src/app"
+              }
+            }
+          ]
         ]
       }
     }
